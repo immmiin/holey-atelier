@@ -1,15 +1,22 @@
+// Finds the toe-hole centre in each sock cutout (bright frayed yarn at the toe tip),
+// normalised to the full image. Usage: node scripts/hole.mjs <dir with sock-N-1200.webp>
 import sharp from 'sharp';
-const out=[];const comps=[];
-for (let n=1;n<=6;n++){
-const {data,info}=await sharp(`public/socks/0${n}.webp`).raw().toBuffer({resolveWithObject:true});
-const W=info.width,H=info.height,C=info.channels;
-let sx=0,sy=0,c=0;
-for(let y=Math.round(H*0.855);y<H;y++)for(let x=0;x<W*0.3;x++){const i=(y*W+x)*C;const r=data[i],g=data[i+1],b=data[i+2],a=data[i+3];
- if(a>250&&Math.min(r,g,b)>185&&Math.max(r,g,b)-Math.min(r,g,b)<40){sx+=x;sy+=y;c++;}}
-const hx=sx/c,hy=sy/c; out.push([+(hx/W).toFixed(4),+(hy/H).toFixed(4)]);
-const L=Math.max(0,Math.round(hx-110)),T=Math.max(0,Math.round(hy-110));
-const crop=await sharp(`public/socks/0${n}.webp`).extract({left:L,top:T,width:220,height:Math.min(220,H-T)}).composite([{input:Buffer.from(`<svg width="220" height="220"><circle cx="${hx-L}" cy="${hy-T}" r="5" fill="red"/></svg>`)}]).flatten({background:'#888'}).png().toBuffer();
-comps.push({input:crop,left:(n-1)*225,top:0});
+const dir = process.argv[2] || 'public/img/socks';
+const out = [];
+for (let n = 1; n <= 6; n++) {
+  const f = `${dir}/sock-${n}-1200.webp`;
+  const { data, info } = await sharp(f).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const W = info.width, H = info.height, C = info.channels;
+  let x0 = W, y0 = H, x1 = 0, y1 = 0;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (data[(y * W + x) * C + 3] > 128) {
+    x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+  }
+  const bw = x1 - x0, bh = y1 - y0;
+  let sx = 0, sy = 0, c = 0;
+  for (let y = Math.round(y0 + bh * 0.855); y <= y1; y++) for (let x = x0; x < x0 + bw * 0.3; x++) {
+    const i = (y * W + x) * C, r = data[i], g = data[i + 1], b = data[i + 2];
+    if (data[i + 3] > 250 && Math.min(r, g, b) > 185 && Math.max(r, g, b) - Math.min(r, g, b) < 40) { sx += x; sy += y; c++; }
+  }
+  out.push({ n, x: +(sx / c / W).toFixed(4), y: +(sy / c / H).toFixed(4), bbox: [x0, y0, bw, bh] });
 }
 console.log(JSON.stringify(out));
-await sharp({create:{width:1350,height:220,channels:3,background:'#888'}}).composite(comps).png().toFile(process.env.TMPDIR+'holes.png');

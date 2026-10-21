@@ -1,0 +1,185 @@
+.bdrawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+.bdrawer__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 15, 31, 0.4);
+}
+.bdrawer__panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  bottom: 12px;
+  width: min(440px, calc(100vw - 24px));
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: var(--line) solid var(--ink);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  transform-origin: 100% 0;
+}
+.bdrawer__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 18px 16px;
+  background: var(--pink);
+  border-bottom: var(--line) solid var(--ink);
+}
+.bdrawer__head .h3 {
+  flex: 1;
+}
+.bdrawer__icon svg {
+  width: 36px;
+  height: 32px;
+}
+.bdrawer__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 30px;
+  text-align: center;
+}
+.bdrawer__empty img {
+  width: 96px;
+  height: auto;
+}
+.bdrawer__empty p {
+  margin: 0;
+}
+.bdrawer__list {
+  list-style: none;
+  margin: 0;
+  padding: 18px 16px;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.bdrawer__item {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 14px;
+  padding: 12px;
+  background: color-mix(in srgb, var(--sock) 30%, var(--paper));
+  border: var(--line) solid var(--ink);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-sm);
+  rotate: var(--tilt);
+}
+.bdrawer__thumb {
+  display: block;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--r-sm);
+  border: var(--line-thin) solid var(--ink);
+  background: var(--paper);
+  overflow: hidden;
+}
+.bdrawer__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6%;
+}
+.bdrawer__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.bdrawer__name {
+  font-family: var(--f-display);
+  font-size: 1.35rem;
+  line-height: 1.1;
+  text-decoration: none;
+}
+.bdrawer__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+}
+.bdrawer__qty {
+  padding: 3px 10px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  font-weight: 800;
+}
+.bdrawer__price {
+  font-weight: 900;
+}
+.bdrawer__remove {
+  align-self: flex-start;
+  padding: 0;
+  background: none;
+  border: 0;
+  font-weight: 800;
+  text-decoration: underline;
+}
+.bdrawer__foot {
+  padding: 16px 18px 20px;
+  border-top: var(--line) solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--cream);
+}
+.bdrawer__total {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--f-display);
+  font-size: 1.6rem;
+}
+.bdrawer__note {
+  margin: 0;
+}
+.bdrawer__checkout {
+  width: 100%;
+  margin-top: 6px;
+}
+
+/* ---------- toast (sticker) ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: 1200;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px 12px 14px;
+  background: var(--hi);
+  border: var(--line) solid var(--ink);
+  border-radius: 18px 24px 16px 26px;
+  box-shadow: var(--shadow);
+  font-weight: 900;
+  white-space: nowrap;
+}
+.toast img {
+  width: 30px;
+  height: auto;
+}
+
+/* a sock hand-distressed at the Atelier */
+.bdrawer__note-line {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 1px 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--pink);
+  font-weight: 800;
+}

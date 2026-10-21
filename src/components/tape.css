@@ -1,0 +1,62 @@
+.tapem-clip {
+  overflow-x: clip;
+  overflow-y: visible;
+  padding-block: 18px;
+  margin-block: -18px;
+}
+.tapem {
+  position: relative;
+  z-index: 2;
+  width: 106%;
+  margin-left: -3%;
+  overflow: hidden;
+  transform: rotate(var(--tilt));
+  border-block: var(--line) solid var(--ink);
+  padding-block: 12px;
+  box-shadow: 0 6px 0 rgba(26, 15, 31, 0.12);
+  pointer-events: none;
+}
+.tapem--hi {
+  background: var(--hi);
+}
+.tapem--pink {
+  background: var(--pink);
+}
+.tapem--green {
+  background: var(--green);
+  color: var(--cream);
+}
+.tapem__track {
+  display: flex;
+  width: max-content;
+}
+.tapem__strip {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding-inline-end: 28px;
+}
+.tapem__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  font-family: var(--f-display);
+  font-size: clamp(1.2rem, 2.2vw, 1.9rem);
+  text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.tapem__item img {
+  width: 26px;
+  height: auto;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tapem__track {
+    animation: tape-move var(--speed) linear infinite var(--dir);
+  }
+}
+@keyframes tape-move {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}

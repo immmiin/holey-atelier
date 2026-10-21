@@ -1,0 +1,180 @@
+.cl {
+  position: relative;
+  width: 100%;
+}
+.cl--scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  /* fade the edges so it's obvious the line keeps going */
+  mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
+}
+.cl--scroll::-webkit-scrollbar {
+  display: none;
+}
+.cl__stage {
+  position: relative;
+  margin-inline: auto;
+  touch-action: pan-x pan-y;
+}
+.cl__stage.is-dragging {
+  touch-action: none;
+}
+.cl__rope {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.cl__rope-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cl__rope-shadow {
+  fill: none;
+  stroke: rgba(26, 15, 31, 0.15);
+  stroke-width: 4;
+  transform: translate(4px, 10px);
+}
+.cl__post {
+  fill: var(--hi);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+
+/* each sock hangs from its peg; transform is driven by the sim */
+.cl__sock {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--sock-w);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: 50% 18px;
+  text-decoration: none;
+  will-change: transform;
+  touch-action: pan-x;
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.cl__sock:focus-visible {
+  outline: none;
+}
+.cl__sock:focus-visible .cl__img {
+  outline: 3px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+.cl__peg {
+  position: relative;
+  z-index: 2;
+  width: calc(var(--sock-w) * 0.13);
+  min-width: 16px;
+  height: auto;
+  margin-bottom: calc(var(--sock-w) * -0.14);
+}
+.cl__peg rect {
+  fill: var(--pink);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+.cl__sock:nth-child(odd of .cl__sock) .cl__peg rect {
+  fill: var(--hi);
+}
+.cl__peg path {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.cl__peg circle {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.cl__img {
+  width: 100%;
+  height: var(--sock-h);
+  object-fit: contain;
+  pointer-events: none;
+  /* die-cut sticker edge so cream socks read on a cream page */
+  filter: drop-shadow(2px 0 0 var(--ink)) drop-shadow(-2px 0 0 var(--ink)) drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 -2px 0 var(--ink))
+    drop-shadow(5px 6px 0 rgba(26, 15, 31, 0.18));
+}
+.cl__tag {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin-top: 10px;
+  padding: 7px 34px 7px 12px;
+  background: var(--paper);
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 8px 8px 12px 12px;
+  box-shadow: var(--shadow-sm);
+  line-height: 1.15;
+  white-space: nowrap;
+  transition: transform 0.4s var(--spring), background-color 0.2s;
+}
+.cl__tag::before {
+  /* string from sock to tag */
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 2px;
+  height: 12px;
+  background: var(--ink);
+}
+.cl__tag-name {
+  font-weight: 900;
+  font-size: 0.92rem;
+}
+.cl__tag-price {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.cl__sock:hover .cl__tag,
+.cl__sock:focus-visible .cl__tag {
+  background: color-mix(in srgb, var(--sock) 55%, var(--paper));
+  transform: scale(1.06) rotate(-2deg);
+}
+.cl__add {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  translate: 0 -50%;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: var(--line-thin) solid var(--ink);
+  background: var(--hi);
+  transition: transform 0.35s var(--spring);
+}
+.cl__add svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 2.6;
+}
+.cl__add:hover {
+  transform: rotate(90deg) scale(1.15);
+}
+.cl__add:active {
+  transform: scale(0.8, 1.2);
+}
+@media (max-width: 760px) {
+  .cl__tag {
+    padding: 5px 30px 5px 9px;
+  }
+  .cl__tag-name {
+    font-size: 0.8rem;
+  }
+}

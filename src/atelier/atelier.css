@@ -1,0 +1,653 @@
+/* The Atelier: the home page's clothesline, with a sock taken down and pulled apart.
+   Fraunces appears only at money/labour moments: the price tag, receipt and certificate. */
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/Fraunces.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
+.atl {
+  --lux: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --red: #c9302c;
+  --spring-soft: cubic-bezier(0.3, 1.35, 0.5, 1);
+  position: relative;
+  padding-block: var(--section) clamp(24px, 3vw, 48px);
+  background: var(--sec-bg, var(--cream));
+  transition: background-color 0.6s var(--ease);
+  scroll-margin-top: 90px;
+}
+
+/* ---------------------------------------------------------------- the room */
+
+.atl__room {
+  position: relative;
+  transition: height 0.6s var(--spring-soft);
+}
+.atl__stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  touch-action: manipulation;
+}
+.atl.is-pulling .atl__stage {
+  pointer-events: auto;
+}
+.atl.is-active .atl__line {
+  pointer-events: none;
+}
+.atl.is-active .cl--scroll {
+  overflow-x: hidden;
+}
+
+/* the work floor fades in under the picked sock */
+.atl__floor {
+  position: absolute;
+  left: calc(var(--gutter, 14px) * -1);
+  right: calc(var(--gutter, 14px) * -1);
+  bottom: 0;
+  height: 22%;
+  z-index: 0;
+  opacity: 0;
+  transform: translateY(24px) scaleY(0.6);
+  transform-origin: 50% 100%;
+  border-top: var(--line-thin) solid var(--ink);
+  background:
+    repeating-linear-gradient(180deg, rgba(26, 15, 31, 0.05) 0 1px, transparent 1px 4px),
+    linear-gradient(#efdccb, #e5cfba);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--spring-soft);
+  pointer-events: none;
+}
+.atl.is-active .atl__floor {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------------------------------------------------------------- depth: one comes forward, the rest recede */
+
+.cl__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  transform-origin: 50% 0;
+  transition:
+    transform 0.62s var(--spring-soft),
+    filter 0.6s var(--ease),
+    opacity 0.6s var(--ease);
+}
+.cl.is-atelier .cl__sock:not(.is-picked) .cl__body {
+  transform: translate(calc(var(--par, 0) * -9px), -10px) scale(0.85);
+  filter: blur(2.5px) saturate(0.6);
+  opacity: 0.7;
+}
+.cl.is-atelier .cl__sock.is-picked {
+  z-index: 4;
+}
+.cl.is-atelier .cl__sock.is-picked .cl__img {
+  /* off the line and into the room: no sticker edge, a deep soft shadow instead */
+  filter: drop-shadow(10px 26px 18px rgba(26, 15, 31, 0.32));
+  transition: filter 0.6s var(--ease);
+}
+.cl.is-atelier .cl__sock.is-picked .cl__tag {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+/* once the canvas has the sock, the clothesline copy steps aside */
+.atl.is-pulling .cl__sock.is-picked .cl__body {
+  opacity: 0;
+  transition:
+    transform 0.62s var(--spring-soft),
+    opacity 0.18s linear 0.05s;
+}
+
+/* ---------------------------------------------------------------- controls */
+
+.atl__back {
+  position: absolute;
+  left: clamp(12px, 2.5vw, 36px);
+  top: 72px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+  font-weight: 900;
+  font-size: 0.9rem;
+  cursor: pointer;
+  animation: atl-pop 0.45s var(--spring) both;
+}
+.atl__back:hover {
+  transform: translateY(-1px) rotate(-1deg);
+}
+.atl__msg {
+  position: absolute;
+  left: clamp(14px, 2.5vw, 36px);
+  bottom: clamp(14px, 3vh, 30px);
+  z-index: 4;
+  max-width: min(32vw, 440px);
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: clamp(22px, 2.9vw, 40px);
+  line-height: 1.02;
+  pointer-events: none;
+  animation: atl-pop 0.45s var(--spring) both;
+}
+@keyframes atl-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+}
+
+/* ---------------------------------------------------------------- price tag (HUD) */
+
+.atl__tag {
+  position: absolute;
+  right: clamp(12px, 3.5vw, 56px);
+  top: 70px;
+  width: clamp(150px, 15vw, 210px);
+  z-index: 5;
+  transform-origin: 50% 0;
+  opacity: 0;
+  translate: 0 -16px;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease), translate 0.5s var(--spring);
+}
+.atl.is-active .atl__tag {
+  opacity: 1;
+  translate: 0 0;
+}
+.atl.is-pulling .atl__tag .tag-card {
+  pointer-events: auto;
+}
+.atl__tag::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -30px;
+  width: 2px;
+  height: 30px;
+  background: var(--ink);
+  transform: translateX(-50%);
+}
+.tag-card {
+  position: relative;
+  padding: clamp(18px, 2vw, 24px) clamp(12px, 1.4vw, 18px) clamp(12px, 1.3vw, 16px);
+  background: var(--paper);
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 10px 10px 14px 14px;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+.tag-eyelet {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: var(--cream);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.tag-house {
+  font-family: var(--lux);
+  font-weight: 900;
+  font-size: clamp(10px, 0.9vw, 12.5px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.tag-name {
+  margin-top: 3px;
+  font-size: clamp(10.5px, 0.85vw, 12px);
+  font-weight: 800;
+  opacity: 0.7;
+}
+.tag-price {
+  margin: clamp(6px, 0.7vw, 10px) 0;
+  font-family: var(--lux);
+  font-weight: 900;
+  font-size: clamp(28px, 3.1vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.tag-rows {
+  margin: 0;
+  border-top: 1.5px dashed rgba(26, 15, 31, 0.3);
+  padding-top: 6px;
+  font-size: clamp(11px, 0.9vw, 13px);
+}
+.tag-rows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+}
+.tag-rows dt {
+  font-weight: 700;
+  opacity: 0.75;
+}
+.tag-rows dd {
+  margin: 0;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+.tag-rows .wage {
+  color: var(--red);
+}
+.tag-basket {
+  margin-top: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 999px;
+  background: var(--hi);
+  color: var(--ink);
+  font-weight: 900;
+  font-size: clamp(12.5px, 0.95vw, 14px);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.2s var(--spring);
+}
+.tag-basket:hover:not(:disabled) {
+  transform: translateY(-1px) rotate(-1.5deg);
+}
+.tag-basket:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.tag-basket:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.tag-basket.is-ready {
+  background: var(--pink);
+  animation: tag-pulse 1.3s ease-in-out infinite;
+}
+@keyframes tag-pulse {
+  50% {
+    box-shadow: 2px 2px 0 var(--ink), 0 0 0 6px rgba(245, 245, 106, 0.9);
+  }
+}
+
+/* ---------------------------------------------------------------- receipt + certificate layer */
+
+.atl-layer {
+  --lux: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --red: #c9302c;
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+}
+.atl-layer > * {
+  pointer-events: auto;
+}
+
+.abtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 20px;
+  border-radius: 999px;
+  border: var(--line-thin) solid var(--ink);
+  font-family: var(--f-body);
+  font-weight: 900;
+  font-size: 15px;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s var(--spring);
+}
+.abtn:hover {
+  transform: translateY(-1px) rotate(-1deg);
+}
+.abtn:active {
+  transform: translateY(1px);
+}
+.abtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+.abtn-primary {
+  background: var(--hi);
+}
+.abtn-ghost {
+  background: var(--paper);
+}
+.abtn-link {
+  border: 0;
+  box-shadow: none;
+  background: none;
+  padding: 8px 10px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.abtn:focus-visible,
+.tag-basket:focus-visible,
+.atl__back:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* receipt: a thermal strip feeding out of a slot under the price tag */
+.rc-col {
+  position: absolute;
+  bottom: 0;
+  width: 340px;
+  transform: translateX(-50%);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: 0 10px 28px;
+  scrollbar-width: none;
+}
+.rc-col::-webkit-scrollbar {
+  display: none;
+}
+.rc-col.is-centered {
+  left: 50%;
+  width: min(100vw, 340px);
+}
+.rc-col.is-inline {
+  position: relative;
+  bottom: auto;
+  transform: none;
+  overflow: visible;
+  margin-inline: auto;
+}
+.rc-slot {
+  position: sticky;
+  top: 0;
+  height: 9px;
+  margin: 0 -2px;
+  border-radius: 0 0 6px 6px;
+  background: linear-gradient(#2a1d2e, var(--ink));
+  box-shadow: 0 2px 6px rgba(26, 15, 31, 0.3);
+  z-index: 2;
+}
+.rc-feed {
+  overflow: hidden;
+  margin-top: -3px;
+}
+.rc-shadow {
+  filter: drop-shadow(0 8px 10px rgba(26, 15, 31, 0.16)) drop-shadow(0 1px 1px rgba(26, 15, 31, 0.12));
+}
+.rc-paper {
+  position: relative;
+  padding: 22px 22px 24px;
+  color: #241a26;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+  background-color: #fffcf6;
+  background-image:
+    linear-gradient(90deg, rgba(60, 40, 30, 0.07), rgba(60, 40, 30, 0) 7%, rgba(60, 40, 30, 0) 93%, rgba(60, 40, 30, 0.06)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.rc-head {
+  text-align: center;
+}
+.rc-house {
+  font-family: var(--lux);
+  font-weight: 900;
+  font-size: 17px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  padding-left: 0.32em;
+}
+.rc-sub {
+  margin: 2px 0 12px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  opacity: 0.75;
+}
+.rc-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+}
+.rc-rule {
+  border: 0;
+  border-top: 1.5px dashed rgba(36, 26, 38, 0.45);
+  margin: 12px 0;
+}
+.rc-rule-double {
+  border-top: 3px double rgba(36, 26, 38, 0.7);
+}
+.rc-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rc-lines li {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.rc-l {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rc-dots {
+  flex: 1;
+  min-width: 10px;
+  border-bottom: 1.5px dotted rgba(36, 26, 38, 0.45);
+  transform: translateY(-3px);
+}
+.rc-r {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.rc-lines .is-red .rc-r,
+.rc-lines .is-red .rc-l {
+  color: var(--red);
+}
+.rc-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--lux);
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 1.1;
+}
+.rc-total span:first-child {
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.rc-vis {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 10px;
+  margin: 18px 0 4px;
+  min-height: 150px;
+}
+.rc-sil {
+  display: block;
+  height: 150px;
+  width: auto;
+}
+.rc-holebox {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  min-width: 84px;
+  font-size: 10.5px;
+}
+.rc-hole {
+  border-radius: 50%;
+}
+.rc-remaining {
+  text-align: center;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
+}
+.rc-barcode {
+  display: block;
+  width: 100%;
+  height: 44px;
+  fill: #241a26;
+}
+.rc-code {
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  margin-top: 2px;
+}
+.rc-foot {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.rc-actions {
+  display: grid;
+  gap: 10px;
+  padding: 18px 6px 0;
+  animation: atl-pop 0.4s ease both;
+}
+
+/* certificate */
+.cert-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: rgba(26, 15, 31, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: atl-fade 0.3s ease both;
+}
+@keyframes atl-fade {
+  from {
+    opacity: 0;
+  }
+}
+.cert {
+  width: min(92vw, 520px);
+  margin: clamp(16px, 4vh, 40px) auto;
+}
+.cert-paper {
+  position: relative;
+  box-shadow: 0 24px 50px -20px rgba(26, 15, 31, 0.6);
+  animation: atl-pop 0.5s var(--spring) both;
+}
+.cert-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cert-seal {
+  position: absolute;
+  height: auto;
+  opacity: 0;
+  pointer-events: none;
+}
+.cert-seal.is-pressing {
+  animation: cert-stamp 0.75s cubic-bezier(0.5, 0, 0.3, 1) 0.1s both;
+}
+@keyframes cert-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(2.4) rotate(-14deg);
+    filter: blur(2px);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(0.9) rotate(4deg);
+    filter: none;
+  }
+  75% {
+    transform: scale(1.04) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(3deg);
+  }
+}
+.cert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 0 8px;
+}
+.cert-actions .abtn-link {
+  color: var(--cream);
+}
+
+/* ---------------------------------------------------------------- phones */
+
+@media (max-width: 759px) {
+  .atl__tag {
+    width: 126px;
+    top: 64px;
+    right: 10px;
+  }
+  .tag-card {
+    padding: 16px 9px 9px;
+  }
+  .tag-rows {
+    font-size: 10.5px;
+  }
+  .tag-basket {
+    padding: 7px 6px;
+    font-size: 12px;
+  }
+  .atl__msg {
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    text-align: center;
+    font-size: clamp(19px, 5.6vw, 26px);
+  }
+  .atl__back {
+    font-size: 0.8rem;
+    padding: 6px 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atl__room,
+  .cl__body,
+  .atl__floor,
+  .atl__tag {
+    transition-duration: 0.01s !important;
+  }
+  .atl__msg,
+  .atl__back,
+  .rc-actions,
+  .cert-paper,
+  .tag-basket.is-ready {
+    animation: none;
+  }
+  .cert-seal.is-pressing {
+    animation: none;
+    opacity: 1;
+  }
+}

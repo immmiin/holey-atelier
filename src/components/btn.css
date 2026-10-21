@@ -1,0 +1,88 @@
+.btn {
+  --bg: var(--hi);
+  --fg: var(--ink);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0.85rem 1.7rem;
+  border: var(--line) solid var(--ink);
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow: var(--shadow);
+  font-family: var(--f-body);
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow 0.12s var(--ease), background-color 0.2s;
+  will-change: transform;
+}
+.btn:active {
+  box-shadow: 0 0 0 var(--ink);
+}
+.btn--hi {
+  --bg: var(--hi);
+}
+.btn--pink {
+  --bg: var(--pink);
+}
+.btn--green {
+  --bg: var(--green);
+  --fg: var(--cream);
+}
+.btn--paper {
+  --bg: var(--paper);
+}
+
+/* sticker: slightly irregular blob, like a die-cut sticker */
+.btn--sticker {
+  border-radius: 20px 26px 18px 28px / 26px 18px 28px 20px;
+}
+.btn--sticker::before {
+  /* the white die-cut margin around a sticker */
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+}
+
+/* care label: sewn-on satin label with stitching and a wash symbol */
+.btn--care {
+  --bg: var(--paper);
+  border-radius: 6px;
+  padding-inline: 1.3rem 1.6rem;
+  font-size: 0.92rem;
+  letter-spacing: 0.1em;
+}
+.btn--care::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1.5px dashed var(--ink);
+  border-radius: 3px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.btn__care-icon {
+  width: 26px;
+  height: auto;
+  flex: none;
+}
+.btn--ghost {
+  --bg: transparent;
+  box-shadow: none;
+  border-radius: 999px;
+}
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

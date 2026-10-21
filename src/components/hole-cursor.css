@@ -1,0 +1,67 @@
+html.hole-cursor,
+html.hole-cursor * {
+  cursor: none !important;
+}
+html.hole-cursor input:not([type='checkbox']):not([type='radio']):not([type='submit']),
+html.hole-cursor textarea,
+html.hole-cursor [contenteditable='true'] {
+  cursor: text !important;
+}
+.hc {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+}
+.hc__hole,
+.hc__ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  will-change: transform;
+}
+/* the hidden layer: pink knit with Holey nail stickers */
+.hc__hole {
+  background-color: var(--pink);
+  background-image:
+    url('/logo/holey_03_nail-icon-H.svg'),
+    url('/logo/holey_03_nail-icon-H.svg'),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0 3px, transparent 3px 7px);
+  background-size: 56px 64px, 56px 64px, auto;
+  background-repeat: repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+  mask-size: 0 0;
+  -webkit-mask-size: 0 0;
+}
+.hc__ring {
+  transform-origin: 60px 60px;
+  overflow: visible;
+}
+.hc__edge {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+.hc__stitch {
+  fill: none;
+  stroke: var(--cream);
+  stroke-width: 1.6;
+  stroke-dasharray: 2.5 4;
+  transform: scale(0.88);
+  transform-origin: 60px 60px;
+}
+.hc__threads path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.hc__threads path:nth-child(3n) {
+  stroke: var(--pink);
+}

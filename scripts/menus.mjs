@@ -1,0 +1,27 @@
+// Screenshots of the header's panels: mega menu, search, mobile menu.
+import { chromium } from 'playwright';
+const base = process.argv[2] || 'http://localhost:5173';
+const browser = await chromium.launch({ channel: 'chrome' });
+const errors = [];
+let page = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+page.on('pageerror', (e) => errors.push(e.message));
+await page.goto(base + '/shop', { waitUntil: 'networkidle' });
+await page.getByRole('link', { name: 'Socks', exact: true }).hover();
+await page.waitForTimeout(500);
+await page.locator('.mega__tile').nth(2).hover();
+await page.waitForTimeout(500);
+await page.screenshot({ path: 'screenshots/ix/mega.png' });
+await page.mouse.move(700, 800);
+await page.waitForTimeout(400);
+await page.locator('.hdr__search-d').click();
+await page.keyboard.type('toe');
+await page.waitForTimeout(400);
+await page.screenshot({ path: 'screenshots/ix/search.png' });
+page = await (await browser.newContext({ viewport: { width: 375, height: 812 } })).newPage();
+page.on('pageerror', (e) => errors.push(e.message));
+await page.goto(base + '/', { waitUntil: 'networkidle' });
+await page.getByRole('button', { name: 'Menu' }).click();
+await page.waitForTimeout(600);
+await page.screenshot({ path: 'screenshots/ix/mobile-menu.png' });
+console.log(errors.length ? errors.join('\n') : 'no errors');
+await browser.close();
