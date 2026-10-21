@@ -1,0 +1,52 @@
+@font-face {
+  font-family: 'Bagel Fat One';
+  src: url('/fonts/Bagel-Fat-One.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/Fraunces.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito.woff2') format('woff2');
+  font-weight: 200 1000;
+  font-display: swap;
+}
+
+:root {
+  --cream: #fbf1e8;
+  --green: #1f5b3a;
+  --pink: #f4a9bc;
+  --ink: #1a0f1f;
+  --yellow: #f5f56a;
+  --red: #d2322d;
+  --f-display: 'Bagel Fat One', 'Arial Rounded MT Bold', system-ui, sans-serif;
+  --f-body: 'Nunito', ui-rounded, system-ui, -apple-system, sans-serif;
+  --f-lux: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --f-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--f-body);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
