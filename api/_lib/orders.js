@@ -96,7 +96,9 @@ export async function ensureSeeded(store) {
 }
 
 export async function readStats(store) {
-  const h = (await store.hgetall(K.stats)) || {};
+  // Upstash without automatic deserialization answers HGETALL with a flat [field, value, …] array
+  const raw = (await store.hgetall(K.stats)) || {};
+  const h = Array.isArray(raw) ? Object.fromEntries(Array.from({ length: raw.length / 2 }, (_, i) => [raw[2 * i], raw[2 * i + 1]])) : raw;
   return {
     totalLaborSec: Number(h.laborSec || 0),
     totalOrders: Number(h.orders || 0),
