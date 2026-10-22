@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Clothesline from '../components/Clothesline.jsx';
 import TagCard from '../components/TagCard.jsx';
+import SnapDots from '../components/SnapDots.jsx';
 import BounceText from '../components/motion/BounceText.jsx';
 import { products } from '../data/products.js';
 import useTitle from '../lib/useTitle.js';
@@ -25,6 +26,7 @@ export default function Shop() {
   const [filter, setFilter] = useState('all');
   const [sort, setSort] = useState('line');
   const [hover, setHover] = useState(null);
+  const pileRow = useRef(null);
   const list = products.filter(filters.find((f) => f.id === filter).test).sort(sorts.find((s) => s.id === sort).fn);
 
   return (
@@ -66,12 +68,14 @@ export default function Shop() {
       </header>
 
       <section className="shop__line" aria-label="Socks on the line">
-        <Clothesline key={filter} items={list} onHover={setHover} />
+        <div className="wrap shop__linewrap">
+          <Clothesline key={filter} items={list} onHover={setHover} />
+        </div>
       </section>
 
       <section className="shop__pile wrap" aria-labelledby="pile-title">
         <h2 id="pile-title" className="h3">The laundry pile</h2>
-        <motion.ul className="pile" layout>
+        <motion.ul ref={pileRow} className="pile snaprow" layout>
           <AnimatePresence mode="popLayout">
             {list.map((p, i) => (
               <motion.li
@@ -87,6 +91,7 @@ export default function Shop() {
             ))}
           </AnimatePresence>
         </motion.ul>
+        <SnapDots key={filter} scroller={pileRow} count={list.length} label="Sock" />
       </section>
     </div>
   );

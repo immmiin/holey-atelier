@@ -26,7 +26,6 @@ export default function Archive() {
   const [next, setNext] = useState(0);
   const [state, setState] = useState('loading'); // loading | ok | offline
   const busy = useRef(false);
-  const sentinel = useRef(null);
 
   const load = useCallback(async (cursor) => {
     if (busy.current || cursor == null) return;
@@ -56,14 +55,16 @@ export default function Archive() {
     load(0);
   }, [load]);
 
-  // infinite scroll
-  useEffect(() => {
-    const el = sentinel.current;
-    if (!el || next == null || state !== 'ok') return undefined;
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && load(next), { rootMargin: '600px' });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [next, state, load]);
+  // "Load more", not infinite scroll: phones show 8 at a time, desktop a page (24)
+  const step = () => (window.matchMedia('(max-width: 767px)').matches ? 8 : 24);
+  const [limit, setLimit] = useState(step);
+  const more = () => {
+    const nextLimit = limit + step();
+    setLimit(nextLimit);
+    if (nextLimit > items.length && next != null) load(next);
+  };
+  const shown = items.slice(0, limit);
+  const hasMore = items.length > limit || next != null;
 
   return (
     <div className="arc">
@@ -78,24 +79,41 @@ export default function Archive() {
       ) : (
         <>
           {state === 'offline' && <p className="arc__note wrap">Showing the last pieces we saw. The Archive is out for a wash.</p>}
-          <ul className="arc__grid wrap">
-            {items.map((it, i) => (
-              <li key={it.serial} className="arc__item" style={{ '--tilt': `${((it.unravelSeed % 7) - 3) * 0.9}deg`, '--peg': i % 2 ? 'var(--pink)' : 'var(--hi)' }}>
-                <Link to={`/r/${it.serial}`} className="arc__card" aria-label={`${it.serial}: ${nameOf(it.sockSlug)}, ${it.holePct}% hole, labor ${clock(it.laborSec)}, $${it.price.toFixed(2)}`}>
-                  <span className="arc__peg" aria-hidden="true" />
-                  <Piece slug={it.sockSlug} hole={it.holePct} w={130} h={162} />
-                  <span className="arc__serial">{it.serial}</span>
-                  <span className="arc__meta">
-                    <span>{it.holePct}% hole</span>
-                    <span>{clock(it.laborSec)}</span>
-                  </span>
-                  <span className="arc__price">${it.price.toFixed(2)}</span>
-                </Link>
-              </li>
-            ))}
+          <ul className="arc__grid wrap" aria-busy={state === 'loading' && !items.length}>
+            {state === 'loading' && !items.length
+              ? Array.from({ length: 8 }, (_, i) => (
+                  <li key={i} className="arc__item arc__item--skel" aria-hidden="true">
+                    <span className="arc__card">
+                      <span className="arc__peg" />
+                      <span className="skel skel--sock" />
+                      <span className="skel skel--line" />
+                      <span className="skel skel--line skel--short" />
+                    </span>
+                  </li>
+                ))
+              : shown.map((it, i) => (
+                  <li key={it.serial} className="arc__item" style={{ '--tilt': `${((it.unravelSeed % 7) - 3) * 0.9}deg`, '--peg': i % 2 ? 'var(--pink)' : 'var(--hi)' }}>
+                    <Link to={`/r/${it.serial}`} className="arc__card" aria-label={`${it.serial}: ${nameOf(it.sockSlug)}, ${it.holePct}% hole, labor ${clock(it.laborSec)}, $${it.price.toFixed(2)}`}>
+                      <span className="arc__peg" aria-hidden="true" />
+                      <Piece slug={it.sockSlug} hole={it.holePct} w={130} h={162} />
+                      <span className="arc__serial">{it.serial}</span>
+                      <span className="arc__meta">
+                        <span>{it.holePct}% hole</span>
+                        <span>{clock(it.laborSec)}</span>
+                      </span>
+                      <span className="arc__price">${it.price.toFixed(2)}</span>
+                    </Link>
+                  </li>
+                ))}
           </ul>
-          <div ref={sentinel} className="arc__more" aria-hidden="true">
-            {next == null && items.length > 0 ? 'That’s every piece so far.' : ''}
+          <div className="arc__more wrap">
+            {hasMore && items.length > 0 ? (
+              <button type="button" className="arc__more-btn" onClick={more}>
+                Load more pieces
+              </button>
+            ) : items.length > 0 ? (
+              <p>That’s every piece so far.</p>
+            ) : null}
           </div>
         </>
       )}

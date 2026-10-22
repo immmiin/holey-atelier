@@ -24,13 +24,15 @@
   --r: 22px;
   --r-lg: 34px;
 
-  --pad: clamp(16px, 4vw, 64px);
+  --pad: clamp(20px, 3.5vw, 56px);
   /* one spacing scale: 64 / 96 / 128 */
   --space-1: 64px;
   --space-2: clamp(64px, 7vw, 96px);
   --space-3: clamp(64px, 9vw, 128px);
   --section: var(--space-3);
   --max: 1360px;
+  /* the one container: 1360 of content + the side padding */
+  --wrap: calc(var(--max) + 2 * var(--pad));
 
   --f-display: 'Bagel Fat One', 'Arial Rounded MT Bold', system-ui, sans-serif;
   --f-body: 'Nunito', ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -186,7 +188,7 @@ button {
 
 .wrap {
   width: 100%;
-  max-width: var(--max);
+  max-width: var(--wrap);
   margin-inline: auto;
   padding-inline: var(--pad);
 }
@@ -339,4 +341,11 @@ button {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* swipe-row dots are a phone thing */
+@media (min-width: 768px) {
+  .snapdots {
+    display: none;
+  }
 }

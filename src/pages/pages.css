@@ -103,7 +103,7 @@
 .pdp2 {
   display: grid;
   gap: clamp(30px, 5vw, 70px);
-  max-width: var(--max);
+  max-width: var(--wrap);
   margin-inline: auto;
   padding: calc(var(--nav-h) + clamp(30px, 4vw, 60px)) var(--pad) 0;
   align-items: start;
@@ -780,4 +780,30 @@
   flex-wrap: wrap;
   gap: 14px;
   margin-top: 8px;
+}
+
+/* ================= v3: content sits on the one container (desktop) ================= */
+@media (min-width: 768px) {
+  /* tilted cards widen their own boxes: inset the rows so the tilted edge meets the container */
+  .about__socks {
+    padding-inline: 6px;
+  }
+  .about__sticker {
+    right: calc(var(--pad) + 19px);
+  }
+  .badges {
+    justify-content: space-between;
+    padding-inline: calc(var(--pad) + 13px);
+  }
+  .faq2__sticker {
+    margin-left: 7px;
+  }
+  .pile {
+    padding-inline: 26px;
+  }
+}
+@media (min-width: 1100px) {
+  .shop__head {
+    flex-wrap: nowrap;
+  }
 }

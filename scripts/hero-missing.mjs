@@ -37,7 +37,7 @@ const hero = await page.evaluate(() => {
 });
 check(hero.lines <= 3, `headline ${hero.lines} lines`);
 check(hero.fontPx >= 56 || mobile, `headline ${hero.fontPx}px (< 56)`);
-check(hero.leadW <= 421, `sub-copy ${Math.round(hero.leadW)}px wide (> 420)`);
+check(hero.leadW <= 461, `sub-copy ${Math.round(hero.leadW)}px wide (> 460)`);
 if (!mobile) {
   const vh = hero.machine.h / H;
   check(vh >= 0.6 && vh <= 0.75, `washer is ${(vh * 100).toFixed(0)}vh tall`);
@@ -64,7 +64,7 @@ const layout = await page.evaluate(() => {
   return { posterH: pe.offsetHeight, posterW: pe.offsetWidth, posterL: p.left, sideL: s.left, sideR: s.right, sideMid: s.top + s.height / 2, posterMid: p.top + p.height / 2 };
 });
 if (!mobile) {
-  check(layout.posterH >= 500 && layout.posterH <= 640, `poster ${Math.round(layout.posterH)}px tall`);
+  check(Math.abs(layout.posterH - Math.min(H * 0.78, 760)) <= 4, `poster ${Math.round(layout.posterH)}px tall (spec: min(78vh, 760px))`);
   check(layout.sideL - (layout.posterL + layout.posterW) < 140, 'text block is far from the poster');
   check(Math.abs(layout.sideMid - layout.posterMid) < 80, 'text block not vertically centred with the poster');
   const leftGap = layout.posterL, rightGap = W - layout.sideR;

@@ -1,0 +1,206 @@
+/* Scroll reveals (see src/lib/reveal.js). html.rv-on is only set when motion is allowed. */
+
+/* generic: fade in + rise 24px, 600ms ease-out, staggered via --rv-d */
+html.rv-on [data-rv] {
+  opacity: 0;
+  translate: 0 24px;
+  transition:
+    opacity 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) var(--rv-d, 0ms),
+    translate 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) var(--rv-d, 0ms);
+}
+html.rv-on [data-rv].is-in {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* clothesline: the socks drop onto the line one by one, then swing and settle */
+html.rv-on .cl--teaser:not(.is-in) .cl__body {
+  opacity: 0;
+}
+html.rv-on .cl--teaser.is-in .cl__body {
+  transform-origin: 50% 0;
+  animation: rv-sock-drop 0.9s cubic-bezier(0.3, 1.2, 0.5, 1) both;
+}
+.cl--teaser .cl__sock:nth-of-type(2) .cl__body { animation-delay: 0.09s; }
+.cl--teaser .cl__sock:nth-of-type(3) .cl__body { animation-delay: 0.18s; }
+.cl--teaser .cl__sock:nth-of-type(4) .cl__body { animation-delay: 0.27s; }
+.cl--teaser .cl__sock:nth-of-type(5) .cl__body { animation-delay: 0.36s; }
+.cl--teaser .cl__sock:nth-of-type(6) .cl__body { animation-delay: 0.45s; }
+.cl--teaser .cl__sock:nth-of-type(7) .cl__body { animation-delay: 0.54s; }
+.cl--teaser .cl__sock:nth-of-type(8) .cl__body { animation-delay: 0.63s; }
+@keyframes rv-sock-drop {
+  0% {
+    opacity: 0;
+    translate: 0 -40px;
+    rotate: -7deg;
+  }
+  45% {
+    opacity: 1;
+    translate: 0 3px;
+    rotate: 5deg;
+  }
+  70% {
+    translate: 0 0;
+    rotate: -2.5deg;
+  }
+  88% {
+    rotate: 1deg;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+  }
+}
+
+/* MISSING: the poster is pinned in (−6° → −3° with a little overshoot), then the tabs flutter once */
+html.rv-on .missing:not(.is-in) .poster {
+  opacity: 0;
+}
+html.rv-on .missing.is-in .poster {
+  animation: rv-pin 0.8s cubic-bezier(0.3, 1.3, 0.5, 1) both;
+}
+@keyframes rv-pin {
+  0% {
+    opacity: 0;
+    rotate: -3deg;
+    scale: 1.06;
+  }
+  40% {
+    opacity: 1;
+  }
+  70% {
+    rotate: 0.7deg;
+    scale: 0.995;
+  }
+  100% {
+    opacity: 1;
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+html.rv-on .missing.is-in .tab {
+  transform-origin: 50% 0;
+  animation: rv-flutter 0.7s ease-in-out 0.75s both;
+}
+.missing .tab:nth-child(2) { animation-delay: 0.8s; }
+.missing .tab:nth-child(3) { animation-delay: 0.85s; }
+.missing .tab:nth-child(4) { animation-delay: 0.9s; }
+.missing .tab:nth-child(5) { animation-delay: 0.95s; }
+.missing .tab:nth-child(6) { animation-delay: 1s; }
+.missing .tab:nth-child(7) { animation-delay: 1.05s; }
+.missing .tab:nth-child(8) { animation-delay: 1.1s; }
+@keyframes rv-flutter {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: 6deg;
+  }
+  50% {
+    rotate: -4deg;
+  }
+  75% {
+    rotate: 2deg;
+  }
+}
+
+/* receipts print in, top → bottom */
+html.rv-on .rv__row:not(.is-in) .rv__paper {
+  clip-path: inset(0 0 100% 0);
+}
+html.rv-on .rv__row.is-in .rv__paper {
+  animation: rv-print 0.5s steps(14, end) both;
+}
+.rv__row .rv__item:nth-child(2) .rv__paper { animation-delay: 0.14s; }
+.rv__row .rv__item:nth-child(3) .rv__paper { animation-delay: 0.28s; }
+.rv__row .rv__item:nth-child(4) .rv__paper { animation-delay: 0.42s; }
+.rv__row .rv__item:nth-child(5) .rv__paper { animation-delay: 0.56s; }
+.rv__row .rv__item:nth-child(6) .rv__paper { animation-delay: 0.7s; }
+@keyframes rv-print {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* the film settles in */
+html.rv-on .laundry:not(.is-in) {
+  opacity: 0;
+  scale: 0.96;
+}
+html.rv-on .laundry {
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.7, 0.3, 1),
+    scale 0.7s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* the stitched seam between sections */
+.seam {
+  display: block;
+  height: 28px;
+  margin-block: 0;
+}
+.seam svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.seam__line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 10 8;
+}
+.seam__draw {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 8;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+}
+.seam__loose {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+}
+html.rv-on .seam:not(.is-in) .seam__draw {
+  stroke-dashoffset: 1;
+}
+html.rv-on .seam .seam__draw {
+  transition: stroke-dashoffset 1.1s cubic-bezier(0.45, 0, 0.2, 1);
+}
+html.rv-on .seam:not(.is-in) .seam__loose {
+  opacity: 0;
+}
+html.rv-on .seam.is-in .seam__loose {
+  animation: rv-pop 0.55s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.seam .seam__loose:nth-of-type(2) { animation-delay: 1.15s; }
+.seam .seam__loose:nth-of-type(3) { animation-delay: 1.3s; }
+.seam .seam__loose:nth-of-type(4) { animation-delay: 1.45s; }
+@keyframes rv-pop {
+  0% {
+    opacity: 0;
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  60% {
+    opacity: 1;
+    rotate: -38deg;
+    translate: 0 -5px;
+  }
+  100% {
+    opacity: 1;
+    rotate: -24deg;
+    translate: 0 -3px;
+  }
+}

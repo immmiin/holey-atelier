@@ -18,6 +18,8 @@ const tenets = [
 
 export default function About() {
   const sockRow = useRef(null);
+  const noteRow = useRef(null);
+  const badgeRow = useRef(null);
   useTitle('About');
   return (
     <div className="about">
@@ -32,7 +34,7 @@ export default function About() {
         </Pop>
       </section>
 
-      <section className="notes wrap" aria-label="What we believe">
+      <section ref={noteRow} className="notes wrap snaprow" aria-label="What we believe">
         {tenets.map(([h, b, bg], i) => (
           <article key={h} className="note" style={{ '--bg': bg, '--tilt': `${[-2.5, 2, 1.5, -2][i]}deg` }}>
             <span className="tape" style={{ top: -14, left: '50%', translate: '-50% 0', rotate: `${[-6, 4, -3, 7][i]}deg` }} />
@@ -42,11 +44,12 @@ export default function About() {
           </article>
         ))}
       </section>
+      <SnapDots scroller={noteRow} count={tenets.length} label="Note" />
 
       <Tape items={['Worn in, not worn out', 'Left foot energy', 'The other one is fine, probably']} tone="green" tilt={-1.5} />
 
       <h2 className="h2 badges__title mobile-only">Holey, by the numbers.</h2>
-      <section className="badges wrap" aria-label="Holey in numbers">
+      <section ref={badgeRow} className="badges wrap snaprow snaprow--small" aria-label="Holey in numbers">
         {[
           ['1', 'sock per order'],
           ['0', 'pairs, ever'],
@@ -59,6 +62,7 @@ export default function About() {
           </div>
         ))}
       </section>
+      <SnapDots scroller={badgeRow} count={4} label="Number" />
 
       <section className="about__line wrap" aria-label="The six socks">
         <ul ref={sockRow} className="about__socks snaprow">

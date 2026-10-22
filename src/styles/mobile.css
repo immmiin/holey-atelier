@@ -918,3 +918,345 @@
     height: 44px;
   }
 }
+
+/* ================= phones, rule 9: repeated items never stack vertically ================= */
+@media (max-width: 767px) {
+  /* the one swipe row: centre-snapped ~78vw items, the next one peeking, edge to edge, no scrollbar */
+  html .snaprow {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 16px;
+    margin-inline: 0;
+    padding: 12px 11vw 16px;
+    width: 100%;
+    max-width: none;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 11vw;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  html .snaprow > * {
+    flex: 0 0 78vw;
+    min-width: 0;
+    scroll-snap-align: center;
+  }
+  html .snaprow--small > * {
+    flex-basis: 44vw;
+  }
+  /* rows inside a padded container bleed to the screen edges */
+  html .wrap .snaprow,
+  html .foot__inner .snaprow {
+    width: auto;
+    margin-inline: calc(-1 * var(--pad));
+  }
+  html .snapdots {
+    position: relative;
+    align-items: center;
+    margin-top: -4px;
+  }
+  html .snaphint {
+    position: absolute;
+    right: var(--pad);
+    top: 50%;
+    translate: 0 -50%;
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(26, 15, 31, 0.55);
+    white-space: nowrap;
+    pointer-events: none;
+    animation: snaphint 1.6s ease-in-out 3;
+  }
+  @keyframes snaphint {
+    50% {
+      translate: 6px -50%;
+    }
+  }
+
+  /* desktop-only hints and decorative extras that only add height */
+  html .hero2__hint,
+  html .hero2__sticker,
+  html .about__sticker,
+  html .note .tape,
+  html .seam {
+    display: none !important;
+  }
+
+  /* ---- home ---- */
+  html .hero2 {
+    gap: var(--s2);
+    padding-bottom: var(--s4);
+  }
+  html .hero2__ctas {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+  }
+  html .hero2__ctas .btn {
+    min-width: 0;
+    padding-inline: 8px;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  html .teaser {
+    padding-block: var(--s5) var(--s4);
+  }
+  html .teaser__head {
+    gap: var(--s2);
+    margin-bottom: 0;
+  }
+  html .teaser__side {
+    gap: var(--s2);
+  }
+  html .teaser__foot {
+    margin-top: var(--s2);
+  }
+  html .laundry-sec {
+    padding-block: var(--s5);
+  }
+  html .rv {
+    padding-block: var(--s5) var(--s4);
+  }
+  html .rv__item {
+    max-height: 70svh;
+  }
+  /* MISSING: a smaller poster, the notice board in one tight block, a short floor for the tabs */
+  html .missing {
+    padding-block: var(--s5) calc(var(--s3) + 64px);
+  }
+  html .missing__inner {
+    gap: var(--s3);
+  }
+  html .poster {
+    width: min(78vw, calc(58svh * 0.74));
+  }
+  html .missing__side {
+    gap: var(--s1);
+    width: 100%;
+  }
+  html .missing__side .h3 {
+    font-size: 28px;
+  }
+  html .missing__side .lead {
+    font-size: 16px;
+  }
+
+  /* footer: three swipeable tags, the form, a one-line bottom */
+  html .foot__inner {
+    padding-top: var(--s5);
+  }
+  html .foot__top {
+    gap: var(--s2);
+  }
+  html .foot__tags {
+    display: block;
+    margin-top: var(--s4);
+  }
+  html .foot__tagrow > .ftag {
+    flex-basis: 78vw;
+    padding: 20px 20px 12px;
+    background: var(--paper);
+    color: var(--ink);
+    border: var(--line) solid var(--ink);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  html .foot__tagrow .ftag a {
+    color: var(--ink);
+    min-height: 44px;
+  }
+  html .foot__tagrow .ftag ul {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 12px;
+  }
+  html .foot .snapdots span {
+    background: rgba(251, 241, 232, 0.35);
+  }
+  html .foot .snapdots .is-on span {
+    background: var(--cream);
+  }
+  html .foot .snaphint {
+    color: rgba(251, 241, 232, 0.7);
+  }
+  html .punch {
+    display: none;
+  }
+  html .foot__bottom {
+    padding-block: var(--s2) calc(var(--s2) + env(safe-area-inset-bottom, 0px));
+    gap: var(--s1);
+  }
+
+  /* ---- About: notes, numbers and polaroids each one row ---- */
+  html .notes {
+    padding-block: var(--s4) var(--s2);
+  }
+  html .notes.snaprow > .note {
+    transform: none;
+    rotate: 0deg;
+  }
+  html .badges__title {
+    margin-bottom: 0;
+  }
+  html .badges {
+    display: flex !important;
+    padding-block: var(--s2);
+  }
+  html .badges > .badge {
+    width: 44vw;
+    height: 44vw;
+  }
+  html .about__hero {
+    padding-bottom: 0;
+  }
+
+  /* ---- Shop: the laundry pile as one row of tag cards ---- */
+  html .pile.snaprow > li {
+    flex-basis: 70vw;
+  }
+
+  /* ---- Archive: a two-column gallery ---- */
+  html .arc__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 10px;
+    --row: 332px;
+  }
+}
+@media (max-width: 767px) {
+  /* the hint is text, not a dot */
+  html .snapdots .snaphint,
+  html .foot .snapdots .snaphint {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: none;
+    transition: none;
+  }
+  /* rows whose parent has no side padding don't need to bleed */
+  html .about__line .snaprow {
+    margin-inline: 0;
+  }
+  /* the tilted marquee tape must not widen the page */
+  html .about {
+    overflow-x: clip;
+  }
+  html .tapem {
+    max-width: 100vw;
+  }
+}
+/* phones: shorter home (the hero already carries "Enter the Atelier") */
+@media (max-width: 767px) {
+  html .teaser__side .btn {
+    display: none;
+  }
+  html .teaser {
+    padding-block: var(--s5) var(--s3);
+  }
+  html .poster {
+    width: min(78vw, calc(50svh * 0.74));
+  }
+  html .missing {
+    padding-block: var(--s5) calc(var(--s2) + 56px);
+  }
+  html .missing__inner {
+    gap: var(--s2);
+  }
+  html .laundry-sec {
+    padding-block: var(--s4);
+  }
+  html .rv {
+    padding-block: var(--s5) var(--s3);
+  }
+  html .rv__head {
+    margin-bottom: var(--s1);
+  }
+  /* footer */
+  html .foot__inner {
+    padding-top: var(--s4);
+  }
+  html .foot__title {
+    font-size: 28px;
+    margin: 0;
+  }
+  html .report {
+    gap: var(--s1);
+  }
+  html .foot__tags {
+    margin-top: var(--s3);
+  }
+  html .foot__tagrow {
+    padding-block: 8px 8px;
+  }
+  html .foot__tagrow > .ftag {
+    padding: 14px 16px 6px;
+  }
+  html .foot__tagrow .ftag__title {
+    font-size: 20px;
+    margin-bottom: 0;
+  }
+  html .foot__bottom {
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    align-items: center;
+    text-align: left;
+  }
+}
+@media (max-width: 767px) {
+  html .foot__inner {
+    gap: var(--s2);
+  }
+  html .foot__tags {
+    margin-top: 0;
+  }
+  html .foot__tagrow.snaprow {
+    padding-block: 4px 8px;
+  }
+  html .foot__tagrow > .ftag {
+    margin-top: 0;
+  }
+}
+@media (max-width: 767px) {
+  /* 8 tear tabs need ≥ 44px each: the poster stays wide, its photo and facts get compact */
+  html .poster,
+  html .poster {
+    width: 90vw;
+    max-width: 90vw;
+  }
+  html .poster__photo {
+    width: 34%;
+  }
+  html .poster__facts div:nth-child(n + 3) {
+    display: none;
+  }
+}
+@media (max-width: 380px) {
+  html .poster {
+    width: calc(100vw - 4px);
+    max-width: none;
+  }
+}
+@media (max-width: 767px) {
+  /* narrow items (two per screen) snap to the start, from the gutter */
+  html .snaprow--small,
+  html .about__socks.snaprow {
+    padding-inline: var(--pad);
+    scroll-padding-inline: var(--pad);
+  }
+  html .snaprow--small > *,
+  html .about__socks.snaprow > * {
+    scroll-snap-align: start;
+  }
+}
+@media (max-width: 767px) {
+  /* a centred flex row would push its first items off the left edge, out of reach */
+  html .snaprow {
+    justify-content: flex-start !important;
+  }
+}
+@media (max-width: 767px) {
+  /* 8 tabs × 44px + the border: the poster is never narrower than 366px */
+  html .poster {
+    width: min(calc(100vw - 4px), max(90vw, 366px));
+    max-width: none;
+  }
+}

@@ -10,6 +10,7 @@ import Toast from './components/Toast.jsx';
 import HoleCursor from './components/HoleCursor.jsx';
 import WashTransition from './components/WashTransition.jsx';
 import Home from './pages/Home.jsx';
+import { startReveal } from './lib/reveal.js';
 import { initScroll, scrollTo, scrollToTop, ScrollTrigger } from './lib/scroll.js';
 import { toggleMute, unlockSound } from './atelier/sound.ts';
 
@@ -150,6 +151,7 @@ export default function App() {
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
     window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
   }, []);
+  useEffect(() => startReveal(), []);
 
   return (
     <MotionConfig reducedMotion="user">

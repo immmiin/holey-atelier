@@ -170,7 +170,7 @@
 
 /* ================= checkout → receipt ================= */
 .cko {
-  max-width: var(--max);
+  max-width: var(--wrap);
   margin-inline: auto;
   padding: calc(var(--nav-h) + var(--space-1)) var(--pad) var(--space-3);
 }

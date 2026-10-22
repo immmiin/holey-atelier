@@ -22,7 +22,8 @@ const MAX_PULL = 190;
 function geometry(width, count, mobile, variant = 'default') {
   const fit = variant === 'stage';
   const stageW = mobile && !fit ? Math.max(width, count * 156 + 70) : width;
-  const pad = mobile ? (fit ? 18 : 34) : Math.max(36, width * 0.035);
+  // desktop: the posts sit on the container edges (the line spans the container exactly)
+  const pad = mobile ? (fit ? 18 : 34) : 12;
   const slot = (stageW - pad * 2) / count;
   const maxW = fit ? 240 : mobile ? 128 : 200;
   // on a phone the stage line lets the (mostly transparent) image boxes overlap, so the socks read larger
@@ -30,10 +31,12 @@ function geometry(width, count, mobile, variant = 'default') {
   const sockH = sockW * 1.25;
   const tagH = fit && mobile ? 0 : 64;
   const sag = variant === 'default' ? 0.085 : 0.05;
+  // the weighted rope dips further than its resting curve: leave room so nothing below can collide
+  const room = variant === 'teaser' ? 0.035 : 0;
   // room for the sag (weighted rope dips ~9% of its span) + swing
   // phones: tighter bottom margin (desktop value unchanged)
   const bottom = variant === 'teaser' ? (mobile ? 10 : 24) : mobile ? 14 : 70;
-  const height = ROPE_Y + sockH + tagH + (stageW - pad * 2) * sag + bottom;
+  const height = ROPE_Y + sockH + tagH + (stageW - pad * 2) * (sag + room) + bottom;
   return { stageW, pad, slot, sockW, sockH, height, slack: variant === 'default' ? 1.025 : 1.01, calm: variant !== 'default' };
 }
 

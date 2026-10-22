@@ -35,7 +35,8 @@ export default function Faq() {
         </Btn>
       </div>
       <div className="faq2__list">
-        <Accordion items={faqs} />
+        {/* phones: all collapsed, so the list is one short column of questions */}
+        <Accordion items={faqs} defaultOpen={typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches ? -1 : 0} />
       </div>
     </section>
   );

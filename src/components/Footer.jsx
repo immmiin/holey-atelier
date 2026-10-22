@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import { products } from '../data/products.js';
 import Btn from './Btn.jsx';
 import { Instagram, TikTok, XLogo } from './Icons.jsx';
 import HolePunchLogo from './HolePunchLogo.jsx';
+import SnapDots from './SnapDots.jsx';
 import './footer.css';
 
 function Report() {
@@ -75,6 +76,7 @@ function TagList({ title, children, tilt }) {
 }
 
 export default function Footer() {
+  const tagRow = useRef(null);
   return (
     <footer className="foot">
       <svg className="foot__wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
@@ -91,6 +93,7 @@ export default function Footer() {
         </div>
 
         <div className="foot__tags">
+          <div ref={tagRow} className="foot__tagrow snaprow">
           <TagList title="Socks" tilt={-3}>
             {products.map((p) => (
               <li key={p.slug}>
@@ -111,6 +114,8 @@ export default function Footer() {
             <li><Link to="/legal/privacy">Privacy (Toes Excluded)</Link></li>
             <li><Link to="/legal/returns">Returns &amp; Feelings</Link></li>
           </TagList>
+          </div>
+          <SnapDots scroller={tagRow} count={3} label="Link group" />
           <HolePunchLogo />
         </div>
 

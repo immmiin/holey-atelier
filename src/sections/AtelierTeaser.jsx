@@ -21,8 +21,12 @@ export default function AtelierTeaser() {
           <Btn to="/atelier">Enter the Atelier →</Btn>
         </div>
       </div>
-      <Clothesline items={products} variant="teaser" onPick={(p) => navigate(`/atelier?sock=${p.slug}`)} />
-      <LaborCounter className="teaser__counter" />
+      <div className="wrap teaser__line">
+        <Clothesline items={products} variant="teaser" onPick={(p) => navigate(`/atelier?sock=${p.slug}`)} />
+      </div>
+      <div className="wrap teaser__foot">
+        <LaborCounter className="teaser__counter" />
+      </div>
     </section>
   );
 }

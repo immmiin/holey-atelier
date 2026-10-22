@@ -4,7 +4,7 @@
   display: grid;
   gap: clamp(20px, 4vw, 60px);
   align-items: center;
-  max-width: var(--max);
+  max-width: var(--wrap);
   margin-inline: auto;
   padding: calc(var(--nav-h) + clamp(30px, 6vw, 80px)) var(--pad) clamp(40px, 6vw, 90px);
   min-height: 100svh;
@@ -323,7 +323,7 @@
   display: grid;
   gap: clamp(30px, 5vw, 80px);
   align-items: center;
-  max-width: var(--max);
+  max-width: var(--wrap);
   margin-inline: auto;
   padding: var(--section) var(--pad);
 }
@@ -712,7 +712,7 @@
   list-style: none;
   margin: 0 auto;
   padding: 20px var(--pad) 40px;
-  max-width: var(--max);
+  max-width: var(--wrap);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(14px, 2vw, 30px);
@@ -1707,5 +1707,206 @@
 @media (max-width: 899px) {
   .missing {
     padding-bottom: calc(var(--space-1) + 120px);
+  }
+}
+
+/* ================= v3: one container (1360 + clamp(20px, 3.5vw, 56px)) ================= */
+@media (min-width: 900px) {
+  .hero2 {
+    --hero-max: var(--wrap);
+    --machine-h: min(72svh, 760px);
+    --machine-w: min(calc(var(--machine-h) * 0.9), 46vw);
+    max-width: var(--wrap);
+    padding-inline: var(--pad);
+    grid-template-columns: minmax(0, 1fr) var(--machine-w);
+    gap: clamp(24px, 3vw, 56px);
+  }
+  .hero2__title,
+  .hero2__alt {
+    font-size: clamp(64px, min(8vw, 13.5vh, calc((min(100vw, var(--wrap)) - 2 * var(--pad) - var(--machine-w) - 56px) * 0.172)), 132px);
+  }
+  .hero2__lead {
+    max-width: 460px;
+    font-size: 20px;
+  }
+  /* the washer's box is the machine: right edge = container edge */
+  .hero2__machine {
+    width: var(--machine-w);
+    justify-self: end;
+  }
+  .hero2__machine .washer,
+  .hero2__machine .machine {
+    width: 100%;
+  }
+  /* the H + "!!" badge lives on the machine's top-right corner, inside its bounds */
+  .hero2__sticker {
+    top: -3%;
+    right: 12px;
+    width: calc(var(--machine-w) * 0.2);
+    min-width: 0;
+  }
+  .hero2__polaroid {
+    left: calc(var(--machine-w) * -0.1);
+  }
+}
+
+/* the door swings open on its left hinge, away from you: it never grows past the machine */
+.porthole {
+  perspective: 900px;
+}
+.porthole__glass {
+  transform-origin: 0% 50%;
+  transition: transform 0.9s cubic-bezier(0.25, 1.25, 0.4, 1);
+}
+.washer.is-open .porthole__glass {
+  transform: rotateY(70deg);
+}
+/* the returned sock: a compact card on the machine's bottom-right corner, clear of the door */
+@media (min-width: 900px) {
+  .washer__out {
+    right: 0;
+    bottom: 0;
+    grid-template-columns: auto auto;
+    align-items: center;
+    column-gap: 12px;
+    max-width: 62%;
+    padding: 10px 12px;
+    transform-origin: 100% 100%;
+  }
+  .washer__out .washer__pair {
+    grid-row: span 2;
+  }
+  .washer__out .washer__msg,
+  .washer__out .washer__links {
+    justify-self: start;
+    text-align: left;
+    justify-content: flex-start;
+  }
+  .washer__returned,
+  .washer__gap {
+    width: clamp(56px, 5vw, 76px);
+  }
+  @keyframes washer-out {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.92);
+    }
+  }
+}
+
+/* clothesline: the line spans the container; the counter sits below the lowest tag, in flow */
+.teaser__foot {
+  display: flex;
+  justify-content: center;
+  /* the stage leaves ~26px under the lowest tag at full width (a little less on narrower lines): ≈ 40 */
+  margin-top: max(14px, calc(14px + (1440px - 100vw) * 0.012));
+}
+.teaser__counter {
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .teaser__line {
+    padding-inline: 0;
+  }
+}
+
+/* MISSING v3: two columns across the whole container — poster ~48%, text ~46%, gap 4% */
+@media (min-width: 900px) {
+  .missing {
+    padding-inline: 0;
+  }
+  .missing__inner {
+    max-width: var(--wrap);
+    padding-inline: var(--pad);
+    grid-template-columns: 48% 46%;
+    column-gap: 4%;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .poster {
+    --poster-h: min(78vh, 760px);
+    /* the -3° tilt widens its box ~2.6% of its height each side: inset so the tilted edge meets the container */
+    --tilt-in: calc(var(--poster-h) * 0.027);
+    width: calc(100% - 2 * var(--tilt-in));
+    max-width: none;
+    height: var(--poster-h);
+    margin-left: var(--tilt-in);
+    justify-self: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 22px 26px 0;
+    transform: rotate(-3deg);
+  }
+  .poster__title {
+    font-size: clamp(3.4rem, min(6vw, 9.5vh), 6rem);
+  }
+  .poster__photo {
+    flex: none;
+    width: auto;
+    height: calc(var(--poster-h) - 440px);
+    aspect-ratio: 1.1;
+  }
+  .poster__facts {
+    width: 100%;
+    font-size: 1rem;
+  }
+  .poster__tabs {
+    align-self: stretch;
+    margin-top: auto;
+    margin-inline: -26px;
+    height: 104px;
+  }
+  .missing__side {
+    max-width: none;
+    width: 100%;
+    gap: 20px;
+  }
+  .missing__side .kicker {
+    font-size: 14px;
+  }
+  .missing__side .h3 {
+    font-size: clamp(48px, 5.5vw, 84px);
+    line-height: 0.98;
+    max-width: 100%;
+  }
+  .missing__side .lead {
+    font-size: 22px;
+    line-height: 1.5;
+    max-width: 34ch;
+  }
+  .missing__count {
+    font-size: 18px;
+  }
+}
+
+/* the film: full container width */
+.laundry-sec__cap,
+.laundry {
+  max-width: var(--max);
+}
+/* behind the open door: the empty drum */
+.porthole::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(100%, 100cqh, 400px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 30%, rgba(26, 15, 31, 0.14) 31% 32%, transparent 33%),
+    radial-gradient(circle at 50% 42%, #8c7f86, #4a3d47 72%);
+  box-shadow: inset 0 0 0 var(--line) var(--ink), inset 0 10px 24px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.washer.is-open .porthole::before {
+  opacity: 1;
+}
+@media (min-width: 900px) {
+  .porthole::before {
+    width: min(100%, 100cqh);
   }
 }

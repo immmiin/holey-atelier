@@ -132,3 +132,10 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+
+/* desktop: the tilted receipts meet the container edges */
+@media (min-width: 768px) {
+  .rv__row {
+    padding-inline: calc(var(--pad) + 8px);
+  }
+}

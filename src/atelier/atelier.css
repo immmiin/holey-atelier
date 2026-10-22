@@ -488,3 +488,11 @@ html.hole-cursor .atl__stage[data-grab='2'],
     display: none;
   }
 }
+
+/* desktop: the line spans the one container (posts on its edges) */
+@media (min-width: 768px) {
+  .atp .atl__line {
+    width: min(var(--max), 100% - 2 * var(--pad));
+    margin-inline: auto;
+  }
+}

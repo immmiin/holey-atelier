@@ -259,3 +259,14 @@
     animation: foot-bob 4.5s ease-in-out infinite;
   }
 }
+
+/* desktop: the tilted tags meet the container edge */
+@media (min-width: 768px) {
+  .foot__tags {
+    padding-left: 7px;
+  }
+}
+/* the three tags sit in their own row (a swipe row on phones; plain flex items on desktop) */
+.foot__tagrow {
+  display: contents;
+}

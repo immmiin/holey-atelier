@@ -85,6 +85,16 @@ const parse = (v) => {
   }
 };
 
+/** the Archive never opens empty: the first read of an empty store adds the 24 samples, once
+ *  (an NX lock, so concurrent cold reads can't seed twice) */
+export async function ensureSeeded(store) {
+  if ((await store.llen(K.archive)) > 0) return;
+  const got = await store.set('holey:seeded', '1', { nx: true });
+  if (got === null) return;
+  const t0 = Date.now() - 24 * 3600e3;
+  for (const [i, o] of sampleOrders().entries()) await createOrder(store, o, t0 + i * 3600e3);
+}
+
 export async function readStats(store) {
   const h = (await store.hgetall(K.stats)) || {};
   return {
