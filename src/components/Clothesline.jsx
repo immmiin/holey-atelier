@@ -26,7 +26,7 @@ function geometry(width, count, mobile, variant = 'default') {
   const slot = (stageW - pad * 2) / count;
   const maxW = fit ? 240 : mobile ? 128 : 200;
   // on a phone the stage line lets the (mostly transparent) image boxes overlap, so the socks read larger
-  const sockW = Math.min(maxW, slot * (mobile ? (fit ? 1.45 : 0.82) : fit ? 0.8 : 0.7));
+  const sockW = Math.min(maxW, slot * (mobile ? (fit ? 1.9 : 0.82) : fit ? 0.8 : 0.7));
   const sockH = sockW * 1.25;
   const tagH = fit && mobile ? 0 : 64;
   const sag = variant === 'default' ? 0.085 : 0.05;

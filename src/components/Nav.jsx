@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
 import { AnimatePresence, motion, useAnimate, useMotionValue, useSpring } from 'motion/react';
 import Logo from './Logo.jsx';
+import { Instagram, TikTok, XLogo } from './Icons.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { products, sockSrc, logoColor } from '../data/products.js';
 import { pushAccent } from '../lib/accent.js';
@@ -84,6 +85,7 @@ function MenuTile({ p, onClose }) {
 
 export default function Nav() {
   const { pathname } = useLocation();
+  const cart = useCart();
   const [open, setOpen] = useState(false);
   const [compact, setCompact] = useState(false);
 
@@ -212,6 +214,29 @@ export default function Nav() {
                 ))}
                 <Link to="/contact" onClick={() => setOpen(false)}>Contact</Link>
               </nav>
+              <div className="tagmenu__foot">
+                <button
+                  type="button"
+                  className="tagmenu__cart"
+                  onClick={() => {
+                    setOpen(false);
+                    cart.setOpen(true);
+                  }}
+                >
+                  Basket{cart.count ? ` (${cart.count})` : ''}
+                </button>
+                <div className="tagmenu__social">
+                  <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
+                    <Instagram />
+                  </a>
+                  <a href="https://tiktok.com" target="_blank" rel="noreferrer" aria-label="TikTok">
+                    <TikTok />
+                  </a>
+                  <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X">
+                    <XLogo />
+                  </a>
+                </div>
+              </div>
               <p className="kicker tagmenu__kicker">On the line today</p>
               <div className="tagmenu__socks">
                 {products.map((p) => (

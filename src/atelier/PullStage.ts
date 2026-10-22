@@ -700,7 +700,8 @@ export class PullStage {
   };
 
   grabR() {
-    return (this.pointerType === 'touch' ? 40 : 24) * Math.max(0.8, this.unit);
+    // touch: at least a 44px reach around the thread
+    return this.pointerType === 'touch' ? Math.max(44, 40 * this.unit) : 24 * Math.max(0.8, this.unit);
   }
 
   tryGrab(x: number, y: number) {

@@ -47,6 +47,8 @@ export default function AtelierPage() {
   const priceRef = useRef(null);
   const pctRef = useRef(null);
   const laborRef = useRef(null);
+  const barPriceRef = useRef(null);
+  const barStatsRef = useRef(null);
   const hud = useRef(null);
   const layoutRef = useRef(null);
   const [top, setTop] = useState(84);
@@ -89,6 +91,8 @@ export default function AtelierPage() {
         if (priceRef.current) priceRef.current.textContent = money(h.phase === 'idle' ? 9 : h.price);
         if (pctRef.current) pctRef.current.textContent = `${holeOf(h)}%`;
         if (laborRef.current) laborRef.current.textContent = clock(h.laborMs);
+        if (barPriceRef.current) barPriceRef.current.textContent = money(h.phase === 'idle' ? 9 : h.price);
+        if (barStatsRef.current) barStatsRef.current.textContent = `Hole ${holeOf(h)}% · Labor ${clock(h.laborMs)}`;
         const tag = tagRef.current, L = layoutRef.current, api = clApi.current;
         if (tag && L && api && !L.mobile) {
           // the tag hangs from the line itself
@@ -128,7 +132,8 @@ export default function AtelierPage() {
     const mobile = W < 760;
     const pinX = mobile ? W * 0.44 : W * 0.5;
     const lineYAt = (x) => offY + api.ropeYAt(x - offX);
-    const baseY = H * 0.93;
+    // phones: the price lives in a bottom bar, so the floor sits just above it
+    const baseY = mobile ? H - 96 : H * 0.93;
     // the sock itself (≈96% of its image box) fills about two thirds of line → floor
     const sockH = (baseY - lineYAt(pinX)) * (mobile ? 0.64 : 0.66);
     const imgW = (sockH / 0.961) * 0.8;
@@ -318,6 +323,35 @@ export default function AtelierPage() {
             </button>
           </div>
         </div>
+
+        {!active && (
+          <div className="atl__pick mobile-only">
+            <p className="kicker">The Atelier</p>
+            <h1 className="h2">Pick a sock.</h1>
+            <p className="atl__pick-line">Tap one to take it down, then pull its loose thread.</p>
+            <LaborCounter className="atl__pick-counter" />
+          </div>
+        )}
+
+        {/* phones: the price tag becomes a bottom bar in the thumb zone */}
+        {active && (
+          <div className="atl__bar mobile-only">
+            <div className="atl__bar-info">
+              <span className="atl__bar-price" ref={barPriceRef}>
+                $9.00
+              </span>
+              <span className="atl__bar-stats" ref={barStatsRef}>
+                Hole 0% · Labor 0:00
+              </span>
+              <span className="atl__bar-wage">
+                Your wage <b>$0.00</b>
+              </span>
+            </div>
+            <button type="button" className={`atl__bar-add ${finished && phase === 'pull' ? 'is-ready' : ''}`} onClick={addToBasket} disabled={phase !== 'pull'}>
+              {phase === 'frozen' ? 'In the basket' : 'Add to basket'}
+            </button>
+          </div>
+        )}
 
         <p className="atl__msg" key={active ? msg : 'line'} aria-live="polite">
           {phase === 'line' ? 'Pick a sock. Never a pair.' : phase === 'lifting' ? 'Taking it down…' : msg}

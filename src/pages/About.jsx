@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { Link } from 'react-router';
+import SnapDots from '../components/SnapDots.jsx';
 import Btn from '../components/Btn.jsx';
 import BounceText from '../components/motion/BounceText.jsx';
 import Pop from '../components/motion/Pop.jsx';
@@ -15,6 +17,7 @@ const tenets = [
 ];
 
 export default function About() {
+  const sockRow = useRef(null);
   useTitle('About');
   return (
     <div className="about">
@@ -42,6 +45,7 @@ export default function About() {
 
       <Tape items={['Worn in, not worn out', 'Left foot energy', 'The other one is fine, probably']} tone="green" tilt={-1.5} />
 
+      <h2 className="h2 badges__title mobile-only">Holey, by the numbers.</h2>
       <section className="badges wrap" aria-label="Holey in numbers">
         {[
           ['1', 'sock per order'],
@@ -57,7 +61,7 @@ export default function About() {
       </section>
 
       <section className="about__line wrap" aria-label="The six socks">
-        <ul className="about__socks">
+        <ul ref={sockRow} className="about__socks snaprow">
           {products.map((p, i) => (
             <li key={p.slug} className="about__sock" style={{ '--sock': p.color, '--tilt': `${[-4, 3, -2, 4, -3, 2][i]}deg` }}>
               <Link to={`/socks/${p.slug}`}>
@@ -67,6 +71,7 @@ export default function About() {
             </li>
           ))}
         </ul>
+        <SnapDots scroller={sockRow} count={products.length} label="Sock" />
         <div className="about__cta card-ink">
           <p className="h3">Ready to commit to one?</p>
           <Btn to="/shop">Shop the sock</Btn>

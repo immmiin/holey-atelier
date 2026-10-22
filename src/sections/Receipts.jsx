@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import BounceText from '../components/motion/BounceText.jsx';
+import SnapDots from '../components/SnapDots.jsx';
 import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/700.css';
 import './receipts.css';
@@ -22,13 +24,14 @@ function Line({ l, r, red }) {
 
 // Reviews, printed like the Atelier receipt you get at checkout.
 export default function Receipts({ title = 'Receipts.', kicker = 'Proof people did this on purpose' }) {
+  const row = useRef(null);
   return (
     <section className="rv" aria-labelledby="rv-title">
       <div className="rv__head wrap">
         <p className="kicker">{kicker}</p>
         <BounceText id="rv-title" text={title} className="h2" />
       </div>
-      <ul className="rv__row wrap">
+      <ul ref={row} className="rv__row wrap snaprow">
         {receipts.map((r, i) => (
           <li key={r.no} className="rv__item" style={{ '--tilt': `${[-2.5, 1.8, -1.2, 2.4][i]}deg` }}>
             <article className="rv__paper">
@@ -56,6 +59,7 @@ export default function Receipts({ title = 'Receipts.', kicker = 'Proof people d
           </li>
         ))}
       </ul>
+      <SnapDots scroller={row} count={receipts.length} label="Receipt" />
     </section>
   );
 }

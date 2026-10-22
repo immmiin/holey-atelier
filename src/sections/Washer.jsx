@@ -345,6 +345,11 @@ export default function Washer() {
         </div>
         <span className="machine__feet" aria-hidden="true" />
       </div>
+      {!done && (
+        <p className="washer__hint mobile-only" aria-hidden="true">
+          drag the drum to spin ↻
+        </p>
+      )}
 
       {done && (
         <div className="washer__out" role="status">

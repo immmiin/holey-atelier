@@ -1,0 +1,920 @@
+/* =====================================================================
+   Mobile system (≤ 767px). One column, 20px gutters, an 8-pt spacing scale,
+   a single type scale, 44px touch targets, nothing under 13px.
+   Rules are prefixed with `html` so they win over page CSS that loads later.
+   ===================================================================== */
+
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --nav-h: 56px;
+    --pad: 20px;
+    --gutter: 20px;
+    --s1: 8px;
+    --s2: 16px;
+    --s3: 24px;
+    --s4: 32px;
+    --s5: 48px;
+    --s6: 64px;
+    --space-1: 48px;
+    --space-2: 64px;
+    --space-3: 64px;
+    --section: 64px;
+    --fs-hero: clamp(2.5rem, 11.5vw, 3rem); /* 40–48 */
+    --fs-h2: clamp(1.75rem, 8vw, 2rem); /* 28–32 */
+    --fs-h3: clamp(1.25rem, 5.6vw, 1.375rem); /* 20–22 */
+    --fs-lead: 1.0625rem; /* 17 */
+    --fs-body: 1rem; /* 16 */
+    --fs-small: 0.8125rem; /* 13 */
+  }
+  html .mobile-only {
+    display: revert !important;
+  }
+  html body {
+    font-size: var(--fs-body);
+    line-height: 1.5;
+  }
+  html .wrap {
+    padding-inline: var(--pad);
+  }
+  html .kicker {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+  }
+  html .small {
+    font-size: 13px;
+  }
+  html .lead {
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+  html input,
+  html select,
+  html textarea {
+    font-size: 16px;
+  }
+  html .round-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* ------------------------------------------------------------ header: full width, 56px, sticky */
+  html .nav {
+    top: 0;
+    height: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px) 12px 0 var(--pad);
+    background: var(--cream);
+    border-bottom: 0;
+    box-shadow: none;
+    transition: box-shadow 0.25s ease;
+    justify-content: stretch;
+  }
+  html .nav.is-compact {
+    box-shadow: 0 6px 18px -10px rgba(26, 15, 31, 0.35);
+  }
+  html .nav__tag {
+    width: 100%;
+    filter: none;
+    transform: none !important;
+  }
+  html .nav__point,
+  html .nav__string {
+    display: none;
+  }
+  html .nav__body,
+  html .nav.is-compact .nav__body {
+    width: 100%;
+    gap: var(--s1);
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+  }
+  html .nav__logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+    margin-right: auto;
+  }
+  html .nav__logo .logo svg,
+  html .nav.is-compact .nav__logo .logo svg {
+    height: 30px;
+  }
+  html .nav .basket-btn,
+  html .nav__menu-btn {
+    width: 44px;
+    height: 44px;
+  }
+  html .nav .basket-count {
+    top: -6px;
+    right: -6px;
+    min-width: 22px;
+    height: 22px;
+    font-size: 13px;
+  }
+
+  /* menu: a full-screen sheet */
+  html .tagmenu {
+    top: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s3);
+    padding: var(--s3) var(--pad) calc(var(--s3) + env(safe-area-inset-bottom, 0px));
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--cream);
+  }
+  html .tagmenu__scrim {
+    display: none;
+  }
+  html .tagmenu__links a {
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    width: 100%;
+    font-size: var(--fs-h2);
+    padding-inline: var(--s1);
+    border-radius: 12px;
+  }
+  html .tagmenu__links a.active {
+    background: var(--hi);
+    text-decoration: none;
+    box-shadow: inset 0 0 0 2px var(--ink);
+  }
+  html .tagmenu__kicker,
+  html .tagmenu__socks {
+    display: none;
+  }
+  html .tagmenu__foot {
+    margin-top: auto;
+    display: grid;
+    gap: var(--s2);
+  }
+  html .tagmenu__cart {
+    min-height: 52px;
+    border: var(--line-thin) solid var(--ink);
+    border-radius: 999px;
+    background: var(--pink);
+    font-weight: 900;
+    font-size: 17px;
+  }
+  html .tagmenu__social {
+    display: flex;
+    justify-content: center;
+    gap: var(--s2);
+  }
+  html .tagmenu__social a {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: var(--line-thin) solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper);
+  }
+  html .tagmenu__social svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* ------------------------------------------------------------ buttons */
+  html .btn {
+    min-height: 48px;
+  }
+
+  /* ------------------------------------------------------------ home: hero */
+  html .hero2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s2);
+    padding: calc(var(--nav-h) + var(--s2)) var(--pad) var(--s5);
+    min-height: 0;
+  }
+  /* order: eyebrow → H1 → washer → sub-copy → CTAs */
+  html .hero2__text {
+    display: contents;
+  }
+  html .hero2__kicker {
+    order: 1;
+    margin: 0;
+  }
+  html .hero2__kicker span {
+    font-size: 13px;
+  }
+  html .hero2__peek {
+    order: 2;
+  }
+  html .hero2__title,
+  html .hero2__alt {
+    font-size: clamp(2.5rem, 11.4vw, 3rem);
+  }
+  html .hero2__hint {
+    order: 3;
+    justify-self: start;
+    font-size: 13px;
+  }
+  html .hero2__machine {
+    order: 4;
+    --machine-w: 78vw;
+  }
+  html .machine {
+    width: 78vw;
+  }
+  html .machine__screen {
+    font-size: 13px;
+  }
+  html .machine__knob {
+    width: 44px;
+    height: 44px;
+  }
+  html .hero2__lead {
+    order: 5;
+    max-width: none;
+    font-size: var(--fs-lead);
+  }
+  html .hero2__ctas {
+    order: 6;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s2);
+    width: 100%;
+  }
+  html .hero2__ctas .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  html .hero2__polaroid {
+    width: 22vw;
+    left: 2vw;
+    bottom: 6%;
+  }
+  html .hero2__polaroid figcaption {
+    font-size: 13px;
+  }
+  html .washer__hint {
+    margin: var(--s3) 0 0;
+    text-align: center;
+    font-weight: 900;
+    font-size: 14px;
+    color: var(--green);
+  }
+  html .washer__out {
+    width: 100%;
+  }
+  html .washer__msg,
+  html .washer__links {
+    font-size: 15px;
+  }
+  html .washer__links a,
+  html .washer__again {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* ------------------------------------------------------------ home: the line */
+  html .teaser {
+    padding-block: var(--s6) var(--s5);
+  }
+  html .teaser__head {
+    gap: var(--s2);
+    margin-bottom: var(--s2);
+  }
+  html .teaser__side {
+    gap: var(--s2);
+  }
+  html .teaser__side .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  html .teaser .cl--scroll::before {
+    content: 'swipe →';
+    position: sticky;
+    left: var(--pad);
+    display: inline-block;
+    margin: 0 0 var(--s1) var(--pad);
+    font-weight: 900;
+    font-size: 13px;
+    color: var(--green);
+  }
+  html .cl__tag-name {
+    font-size: 14px;
+  }
+  html .cl__tag-price {
+    font-size: 13px;
+  }
+  html .cl__tag {
+    padding: 4px 46px 4px 10px;
+  }
+  /* "+" keeps its look but gets a 44px hit area */
+  html .cl__add {
+    width: 44px;
+    height: 44px;
+    right: 0;
+    border: 0;
+    background: none;
+  }
+  html .cl__add::before {
+    content: '';
+    position: absolute;
+    inset: 9px;
+    border-radius: 50%;
+    border: var(--line-thin) solid var(--ink);
+    background: var(--hi);
+    z-index: -1;
+  }
+  html .cl__add {
+    isolation: isolate;
+  }
+  html .cl__tag-alt {
+    font-size: 13px;
+  }
+  html .labor {
+    font-size: 13px;
+  }
+
+  /* ------------------------------------------------------------ home: film */
+  html .laundry-sec {
+    padding: var(--s6) var(--pad) var(--s5);
+  }
+  html .laundry-sec__cap {
+    margin-bottom: var(--s2);
+    font-size: var(--fs-h3);
+  }
+
+  /* ------------------------------------------------------------ home: MISSING */
+  html .missing {
+    padding: var(--s6) var(--pad) calc(var(--s6) + 56px);
+  }
+  html .missing__inner {
+    gap: var(--s4);
+  }
+  html .poster {
+    width: min(88vw, calc(70svh * 0.74));
+    max-width: 88vw;
+    padding: 16px 16px 0;
+  }
+  html .poster__title {
+    font-size: clamp(2.6rem, 13vw, 3.4rem);
+  }
+  html .poster__sub {
+    font-size: 14px;
+  }
+  html .poster__photo {
+    width: 40%;
+  }
+  html .poster__facts {
+    font-size: 13px;
+  }
+  html .poster__facts dt {
+    font-size: 13px;
+  }
+  html .poster__facts div {
+    grid-template-columns: 8.5em 1fr;
+  }
+  html .poster__reward {
+    font-size: 1.25rem;
+  }
+  html .poster__reward span {
+    font-size: 13px;
+  }
+  html .poster__tabs {
+    margin-inline: -16px;
+    height: 128px;
+  }
+  @media (max-width: 380px) {
+    /* the eight tabs stay ≥ 44px wide on the narrowest phones */
+    html .poster {
+      width: 88vw;
+    }
+  }
+  html .tab__paper,
+  html .tab__piece {
+    font-size: 13px;
+  }
+  html .missing__side {
+    max-width: none;
+    width: 100%;
+    gap: var(--s2);
+  }
+  html .missing__side .h3 {
+    font-size: var(--fs-h2);
+  }
+  @media (max-height: 760px) {
+    /* short phones: the poster still fits in ~70svh */
+    html .poster__photo {
+      width: 30%;
+    }
+    html .poster__facts div:nth-child(n + 3) {
+      display: none;
+    }
+  }
+
+  /* ------------------------------------------------------------ horizontal snap rows */
+  html .snaprow {
+    display: flex !important;
+    gap: var(--s2);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--pad);
+    padding: var(--s1) var(--pad) var(--s2);
+    margin: 0;
+    max-width: none;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 12px, #000 calc(100% - 24px), transparent);
+  }
+  html .snaprow::-webkit-scrollbar {
+    display: none;
+  }
+  html .snaprow > * {
+    flex: 0 0 82vw;
+    scroll-snap-align: start;
+  }
+  html .snapdots {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+  }
+  html .snapdots button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  html .snapdots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(26, 15, 31, 0.25);
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+  html .snapdots .is-on span {
+    width: 22px;
+    border-radius: 999px;
+    background: var(--ink);
+  }
+
+  /* ------------------------------------------------------------ home: reviews */
+  html .rv {
+    padding-block: var(--s6) var(--s5);
+  }
+  html .rv__item {
+    transform: none;
+  }
+  html .rv__paper {
+    font-size: 13px;
+  }
+  html .rv__meta,
+  html .rv__aside,
+  html .rv__foot {
+    font-size: 13px;
+  }
+  html .rv__note {
+    font-size: 16px;
+  }
+
+  /* ------------------------------------------------------------ footer: about half as tall */
+  html .foot__inner {
+    padding-top: var(--s5);
+  }
+  html .foot__top {
+    display: grid;
+    gap: var(--s3);
+  }
+  html .foot__title {
+    font-size: var(--fs-h2);
+  }
+  html .report {
+    padding: var(--s2);
+  }
+  html .report__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s1);
+  }
+  html .report__row .btn,
+  html .report__row button {
+    width: 100%;
+    min-height: 48px;
+  }
+  html .report__field input {
+    width: 100%;
+    min-height: 48px;
+    font-size: 16px;
+  }
+  html .report__msg,
+  html .report__kicker {
+    font-size: 13px;
+  }
+  html .foot__tags {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s3) var(--s2);
+    margin-top: var(--s4);
+  }
+  html .ftag {
+    min-width: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    transform: none;
+    rotate: 0deg;
+    color: var(--cream);
+  }
+  html .ftag__hole {
+    display: none;
+  }
+  html .ftag__title {
+    font-size: var(--fs-h3);
+    margin-bottom: var(--s1);
+  }
+  html .ftag:nth-of-type(3) {
+    grid-column: 1 / -1;
+  }
+  html .ftag ul {
+    display: grid;
+    gap: 0;
+  }
+  html .ftag a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 16px;
+    color: var(--cream);
+  }
+  html .punch {
+    grid-column: 1 / -1;
+    justify-items: center;
+    margin-top: var(--s2);
+  }
+  html .punch__logo {
+    width: 64vw;
+  }
+  html .punch .foot__bubble {
+    width: 100%;
+  }
+  html .punch__count {
+    text-align: center;
+    font-size: 15px;
+  }
+  html .foot__bottom {
+    display: grid;
+    justify-items: center;
+    gap: var(--s2);
+    padding-block: var(--s3) calc(var(--s3) + env(safe-area-inset-bottom, 0px));
+    text-align: center;
+  }
+  html .foot__social {
+    gap: var(--s2);
+  }
+  html .foot__bottom .small {
+    font-size: 13px;
+  }
+
+  /* ------------------------------------------------------------ About */
+  html .about__hero {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    padding-top: calc(var(--nav-h) + var(--s3));
+  }
+  html .about__sticker {
+    order: -1;
+    position: static;
+    align-self: center;
+    width: 55vw;
+    margin: 0;
+    transform: none;
+  }
+  html .about__sticker img {
+    width: 100%;
+    height: auto;
+  }
+  html .about__title {
+    font-size: var(--fs-hero);
+  }
+  html .about__lead {
+    font-size: 17px;
+  }
+  html .notes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s2);
+    padding-block: var(--s4);
+  }
+  html .note {
+    transform: rotate(calc(var(--tilt) * 0.5));
+    max-width: none;
+  }
+  html .note p {
+    font-size: 16px;
+  }
+  html .badges__title {
+    margin: var(--s3) var(--pad) var(--s2);
+  }
+  html .badges {
+    display: grid;
+    grid-template-columns: repeat(2, 40vw);
+    justify-content: center;
+    gap: var(--s2);
+    padding-block: 0 var(--s4);
+  }
+  html .badge {
+    width: 40vw;
+    height: 40vw;
+    margin: 0;
+  }
+  html .badge__l {
+    font-size: 13px;
+  }
+  html .about__line {
+    padding-block: var(--s4) var(--s5);
+    padding-inline: 0;
+    gap: var(--s2);
+  }
+  html .about__socks > li {
+    flex-basis: 46vw;
+  }
+  html .about__line .about__cta {
+    justify-self: stretch;
+    margin-inline: var(--pad);
+  }
+  html .about__cta .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ------------------------------------------------------------ FAQ */
+  html .faq2 {
+    display: grid;
+    gap: var(--s4);
+    padding-top: calc(var(--nav-h) + var(--s3));
+    padding-bottom: var(--s5);
+  }
+  html .faq2__side {
+    position: static;
+    gap: var(--s2);
+  }
+  html .faq2__title {
+    font-size: var(--fs-hero);
+  }
+  html .faq2__sticker {
+    display: none;
+  }
+  html .faq2__side .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  html .acc2 {
+    display: grid;
+    gap: 12px;
+  }
+  html .acc2__btn {
+    min-height: 56px;
+    font-size: 17px;
+  }
+  html .acc2__body {
+    font-size: 16px;
+  }
+
+  /* ------------------------------------------------------------ cart: a bottom sheet */
+  html .bdrawer__panel {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: 85svh;
+    border-radius: 24px 24px 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html .bdrawer__foot {
+    position: sticky;
+    bottom: 0;
+    background: var(--paper);
+  }
+  html .bdrawer__remove,
+  html .bdrawer__name,
+  html .bdrawer__thumb {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+  html .bdrawer__checkout {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ------------------------------------------------------------ checkout + receipt */
+  html .cko {
+    padding: calc(var(--nav-h) + var(--s3)) var(--pad) var(--s5);
+  }
+  html .cko__field input {
+    font-size: 16px;
+    min-height: 48px;
+  }
+  html .cko__field small,
+  html .cko__name small {
+    font-size: 13px;
+  }
+  html .cko__place {
+    width: 100%;
+    min-height: 52px;
+  }
+  html .cko__check {
+    min-height: 44px;
+  }
+  html .rprint__printer {
+    width: min(92vw, 356px);
+  }
+  html .rprint__feed {
+    width: min(92vw, 340px);
+  }
+  html .rprint__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: min(92vw, 340px);
+  }
+  html .rprint__actions .abtn {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  /* ------------------------------------------------------------ the Atelier */
+  /* line state: the line on top, then what to do */
+  html .atl__pick {
+    position: absolute;
+    left: var(--pad);
+    right: var(--pad);
+    bottom: calc(var(--s4) + env(safe-area-inset-bottom, 0px));
+    z-index: 4;
+    display: grid !important;
+    gap: var(--s1);
+  }
+  html .atl__pick .h2 {
+    margin: 0;
+  }
+  html .atl__pick-line {
+    margin: 0;
+    font-size: 16px;
+  }
+  html .atl__pick-counter {
+    display: flex;
+    margin: var(--s1) 0 0;
+    width: 100%;
+    max-width: none;
+  }
+  /* tall phones: sit right under the line instead of leaving a gap */
+  @media (min-height: 760px) {
+    html .atl__pick {
+      top: calc(32px + 78vw);
+      bottom: auto;
+    }
+  }
+  html .atp:not(.is-active) .atl__msg {
+    display: none;
+  }
+  /* picked: the tag becomes a bottom bar, in the thumb zone */
+  html .atl__tag {
+    display: none;
+  }
+  html .atl__bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 8;
+    display: flex !important;
+    align-items: center;
+    gap: var(--s2);
+    padding: 12px var(--pad) calc(12px + env(safe-area-inset-bottom, 0px));
+    background: var(--paper);
+    border-top: var(--line-thin) solid var(--ink);
+    box-shadow: 0 -8px 20px -14px rgba(26, 15, 31, 0.45);
+  }
+  html .atl__bar-info {
+    display: grid;
+    min-width: 0;
+    flex: 1;
+  }
+  html .atl__bar-price {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 900;
+    font-size: 30px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  html .atl__bar-stats {
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  html .atl__bar-wage {
+    font-size: 13px;
+    font-weight: 900;
+  }
+  html .atl__bar-wage b {
+    color: #c9302c;
+  }
+  html .atl__bar-add {
+    flex: none;
+    min-height: 48px;
+    padding: 0 18px;
+    border: var(--line-thin) solid var(--ink);
+    border-radius: 999px;
+    background: var(--hi);
+    box-shadow: 2px 2px 0 var(--ink);
+    font-weight: 900;
+    font-size: 16px;
+  }
+  html .atl__bar-add.is-ready {
+    background: var(--pink);
+  }
+  html .atl__bar-add:disabled {
+    opacity: 0.55;
+  }
+  html .atl__back {
+    top: 8px;
+    min-height: 44px;
+    font-size: 15px;
+  }
+  /* stage messages: centred, just above the bar */
+  html .atl__msg {
+    left: var(--pad);
+    right: var(--pad);
+    bottom: 112px;
+    max-width: none;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    text-align: center;
+    font-size: var(--fs-h3);
+  }
+  html .atl__floor {
+    bottom: 88px;
+    height: 14%;
+  }
+  html .atl__added {
+    bottom: 104px;
+  }
+  html .atl__added p {
+    font-size: 15px;
+  }
+  html .atl__added-actions .abtn {
+    flex: 1;
+    min-height: 44px;
+  }
+
+  /* ------------------------------------------------------------ Archive, shop, product */
+  html .arc__serial,
+  html .arc__meta,
+  html .pdp2__thumb-label,
+  html dt {
+    font-size: 13px;
+  }
+  html .arc__card {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 767px) {
+  html .laundry__pause {
+    width: 44px;
+    height: 44px;
+  }
+  html .chip--select select {
+    min-height: 44px;
+  }
+  html .pdp2__label dt {
+    font-size: 13px;
+  }
+}
+@media (max-width: 767px) {
+  html .qty2__pill button {
+    width: 44px;
+    height: 44px;
+  }
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import { lineNote, linePrice, useCart } from '../context/CartContext.jsx';
@@ -14,6 +14,14 @@ export default function BasketDrawer() {
   const panel = useRef(null);
   const lastFocus = useRef(null);
   const navigate = useNavigate();
+  // phones: a bottom sheet rather than a side drawer
+  const [sheet, setSheet] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const on = () => setSheet(mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -58,9 +66,9 @@ export default function BasketDrawer() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="basket-title"
-            initial={{ x: '110%', rotate: 6 }}
-            animate={{ x: 0, rotate: 0 }}
-            exit={{ x: '110%', rotate: 6 }}
+            initial={sheet ? { y: '105%' } : { x: '110%', rotate: 6 }}
+            animate={sheet ? { y: 0 } : { x: 0, rotate: 0 }}
+            exit={sheet ? { y: '105%' } : { x: '110%', rotate: 6 }}
             transition={{ type: 'spring', stiffness: 300, damping: 24 }}
           >
             <header className="bdrawer__head">
