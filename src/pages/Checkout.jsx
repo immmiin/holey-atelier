@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
 import Btn from '../components/Btn.jsx';
-import { useCart } from '../context/CartContext.jsx';
+import { lineNote, linePrice, useCart } from '../context/CartContext.jsx';
+import Receipt from '../atelier/Receipt.tsx';
+import Certificate from '../atelier/Certificate.tsx';
+import { loadSale } from '../atelier/sale.ts';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/700.css';
+import '../atelier/atelier.css';
 import { bySlug, money, sockSrc } from '../data/products.js';
 import { reducedMotion } from '../lib/scroll.js';
 import useTitle from '../lib/useTitle.js';
@@ -19,11 +26,12 @@ function readOrder() {
 
 export default function Checkout() {
   useTitle('Order placed');
-  const { items, clear } = useCart();
+  const { items, lines, clear } = useCart();
+  const navigate = useNavigate();
   // freeze the cart into an order the moment we land here
   const [order] = useState(() => {
     if (items.length) {
-      const o = { id: `HOLEY-${String(Date.now()).slice(-6)}`, items: [...items] };
+      const o = { id: `HOLEY-${String(Date.now()).slice(-6)}`, items: [...items], lines: lines.map((l) => ({ ...l })) };
       try {
         sessionStorage.setItem(KEY, JSON.stringify(o));
       } catch {
@@ -34,6 +42,18 @@ export default function Checkout() {
     return readOrder();
   });
   const [phase, setPhase] = useState(order && items.length ? 'processing' : 'done');
+  // socks hand-distressed at the Atelier get their own receipt (and certificate) at checkout
+  const [sales, setSales] = useState([]);
+  const [cert, setCert] = useState(null);
+  useEffect(() => {
+    const done = (order?.lines || []).filter((l) => l.serial);
+    if (!done.length) return undefined;
+    let alive = true;
+    Promise.all(done.map((l) => loadSale(l.slug, l.serial))).then((list) => alive && setSales(list.filter(Boolean)));
+    return () => {
+      alive = false;
+    };
+  }, [order]);
 
   useEffect(() => {
     if (items.length) clear();
@@ -53,8 +73,10 @@ export default function Checkout() {
     );
   }
 
+  const orderLines = order.lines || order.items.map((slug) => ({ slug }));
+  const lineOf = (slug) => orderLines.find((l) => l.slug === slug) || { slug };
   const socks = order.items.map((s) => bySlug[s]).filter(Boolean);
-  const total = socks.reduce((t, p) => t + p.price, 0);
+  const total = socks.reduce((t, p) => t + linePrice(lineOf(p.slug)), 0);
   const lead = socks[0];
 
   if (phase === 'processing') {
@@ -115,9 +137,11 @@ export default function Checkout() {
               </span>
               <span className="co__name">
                 {p.name}
-                <span className="lead">{p.subtitle} · Qty 1</span>
+                <span className="lead">
+                  {lineNote(lineOf(p.slug)) || p.subtitle} · Qty 1
+                </span>
               </span>
-              <span className="lead">{money(p.price)}</span>
+              <span className="lead">{money(linePrice(lineOf(p.slug)))}</span>
             </li>
           ))}
         </ul>
@@ -134,6 +158,18 @@ export default function Checkout() {
           <span className="lead">Good faith (declined, then approved)</span>
         </div>
       </motion.div>
+
+      {sales.length > 0 && (
+        <div className="co__atelier">
+          <p className="kicker">Printed at the Atelier</p>
+          <div className="co__receipts">
+            {sales.map((sale) => (
+              <Receipt key={sale.serial} inline sale={sale} onCert={() => setCert(sale)} onAnother={() => navigate('/#atelier')} />
+            ))}
+          </div>
+        </div>
+      )}
+      {cert && <Certificate sale={cert} onAnother={() => navigate('/#atelier')} onClose={() => setCert(null)} />}
 
       <div className="co__cta">
         <Btn to="/shop">Lose another</Btn>

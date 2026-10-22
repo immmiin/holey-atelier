@@ -254,7 +254,11 @@ export default function Atelier() {
     void cart.add(def.slug, basketRef.current, { distressed: { price: s.price, hole: holePct(s), serial: s.serial }, openDrawer: false });
     const r = tagRef.current.getBoundingClientRect();
     const narrow = window.innerWidth < 760;
-    setRcPos(narrow ? { top: navHeight() + 6, center: null } : { top: r.bottom - 6, center: r.left + r.width / 2 });
+    setRcPos(
+      narrow
+        ? { top: navHeight() + 6, center: null }
+        : { top: r.bottom - 6, center: Math.min(r.left + r.width / 2, window.innerWidth - 182) }
+    );
     setSale(s);
     lockScroll();
     setPhase('receipt');

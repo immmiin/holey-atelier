@@ -1,32 +1,35 @@
-# Atelier Holey — Hand-distressed by You
+# Holey × Atelier — Hand-distressed by you
 
-Holey sells **one sock with a hole**. At the Atelier you finish it yourself: pick a sock off the
-clothesline, sign the artisan badge, and pull the loose thread. The sock unravels row by row into
-a heap on the floor. Less sock, higher price ($9 → $99). Your wage: $0.00.
+Holey sells **one sock with a hole**. This is the Holey site (shop, product pages, cart, FAQ,
+About, the Laundry Day film) with **the Atelier** built into the home page clothesline: take a
+sock down, and it comes forward onto a big peg while the others recede; pull its loose thread and
+it unravels row by row into a heap on the floor. Less sock, higher price ($9 → $99). Your wage:
+$0.00. "Add to basket" puts the sock in the cart at its distressed price, prints an Atelier
+receipt, and issues a Certificate of Authenticity (PNG).
 
 Entry for the Communication Arts 2027 Interactive Competition (Student Work).
 Concept, design & code: Minjeong Shin (immmiin), SVA BFA Graphic Design.
+Product imagery visualized with AI; all interaction, unravel effects and yarn rendered in code.
 
-## How it works
+## Where things are
 
-- **Knit model** (`src/scene/model.ts`, built in a Web Worker): the sock cutout's alpha mask is
-  gridded; a harmonic field from the toe hole to the cuff (seeded by a geodesic BFS, re-parametrised
-  by arc length) gives knit rows that run across the tube. Rows unravel boustrophedon, so the active
-  stitch shuttles back and forth.
-- **Conservation**: unravelled yarn length drives the fabric removed. Air yarn is clamped to what
-  reaches the hand plus droop; the rest lies in the heap, whose silhouette is ~48% of the sock's.
-- **Stick-slip** pulling, verlet thread, pendulum on the clothespin, crimped 2-ply yarn, a heap
-  baked loop-by-loop in material order. All synthesised sound (WebAudio); "M" mutes.
-- Receipt (thermal strip with a die-cut hole sized to the hole you made) and a canvas-drawn
-  Certificate of Authenticity with PNG export.
+- `src/sections/Atelier.jsx` — the home clothesline turned Atelier (pick, depth, HUD, basket flow)
+- `src/components/Clothesline.jsx` — the site's verlet clothesline (+ atelier mode: pick, freeze, live rope)
+- `src/atelier/PullStage.ts` — the pull: stick-slip, pendulum, conservation of yarn, thread, heap
+- `src/atelier/model.ts` (+ worker) — knit rows from a harmonic field over the sock's alpha mask
+- `src/atelier/Receipt.tsx`, `Certificate.tsx`, `certDraw.ts` — receipt strip and certificate
+- `src/atelier/sound.ts` — synthesised sound (starts on first gesture; "M" mutes)
 
 ## Develop
 
 ```sh
 npm install
-npm run dev          # http://localhost:5199  (?tune shows the feel sliders)
-node scripts/flowtest.mjs out            # full Playwright flow, desktop
-node scripts/flowtest.mjs out 390 844    # mobile
+npm run dev                                  # http://localhost:5199
+node scripts/atelier-flow.mjs out            # full Atelier flow, desktop (dev server running)
+node scripts/atelier-flow.mjs out 390 844    # mobile
+node scripts/overflow.mjs http://localhost:5199
+npm run typecheck                            # TypeScript in src/atelier
 ```
 
-Product imagery visualized with AI; all interaction, unravel effects and yarn rendered in code.
+Based on the original Holey site (README.original.md). Source photos for `npm run assets` live in
+`assets-src/`.

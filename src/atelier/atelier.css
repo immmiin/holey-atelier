@@ -19,6 +19,14 @@
   scroll-margin-top: 90px;
 }
 
+.atl__head {
+  transition: opacity 0.5s var(--ease);
+}
+.atl.is-active .atl__head {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* ---------------------------------------------------------------- the room */
 
 .atl__room {
@@ -47,8 +55,8 @@
 /* the work floor fades in under the picked sock */
 .atl__floor {
   position: absolute;
-  left: calc(var(--gutter, 14px) * -1);
-  right: calc(var(--gutter, 14px) * -1);
+  left: 0;
+  right: 0;
   bottom: 0;
   height: 22%;
   z-index: 0;
@@ -627,6 +635,8 @@
     font-size: clamp(19px, 5.6vw, 26px);
   }
   .atl__back {
+    top: auto;
+    bottom: 64px;
     font-size: 0.8rem;
     padding: 6px 11px;
   }

@@ -24,14 +24,14 @@ function Barcode({ value }: { value: string }) {
       h = Math.imul(h ^ value.charCodeAt(i % value.length) ^ i, 16777619) >>> 0;
       const w = 1 + (h % 3);
       if (i % 2 === 0) out.push([x, w]);
-      x += w + ((h >> 4) % 2);
+      x += w + ((h >>> 4) % 2);
     }
     return { out, width: x };
   }, [value]);
   return (
     <svg className="rc-barcode" viewBox={`0 0 ${bars.width} 40`} preserveAspectRatio="none" aria-hidden>
-      {bars.out.map(([x, w]) => (
-        <rect key={x} x={x} y={0} width={w} height={40} />
+      {bars.out.map(([x, w], i) => (
+        <rect key={i} x={x} y={0} width={w} height={40} />
       ))}
     </svg>
   );

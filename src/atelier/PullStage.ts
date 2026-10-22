@@ -217,6 +217,7 @@ export class PullStage {
     this.maskData = this.maskCtx.createImageData(m.gw, m.gh);
     this.L = layout;
     this.layout();
+    this.pivY = layout.lineYAt(layout.pinX);
     this.resetSock();
     this.phase = 'pull';
     this.appear = this.now;
@@ -374,8 +375,10 @@ export class PullStage {
     return 2.6 * this.unit * Math.exp(-t / 0.13) * Math.sin(t * 2 * Math.PI * 17);
   }
 
+  /** the rope is a separate simulation: read it once per frame so physics, drawing and checks agree */
+  pivY = 0;
   pivot() {
-    return { x: this.pinX, y: this.lineYAt(this.pinX) };
+    return { x: this.pinX, y: this.pivY + (this.reducedMotion ? 0 : this.shiver() * 0.5) };
   }
 
   toWorld(lx: number, ly: number) {
@@ -949,6 +952,7 @@ export class PullStage {
     if (this.disposed) return;
     const dt = Math.min(1 / 30, (t - this.last) / 1000);
     this.last = t;
+    if (this.model) this.pivY = this.L.lineYAt(this.pinX);
     const sub = 2;
     for (let i = 0; i < sub; i++) {
       this.now += dt / sub;
@@ -1073,9 +1077,12 @@ export class PullStage {
       ctx.globalAlpha = a;
       ctx.fillStyle = '#1F5B3A';
       ctx.font = `800 ${Math.round(13 * Math.max(0.85, u))}px Nunito, system-ui, sans-serif`;
-      ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
-      ctx.fillText('pull the loose thread', e.x - 18 * u, e.y + 6 * u);
+      // label on whichever side of the thread end has room
+      const label = 'pull the loose thread';
+      const left = e.x - 18 * u - ctx.measureText(label).width > 8;
+      ctx.textAlign = left ? 'right' : 'left';
+      ctx.fillText(label, left ? e.x - 18 * u : e.x + 18 * u, e.y + 6 * u);
       ctx.beginPath();
       ctx.arc(e.x, e.y, 9 * u + 3 * Math.sin(now * 3), 0, Math.PI * 2);
       ctx.strokeStyle = '#1F5B3A';
