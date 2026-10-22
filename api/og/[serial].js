@@ -1,4 +1,4 @@
-// GET /api/og/HOL-1234 — the shared receipt as a 1200×630 Open Graph image (Vercel OG, Edge runtime).
+// GET /api/og/HOL-1234 — the shared receipt as a 1200×630 Open Graph image (Vercel OG, Node runtime).
 import { ImageResponse } from '@vercel/og';
 import { getStore, readEntry } from '../_lib/orders.js';
 
@@ -14,8 +14,6 @@ const SOCKS = {
 const h = (type, style, ...children) => ({ type, props: { style: { display: 'flex', ...style }, children: children.length === 1 ? children[0] : children } });
 const row = (l, r, color = '#241a26') =>
   h('div', { justifyContent: 'space-between', width: '100%', fontSize: 26, color, borderBottom: '2px dotted rgba(36,26,38,.3)', padding: '6px 0' }, l, r);
-
-export const config = { runtime: 'edge' };
 
 export default async function handler(request) {
   const url = new URL(request.url);
