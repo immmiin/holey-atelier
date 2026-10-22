@@ -7,6 +7,7 @@ import { bySlug, money, sockSrc } from '../data/products.js';
 import { reducedMotion } from '../lib/scroll.js';
 import useTitle from '../lib/useTitle.js';
 import ReceiptPrint from '../atelier/ReceiptPrint.tsx';
+import { bumpCachedStats, postOrder } from '../lib/api.js';
 import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/700.css';
 import '../atelier/atelier.css';
@@ -22,10 +23,11 @@ function readOrder() {
   }
 }
 
-/** the cart, frozen into an order for the receipt */
+/** the cart, frozen into an order for the receipt (a local serial until the Archive confirms one) */
 function toOrder(lines) {
   return {
     id: `HOL-${String(1000 + Math.floor(Math.random() * 9000))}`,
+    local: true,
     date: new Date().toISOString(),
     lines: lines.map((l) => {
       const p = bySlug[l.slug];
@@ -37,6 +39,7 @@ function toOrder(lines) {
         price: linePrice(l),
         hole: l.hole,
         laborMs: l.laborMs,
+        unravelSeed: l.unravelSeed,
         outline: l.outline
       };
     })
@@ -53,17 +56,47 @@ export default function Checkout() {
   const [phase, setPhase] = useState(() => (lines.length ? 'form' : readOrder() ? 'printed' : 'empty'));
   const [shipTo, setShipTo] = useState('');
 
-  const place = (e) => {
-    e.preventDefault();
-    const o = toOrder(lines);
+  const save = (o) => {
     try {
       sessionStorage.setItem(KEY, JSON.stringify(o));
     } catch {
       /* the receipt still prints */
     }
+  };
+
+  const place = (e) => {
+    e.preventDefault();
+    const o = toOrder(lines);
+    save(o);
     setOrder(o);
     clear();
     setPhase('counting');
+    archive(o);
+  };
+
+  /* every hand-distressed piece goes into the Archive, in the background. Nothing waits on it. */
+  const archive = async (o) => {
+    const pieces = o.lines.filter((l) => l.hole != null);
+    for (const [i, l] of pieces.entries()) {
+      if (i) await new Promise((r) => setTimeout(r, 10500)); // the Archive takes one piece per 10 s
+      const body = {
+        sockSlug: l.slug,
+        holePct: Math.max(0, Math.min(100, Math.round(l.hole))),
+        laborSec: Math.max(1, Math.min(3600, Math.round((l.laborMs || 1000) / 1000))),
+        price: Math.max(9, Math.min(99, Math.round(l.price * 100) / 100)),
+        unravelSeed: Number.isInteger(l.unravelSeed) ? l.unravelSeed : 0
+      };
+      const serial = await postOrder(body);
+      if (!serial) continue;
+      bumpCachedStats(body);
+      if (i === 0) {
+        setOrder((cur) => {
+          const next = { ...cur, id: serial, local: false };
+          save(next);
+          return next;
+        });
+      }
+    }
   };
 
   useEffect(() => {
@@ -80,8 +113,8 @@ export default function Checkout() {
     return (
       <section className="co co--empty">
         <img src="/logo/holey_04_nail-icon-holey.svg" alt="" className="co__empty-icon" />
-        <h1 className="h2">Nothing to check out.</h1>
-        <p className="lead">Your basket is empty, which is also very on brand.</p>
+        <h1 className="h2">Your basket has a hole in it.</h1>
+        <p className="lead">Nothing to check out. Which is also very on brand.</p>
         <Btn to="/atelier">Pull a thread</Btn>
       </section>
     );
@@ -111,7 +144,12 @@ export default function Checkout() {
           <h1 className="h2">Here’s your receipt.</h1>
           <p className="lead">Your sock is on its way to find its other half. Estimated reunion: never, probably.</p>
         </div>
-        <ReceiptPrint order={order} onBack={() => navigate('/atelier')} />
+        <ReceiptPrint
+          order={order}
+          link={order.local ? null : `${location.origin}/r/${order.id}`}
+          onArchive={() => navigate('/archive')}
+          onBack={() => navigate('/atelier')}
+        />
       </section>
     );
   }

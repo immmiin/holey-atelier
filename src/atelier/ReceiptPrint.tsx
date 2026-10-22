@@ -1,15 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
 import { printerStep } from './sound';
-import { type Order, RECEIPT_W, clock, drawReceipt, money, orderTotal, receiptPNG, split } from './receiptDraw';
+import { type Order, RECEIPT_W, clock, drawReceipt, money, orderLaborMs, orderTotal, receiptPNG, split } from './receiptDraw';
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* The receipt feeds out of a printer slot a line at a time, with printer chatter. */
-export default function ReceiptPrint({ order, onBack }: { order: Order; onBack: () => void }) {
+export default function ReceiptPrint({
+  order,
+  onBack,
+  onArchive,
+  link,
+  instant = false,
+}: {
+  order: Order;
+  onBack: () => void;
+  onArchive?: () => void;
+  /** a shareable link, once the Archive has the piece */
+  link?: string | null;
+  /** skip the print animation (shared receipts) */
+  instant?: boolean;
+}) {
   const cvRef = useRef<HTMLCanvasElement>(null);
   const [h, setH] = useState(0);
   const [fed, setFed] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const printed = useRef(false);
   const done = h > 0 && fed >= h;
 
   useEffect(() => {
@@ -24,7 +40,10 @@ export default function ReceiptPrint({ order, onBack }: { order: Order; onBack: 
       const ctx = cv.getContext('2d')!;
       ctx.scale(dpr, dpr);
       await drawReceipt(ctx, order);
-      if (alive) setH(H);
+      if (!alive) return;
+      setH(H);
+      // a later redraw (the real serial arrived) shouldn't print it all again
+      if (printed.current) setFed(H);
     })();
     return () => {
       alive = false;
@@ -32,8 +51,9 @@ export default function ReceiptPrint({ order, onBack }: { order: Order; onBack: 
   }, [order]);
 
   useEffect(() => {
-    if (!h) return undefined;
-    if (reduced()) {
+    if (!h || printed.current) return undefined;
+    printed.current = true;
+    if (reduced() || instant) {
       printerStep();
       setFed(h);
       return undefined;
@@ -46,7 +66,7 @@ export default function ReceiptPrint({ order, onBack }: { order: Order; onBack: 
       if (f >= h) clearInterval(id);
     }, 55);
     return () => clearInterval(id);
-  }, [h]);
+  }, [h]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const save = async () => {
     setSaving(true);
@@ -62,6 +82,17 @@ export default function ReceiptPrint({ order, onBack }: { order: Order; onBack: 
       setTimeout(() => URL.revokeObjectURL(url), 4000);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const copy = async () => {
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.prompt('Copy this link:', link);
     }
   };
 
@@ -87,12 +118,21 @@ export default function ReceiptPrint({ order, onBack }: { order: Order; onBack: 
         <li>Artisan wage $0.00</li>
         <li>Total {money(orderTotal(order))}</li>
         <li>Your hands. Our premium. No refunds on feelings.</li>
+        <li>Artisan copy, payslip: hours worked {clock(orderLaborMs(order))}, rate $0.00 an hour, gross pay $0.00, net pay $0.00. Thank you for your passion.</li>
       </ul>
       {done && (
         <div className="rprint__actions">
           <button type="button" className="abtn abtn-primary" onClick={save} disabled={saving}>
             {saving ? 'Saving…' : 'Save receipt'}
           </button>
+          <button type="button" className="abtn abtn-ghost" onClick={copy} disabled={!link} title={link ? link : 'The link appears once the Archive has your piece'}>
+            {copied ? 'Copied' : 'Copy link'}
+          </button>
+          {onArchive && (
+            <button type="button" className="abtn abtn-ghost" onClick={onArchive}>
+              See the Archive
+            </button>
+          )}
           <button type="button" className="abtn abtn-ghost" onClick={onBack}>
             Back to the line
           </button>

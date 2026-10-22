@@ -472,3 +472,19 @@ html.hole-cursor .atl__stage[data-grab='2'],
 .atl__stage[data-grab='2'] {
   cursor: grabbing !important;
 }
+
+/* the collective labor counter, top centre of the room */
+.atl__counter {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  translate: -50% 0;
+  z-index: 5;
+  font-size: 0.82rem;
+  padding: 5px 12px;
+}
+@media (max-width: 899px) {
+  .atl__counter {
+    display: none;
+  }
+}

@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext.jsx';
 import { pushAccent } from '../lib/accent.js';
 import { reducedMotion } from '../lib/scroll.js';
 import { Plus } from './Icons.jsx';
+import Peek from './Peek.jsx';
 import './clothesline.css';
 
 /* ---------------------------------------------------------------
@@ -67,8 +68,22 @@ function Sock({ p, i, refs, dragged, onHover, onQuickAdd, inCart, onPick, picked
       </svg>
       <img className="cl__img" src={sockSrc(p.n, 400)} alt="" width="400" height="500" draggable="false" />
       <span className="cl__tag">
-        <span className="cl__tag-name">{p.name}</span>
-        <span className="cl__tag-price">{money(p.price)}</span>
+        <Peek
+          as="span"
+          className="cl__tag-text"
+          r={30}
+          altClassName="cl__tag-alt"
+          alt={
+            <>
+              Your wage
+              <br />
+              $0.00
+            </>
+          }
+        >
+          <span className="cl__tag-name">{p.name}</span>
+          <span className="cl__tag-price">{money(p.price)}</span>
+        </Peek>
         <button
           type="button"
           className="cl__add"

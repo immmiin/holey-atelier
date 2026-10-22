@@ -6,7 +6,7 @@ const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
 const errs = [];
 p.on('pageerror', (e) => errs.push(`${p.url()} PAGEERR ${e.message}`));
 p.on('console', (m) => m.type() === 'error' && errs.push(`${p.url()} ${m.text()}`));
-for (const r of ['/', '/atelier', '/atelier?sock=toe-jam', '/shop', '/socks/grass-stain', '/about', '/faq', '/checkout', '/nope']) {
+for (const r of ['/', '/archive', '/atelier', '/atelier?sock=toe-jam', '/shop', '/socks/grass-stain', '/about', '/faq', '/checkout', '/nope']) {
   await p.goto(base + r);
   await p.waitForTimeout(1800);
 }

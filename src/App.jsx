@@ -20,6 +20,8 @@ const Faq = lazy(() => import('./pages/Faq.jsx'));
 const Contact = lazy(() => import('./pages/Contact.jsx'));
 const Checkout = lazy(() => import('./pages/Checkout.jsx'));
 const AtelierPage = lazy(() => import('./pages/AtelierPage.jsx'));
+const Archive = lazy(() => import('./pages/Archive.jsx'));
+const ReceiptShare = lazy(() => import('./pages/ReceiptShare.jsx'));
 const Legal = lazy(() => import('./pages/Legal.jsx'));
 const NotFound = lazy(() => import('./pages/NotFound.jsx'));
 
@@ -86,6 +88,8 @@ function WashedRoutes() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/atelier" element={<AtelierPage />} />
+            <Route path="/archive" element={<Archive />} />
+            <Route path="/r/:serial" element={<ReceiptShare />} />
             <Route path="/legal/:page" element={<Legal />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -123,8 +127,24 @@ function SiteFooter() {
   return pathname.startsWith('/atelier') ? null : <Footer />;
 }
 
+/* a hidden tab gets a little lonely */
+function useMissYou() {
+  useEffect(() => {
+    let real = document.title;
+    const onVis = () => {
+      if (document.hidden) {
+        real = document.title;
+        document.title = 'Your other sock misses you.';
+      } else if (document.title === 'Your other sock misses you.') document.title = real;
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
+}
+
 export default function App() {
   useAtelierSound();
+  useMissYou();
   useEffect(() => {
     initScroll();
     document.fonts?.ready.then(() => ScrollTrigger.refresh());

@@ -10,6 +10,7 @@ import { sockModel } from '../atelier/models.ts';
 import { SOCKS } from '../atelier/socks.ts';
 import { twang } from '../atelier/sound.ts';
 import { clock, money } from '../atelier/receiptDraw.ts';
+import LaborCounter from '../components/LaborCounter.jsx';
 import '../atelier/atelier.css';
 
 const MESSAGES = [
@@ -60,6 +61,7 @@ export default function AtelierPage() {
   const [finished, setFinished] = useState(false);
   const [added, setAdded] = useState(null);
   const serial = useRef('0000');
+  const seed = useRef(0);
 
   const def = picked ? SOCKS.find((s) => s.slug === picked) : null;
   const active = phase !== 'line';
@@ -167,6 +169,7 @@ export default function AtelierPage() {
       layoutRef.current = L2;
       stageRef.current.open(sdef, m, { ...L2 });
       serial.current = String(1000 + Math.floor(Math.random() * 9000));
+      seed.current = Math.floor(Math.random() * 1e6);
       setPhase('pull');
     },
     [computeLayout, liftSock, setPhase]
@@ -246,6 +249,7 @@ export default function AtelierPage() {
       hole: holeOf(h),
       laborMs: Math.round(h.laborMs),
       serial: serial.current,
+      unravelSeed: seed.current,
       outline: stage.outlineImage(110, 150).toDataURL('image/png')
     };
     // the sock flies from the peg into the basket
@@ -267,6 +271,7 @@ export default function AtelierPage() {
     >
       <div ref={roomRef} className="atl__room" onPointerMove={onPointerMove}>
         <div className="atl__floor" aria-hidden="true" />
+        <LaborCounter className="atl__counter" />
         <Clothesline items={products} onPick={pick} picked={picked} apiRef={clApi} variant="stage" className="atl__line" />
         <canvas
           ref={canvasRef}

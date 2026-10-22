@@ -99,7 +99,7 @@ export default function LaundryDay() {
   return (
     <section className="laundry-sec" aria-labelledby="laundry-cap">
       <p id="laundry-cap" className="laundry-sec__cap">
-        Laundry day, as seen by the sock.
+        Laundry Day.
       </p>
       <div ref={box} className="laundry">
       {still ? (

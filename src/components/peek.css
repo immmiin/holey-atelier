@@ -1,0 +1,41 @@
+.peek {
+  position: relative;
+}
+.peek__alt {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  clip-path: circle(0 at 50% 50%);
+}
+
+.peek-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 6px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+  font-weight: 900;
+  font-size: 0.8rem;
+  rotate: 2deg;
+}
+.peek-hint__hole {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: radial-gradient(circle, var(--ink) 0 40%, var(--pink) 41%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .peek-hint {
+    animation: peek-hint 2.4s ease-in-out infinite;
+  }
+}
+@keyframes peek-hint {
+  50% {
+    translate: 0 -3px;
+  }
+}

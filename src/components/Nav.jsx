@@ -60,7 +60,8 @@ const links = [
   { to: '/shop', label: 'Shop' },
   { to: '/about', label: 'About' },
   { to: '/faq', label: 'FAQ' },
-  { to: '/atelier', label: 'The Atelier' }
+  { to: '/atelier', label: 'The Atelier' },
+  { to: '/archive', label: 'Archive' }
 ];
 
 function MenuTile({ p, onClose }) {

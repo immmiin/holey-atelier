@@ -140,3 +140,84 @@ export function printerStep() {
   o.start(t);
   o.stop(t + 0.06);
 }
+
+/** paper tearing: a quick run of crackly, high-passed bursts that sweep upward */
+export function rip(strength = 1) {
+  const a = live();
+  if (!a) return;
+  const t = a.currentTime;
+  const n = 9 + Math.floor(Math.random() * 5);
+  for (let i = 0; i < n; i++) {
+    const at = t + i * (0.012 + Math.random() * 0.014);
+    burst(a, at, 0.018 + Math.random() * 0.02, 1400 + i * 260 + Math.random() * 500, 1.4, (0.22 + Math.random() * 0.2) * strength, 'bandpass');
+  }
+  burst(a, t, 0.16, 3200, 0.7, 0.12 * strength, 'highpass');
+}
+
+/** a light papery tap when a torn tab lands */
+export function tap() {
+  const a = live();
+  if (!a) return;
+  burst(a, a.currentTime, 0.03, 900 + Math.random() * 300, 1.5, 0.18);
+}
+
+let rumble: { gain: GainNode; lp: BiquadFilterNode; osc: OscillatorNode } | null = null;
+
+/** the washer drum: a low rumble whose loudness and pitch follow its speed (0–1) */
+export function setRumble(level: number) {
+  const a = live();
+  if (!a) return;
+  if (!rumble) {
+    const src = a.createBufferSource();
+    src.buffer = noise;
+    src.loop = true;
+    const lp = a.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = 140;
+    lp.Q.value = 1.2;
+    const osc = a.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = 38;
+    const og = a.createGain();
+    og.gain.value = 0.5;
+    const gain = a.createGain();
+    gain.gain.value = 0;
+    src.connect(lp).connect(gain);
+    osc.connect(og).connect(gain);
+    gain.connect(master!);
+    src.start();
+    osc.start();
+    rumble = { gain, lp, osc };
+  }
+  const x = Math.max(0, Math.min(1, level));
+  rumble.gain.gain.setTargetAtTime(0.55 * Math.pow(x, 1.3), a.currentTime, 0.08);
+  rumble.lp.frequency.setTargetAtTime(110 + 260 * x, a.currentTime, 0.1);
+  rumble.osc.frequency.setTargetAtTime(32 + 30 * x, a.currentTime, 0.1);
+}
+
+/** a detent on the washer dial */
+export function dialClick() {
+  const a = live();
+  if (!a) return;
+  burst(a, a.currentTime, 0.014, 3800, 3, 0.35);
+  burst(a, a.currentTime + 0.004, 0.02, 1200, 2, 0.12);
+}
+
+/** the washer door pops open */
+export function doorPop() {
+  const a = live();
+  if (!a) return;
+  const t = a.currentTime;
+  const o = a.createOscillator();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(320, t);
+  o.frequency.exponentialRampToValueAtTime(90, t + 0.12);
+  const g = a.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.5, t + 0.005);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+  o.connect(g).connect(master!);
+  o.start(t);
+  o.stop(t + 0.2);
+  burst(a, t, 0.05, 2400, 1, 0.2);
+}

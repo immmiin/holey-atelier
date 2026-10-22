@@ -1,0 +1,126 @@
+.arc {
+  padding: calc(var(--nav-h) + var(--space-1)) 0 var(--space-3);
+  background: var(--cream);
+  min-height: 100svh;
+}
+.arc__head {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+.arc__counter {
+  margin: 4px 0 0;
+}
+.arc__grid {
+  list-style: none;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 48px 22px;
+  /* every row hangs on a line */
+  --row: 344px;
+  background: repeating-linear-gradient(180deg, transparent 0 21px, var(--ink) 21px 23.5px, transparent 23.5px var(--row));
+}
+.arc__item {
+  display: grid;
+  justify-items: center;
+  height: 296px;
+}
+.arc__card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 30px 10px 12px;
+  text-decoration: none;
+  transform: rotate(var(--tilt));
+  transform-origin: 50% 12px;
+  transition: transform 0.4s var(--spring);
+}
+.arc__card:hover,
+.arc__card:focus-visible {
+  transform: rotate(0) translateY(4px);
+}
+.arc__peg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
+  width: 14px;
+  height: 30px;
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+  background: var(--peg);
+  z-index: 2;
+}
+.piece {
+  display: block;
+  filter: drop-shadow(3px 5px 0 rgba(26, 15, 31, 0.18));
+}
+.arc__serial {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+.arc__meta {
+  display: flex;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+.arc__price {
+  padding: 1px 10px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  font-weight: 900;
+}
+.arc__more,
+.arc__note,
+.arc__empty {
+  text-align: center;
+  font-weight: 800;
+  padding: 24px 0;
+}
+.arc__empty {
+  font-family: var(--f-display);
+  font-size: var(--fs-h3);
+  padding: 80px var(--pad);
+}
+@media (max-width: 560px) {
+  .arc__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 10px;
+    --row: 332px;
+  }
+}
+
+/* a shared receipt */
+.share__grid {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  justify-content: center;
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .share__grid {
+    grid-template-columns: auto auto;
+  }
+}
+.share__piece {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin: 0;
+  font-weight: 900;
+}
+.share__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}

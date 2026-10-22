@@ -1,8 +1,9 @@
+import { Link } from 'react-router';
 import Btn from '../components/Btn.jsx';
 import BounceText from '../components/motion/BounceText.jsx';
 import Pop from '../components/motion/Pop.jsx';
 import Tape from '../components/Tape.jsx';
-import { products } from '../data/products.js';
+import { products, sockSrc } from '../data/products.js';
 import useTitle from '../lib/useTitle.js';
 import './pages.css';
 
@@ -55,17 +56,17 @@ export default function About() {
         ))}
       </section>
 
-      <section className="about__photos wrap" aria-label="Field evidence">
-        <figure className="polaroid about__pol">
-          <span className="tape" style={{ top: -12, left: 24, rotate: '-6deg' }} />
-          <img src="/img/lifestyle/life-1-1000.webp" alt="Two feet in pink and green Holey socks, both toes out." width="1000" height="1116" loading="lazy" />
-          <figcaption>technically two separate orders</figcaption>
-        </figure>
-        <figure className="polaroid about__pol">
-          <span className="tape" style={{ top: -12, right: 24, rotate: '5deg' }} />
-          <img src="/img/lifestyle/life-2-1000.webp" alt="A toenail painted with the Holey logo poking through a sock." width="1000" height="1116" loading="lazy" />
-          <figcaption>the toe, unbothered</figcaption>
-        </figure>
+      <section className="about__line wrap" aria-label="The six socks">
+        <ul className="about__socks">
+          {products.map((p, i) => (
+            <li key={p.slug} className="about__sock" style={{ '--sock': p.color, '--tilt': `${[-4, 3, -2, 4, -3, 2][i]}deg` }}>
+              <Link to={`/socks/${p.slug}`}>
+                <img src={sockSrc(p.n, 400)} alt={`${p.name}: one sock, hole included.`} width="400" height="500" loading="lazy" />
+                <span>{p.name}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
         <div className="about__cta card-ink">
           <p className="h3">Ready to commit to one?</p>
           <Btn to="/shop">Shop the sock</Btn>

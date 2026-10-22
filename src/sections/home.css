@@ -1223,3 +1223,259 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* MISSING: tabs that really tear */
+.tab__paper {
+  touch-action: none;
+  cursor: grab;
+  transform-origin: 50% 0;
+}
+.missing__floor {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+.tab__piece {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  border: var(--line-thin) dashed var(--ink);
+  font-weight: 900;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  box-shadow: 3px 4px 0 rgba(26, 15, 31, 0.25);
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  will-change: transform;
+}
+.tab__piece span {
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+@media (max-width: 767px) {
+  .tab__piece {
+    font-size: 0.62rem;
+  }
+}
+
+.teaser__counter {
+  margin-top: clamp(8px, 1.5vw, 20px);
+}
+.teaser {
+  max-height: none;
+}
+
+/* ================= the washer you can spin ================= */
+.washer {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.machine__knob {
+  padding: 0;
+  cursor: grab;
+  touch-action: none;
+}
+.machine__knob:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+.porthole__glass {
+  touch-action: none;
+  cursor: grab;
+  transform-origin: 0% 50%;
+  transition: transform 0.6s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.porthole__glass:active {
+  cursor: grabbing;
+}
+.porthole__drum {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+.washer.is-open .porthole__glass {
+  /* the door pops open on its hinge */
+  transform: perspective(700px) rotateY(-62deg);
+}
+/* lens: the pile of lost socks behind the glass */
+.porthole__lost {
+  background: radial-gradient(circle at 50% 40%, #fbe0e8, var(--pink) 70%);
+  border-radius: 50%;
+  overflow: hidden;
+}
+.porthole__lost img {
+  position: absolute;
+  width: 34%;
+  height: auto;
+  filter: drop-shadow(2px 3px 0 rgba(26, 15, 31, 0.3));
+}
+.porthole__lost img:nth-child(1) { left: 6%; top: 46%; rotate: -70deg; }
+.porthole__lost img:nth-child(2) { left: 30%; top: 52%; rotate: 20deg; }
+.porthole__lost img:nth-child(3) { left: 56%; top: 46%; rotate: 80deg; }
+.porthole__lost img:nth-child(4) { left: 18%; top: 30%; rotate: 140deg; }
+.porthole__lost img:nth-child(5) { left: 44%; top: 28%; rotate: -120deg; }
+.porthole__lost img:nth-child(6) { left: 64%; top: 22%; rotate: 30deg; }
+.porthole__lost img:nth-child(7) { left: 30%; top: 8%; rotate: -20deg; }
+.porthole__lost img:nth-child(8) { left: 2%; top: 14%; rotate: 60deg; }
+.porthole__lost b {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  translate: -50% 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* spin complete: one sock comes back, beside the space where its twin should be */
+.washer__out {
+  position: absolute;
+  right: -6%;
+  bottom: -4%;
+  z-index: 4;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--paper);
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  animation: washer-out 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@keyframes washer-out {
+  from {
+    opacity: 0;
+    transform: translate(-60%, -40%) scale(0.4) rotate(-30deg);
+  }
+}
+.washer__pair {
+  display: flex;
+  gap: 4px;
+}
+.washer__returned,
+.washer__gap {
+  width: clamp(64px, 6.5vw, 96px);
+  aspect-ratio: 4 / 5;
+}
+.washer__returned {
+  height: auto;
+  rotate: -8deg;
+  filter: drop-shadow(3px 5px 0 rgba(26, 15, 31, 0.25));
+}
+.washer__gap {
+  border-radius: 12px;
+}
+.washer__ghost {
+  display: grid;
+  place-items: center;
+  background: var(--cream);
+  border: 2px dashed var(--ink);
+  border-radius: 12px;
+}
+.washer__ghost img {
+  position: absolute;
+  inset: 6%;
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  rotate: 8deg;
+  /* a pale, dashed stand-in for the twin */
+  filter: grayscale(1) brightness(1.7) contrast(0.6) drop-shadow(1.5px 0 0 var(--ink)) drop-shadow(-1.5px 0 0 var(--ink)) drop-shadow(0 1.5px 0 var(--ink))
+    drop-shadow(0 -1.5px 0 var(--ink));
+  -webkit-mask: repeating-linear-gradient(135deg, #000 0 7px, rgba(0, 0, 0, 0.25) 7px 11px);
+  mask: repeating-linear-gradient(135deg, #000 0 7px, rgba(0, 0, 0, 0.25) 7px 11px);
+}
+.washer__ghost b {
+  position: absolute;
+  bottom: 6%;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #c9302c;
+  color: var(--paper);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.washer__msg {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: 1.05rem;
+}
+.washer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  margin: 0;
+  font-weight: 800;
+  font-size: 0.88rem;
+}
+.washer__links a {
+  color: var(--green);
+}
+.washer__again {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+@media (max-width: 899px) {
+  .washer__out {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    margin-top: 14px;
+  }
+}
+
+/* lens: the headline's other meaning */
+.hero2__peek {
+  display: block;
+}
+.hero2__alt {
+  display: flex !important;
+  flex-direction: column;
+  font-size: clamp(2.6rem, min(7vw, 11vh), 7.2rem);
+  line-height: 0.92;
+  color: var(--pink);
+  background: var(--green);
+  text-shadow: 4px 4px 0 var(--ink);
+}
+.hero2__hint {
+  margin-top: -6px;
+  justify-self: start;
+}
+
+/* lens on the $9.00 tags */
+.cl__tag-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cl__tag-alt {
+  display: grid;
+  place-items: center;
+  background: var(--hi);
+  color: #c9302c;
+  font-weight: 900;
+  font-size: 0.72rem;
+  line-height: 1.05;
+  text-align: center;
+  border-radius: 6px;
+}

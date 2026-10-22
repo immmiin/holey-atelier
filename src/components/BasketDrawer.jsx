@@ -85,8 +85,8 @@ export default function BasketDrawer() {
                   animate={{ rotate: [-8, 6, -8] }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 />
-                <p className="h3">Nothing in here.</p>
-                <p>Which, frankly, is how most laundry baskets end up.</p>
+                <p className="h3">Your basket has a hole in it.</p>
+                <p>Nothing in here. Which, frankly, is how most laundry baskets end up.</p>
                 <Btn to="/shop" onClick={close}>
                   Find the one
                 </Btn>

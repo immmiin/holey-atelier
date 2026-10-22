@@ -205,3 +205,57 @@
     margin-inline: auto;
   }
 }
+
+/* the punchable wordmark */
+.punch {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+.punch__logo {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: crosshair;
+  line-height: 0;
+}
+.punch__logo:focus-visible {
+  outline: 3px solid var(--hi);
+  outline-offset: 6px;
+}
+.punch__hole {
+  position: absolute;
+  width: calc(26px * var(--s));
+  height: calc(22px * var(--s));
+  translate: -50% -50%;
+  rotate: var(--r);
+  border-radius: 46% 54% 50% 50% / 55% 45% 55% 45%;
+  /* the green footer shows through, with a frayed rim */
+  background: var(--green);
+  box-shadow: inset 2px 3px 0 rgba(0, 0, 0, 0.35), 0 0 0 2px var(--ink), 0 0 0 4px rgba(251, 241, 232, 0.6);
+  animation: punch 0.3s cubic-bezier(0.3, 1.8, 0.5, 1) both;
+}
+@keyframes punch {
+  from {
+    scale: 0.2;
+  }
+}
+.punch__count {
+  margin: 0;
+  color: var(--cream);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+.punch__count b {
+  color: var(--hi);
+}
+.punch .foot__bubble {
+  margin: 0;
+  animation: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .punch__logo {
+    animation: foot-bob 4.5s ease-in-out infinite;
+  }
+}

@@ -1,0 +1,48 @@
+.labor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 12px;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: calc(100% - 2 * var(--pad, 16px));
+  padding: 8px 16px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.labor b {
+  font-weight: 900;
+}
+.labor__wage {
+  color: #c9302c;
+}
+.labor__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2fa15b;
+  box-shadow: 0 0 0 3px rgba(47, 161, 91, 0.25);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .labor__dot {
+    animation: labor-live 2s ease-in-out infinite;
+  }
+}
+@keyframes labor-live {
+  50% {
+    box-shadow: 0 0 0 6px rgba(47, 161, 91, 0.05);
+  }
+}
+@media (max-width: 600px) {
+  .labor {
+    font-size: 0.8rem;
+    border-radius: 16px;
+    padding: 6px 12px;
+  }
+}

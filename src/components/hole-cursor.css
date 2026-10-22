@@ -65,3 +65,8 @@ html.hole-cursor [contenteditable='true'] {
 .hc__threads path:nth-child(3n) {
   stroke: var(--pink);
 }
+
+/* the cursor is a ring now; only peek hotspots reveal anything */
+.hc__hole {
+  display: none;
+}

@@ -1,0 +1,134 @@
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/fonts/Fraunces.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
+/* customer reviews as Atelier thermal receipts */
+.rv {
+  padding-block: var(--space-2) var(--space-3);
+  background: var(--cream);
+}
+.rv__head {
+  margin-bottom: clamp(24px, 3vw, 44px);
+}
+.rv__row {
+  list-style: none;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 28px);
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .rv__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .rv__row {
+    grid-template-columns: 1fr;
+    max-width: 340px;
+  }
+}
+.rv__item {
+  transform: rotate(var(--tilt));
+  filter: drop-shadow(0 8px 10px rgba(26, 15, 31, 0.14)) drop-shadow(0 1px 1px rgba(26, 15, 31, 0.12));
+  transition: transform 0.4s var(--spring);
+}
+.rv__item:hover {
+  transform: rotate(0) translateY(-4px);
+}
+.rv__paper {
+  padding: 20px 18px 26px;
+  color: #241a26;
+  font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  font-size: 11.5px;
+  line-height: 1.55;
+  background-color: #fffcf6;
+  background-image:
+    linear-gradient(90deg, rgba(60, 40, 30, 0.07), rgba(60, 40, 30, 0) 8%, rgba(60, 40, 30, 0) 92%, rgba(60, 40, 30, 0.06)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* torn zig-zag bottom edge */
+  --t: 9px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--t)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--t) * 2) var(--t) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--t)) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--t) * 2) var(--t) repeat-x;
+}
+.rv__paper p {
+  margin: 0;
+}
+.rv__paper hr {
+  border: 0;
+  border-top: 1.5px dashed rgba(36, 26, 38, 0.45);
+  margin: 10px 0;
+}
+.rv__house {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.rv__meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px !important;
+  font-size: 10px;
+}
+.rv__line {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.rv__line span:last-child {
+  font-weight: 700;
+}
+.rv__line i {
+  flex: 1;
+  border-bottom: 1.5px dotted rgba(36, 26, 38, 0.45);
+  transform: translateY(-3px);
+}
+.rv__line.is-red {
+  color: #c9302c;
+}
+.rv__note {
+  margin: 4px 0 8px;
+  font-family: var(--f-body);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.rv__stars {
+  font-size: 15px;
+  letter-spacing: 0.1em;
+}
+.rv__lost {
+  opacity: 0.35;
+}
+.rv__aside {
+  font-size: 10px;
+  opacity: 0.7;
+}
+.rv__who {
+  margin-top: 8px !important;
+  font-weight: 700;
+}
+.rv__barcode {
+  display: block;
+  height: 34px;
+  margin: 14px 0 6px;
+  background: repeating-linear-gradient(90deg, #241a26 0 2px, transparent 2px 4px, #241a26 4px 5px, transparent 5px 8px, #241a26 8px 11px, transparent 11px 12px);
+}
+.rv__foot {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { products } from '../data/products.js';
 import Btn from './Btn.jsx';
 import { Instagram, TikTok, XLogo } from './Icons.jsx';
+import HolePunchLogo from './HolePunchLogo.jsx';
 import './footer.css';
 
 function Report() {
@@ -102,6 +103,7 @@ export default function Footer() {
             <li><Link to="/about">About</Link></li>
             <li><Link to="/faq">FAQ</Link></li>
             <li><Link to="/atelier">The Atelier</Link></li>
+            <li><Link to="/archive">Archive</Link></li>
             <li><Link to="/contact">Contact</Link></li>
           </TagList>
           <TagList title="Fine print" tilt={-1.5}>
@@ -109,7 +111,7 @@ export default function Footer() {
             <li><Link to="/legal/privacy">Privacy (Toes Excluded)</Link></li>
             <li><Link to="/legal/returns">Returns &amp; Feelings</Link></li>
           </TagList>
-          <img className="foot__bubble" src="/logo/holey_05_bubble-pink.svg" alt="Holey" width="1620" height="930" loading="lazy" />
+          <HolePunchLogo />
         </div>
 
         <div className="foot__bottom">

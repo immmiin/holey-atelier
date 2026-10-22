@@ -21,6 +21,8 @@ export interface Order {
   id: string;
   date: string;
   lines: ReceiptLine[];
+  /** true while the serial is only local (the Archive hasn't confirmed it yet) */
+  local?: boolean;
 }
 
 export const RECEIPT_W = 320;
@@ -47,6 +49,11 @@ export function split(l: ReceiptLine) {
 }
 
 export const orderTotal = (o: Order) => o.lines.reduce((t, l) => t + l.price, 0);
+export const orderLaborMs = (o: Order) => o.lines.reduce((t, l) => t + (l.laborMs ?? 0), 0);
+const hours = (ms: number) => {
+  const s = Math.round(ms / 1000);
+  return `${Math.floor(s / 3600)}h ${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}m ${String(s % 60).padStart(2, '0')}s`;
+};
 
 export async function receiptFontsReady() {
   await Promise.all([
@@ -235,7 +242,54 @@ export async function drawReceipt(ctx: CanvasRenderingContext2D | null, o: Order
   text('YOUR HANDS. OUR PREMIUM.', W / 2, y + 10, `700 10.5px ${MONO}`, { align: 'center', track: 0.9 });
   y += 16;
   text('NO REFUNDS ON FEELINGS.', W / 2, y + 10, `700 10.5px ${MONO}`, { align: 'center', track: 0.9 });
-  y += 28;
+  y += 30;
+
+  // ---------------- perforation, then the artisan's copy: a payslip
+  const perf = y;
+  ops.push((c) => {
+    c.strokeStyle = 'rgba(36,26,38,0.55)';
+    c.lineWidth = 1.5;
+    c.setLineDash([3, 4]);
+    c.beginPath();
+    c.moveTo(10, perf);
+    c.lineTo(W - 10, perf);
+    c.stroke();
+    c.setLineDash([]);
+    c.font = `400 10px ${MONO}`;
+    c.fillStyle = 'rgba(36,26,38,0.6)';
+    c.textAlign = 'center';
+    c.fillText('✂  tear here', W / 2, perf - 6);
+  });
+  holes.push([0, perf, 7], [W, perf, 7]);
+  y += 22;
+  text('ARTISAN COPY', W / 2, y + 14, `900 15px ${LUX}`, { align: 'center', track: 4 });
+  y += 20;
+  text('— PAYSLIP —', W / 2, y + 12, `400 10.5px ${MONO}`, { align: 'center', track: 3, alpha: 0.75 });
+  y += 24;
+  const pay: [string, string][] = [
+    ['Artisan', 'You'],
+    ['Pay period', d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })],
+    ['Hours worked', hours(orderLaborMs(o))],
+    ['Rate', '$0.00/hr'],
+  ];
+  for (const [a, b] of pay) leader(a, b);
+  rule();
+  leader('Gross pay', money(0), { bold: true });
+  text('Deductions', PAD, y + 12, `400 11.5px ${MONO}`);
+  y += 18;
+  leader('Brand premium', '−$0.00', { indent: 10 });
+  leader('Exposure', '−$0.00', { indent: 10 });
+  rule(true);
+  text('NET PAY', PAD, y + 26, `900 15px ${LUX}`, { track: 3, color: RED });
+  text('$0.00', W - PAD, y + 32, `900 34px ${LUX}`, { align: 'right', color: RED });
+  y += 50;
+  text('Thank you for your passion.', W / 2, y + 12, `700 11.5px ${MONO}`, { align: 'center' });
+  y += 20;
+  if (o.local) {
+    text('(saved on this device · archive pending)', W / 2, y + 10, `400 9.5px ${MONO}`, { align: 'center', alpha: 0.6 });
+    y += 16;
+  }
+  y += 14;
   const H = Math.ceil(y + 8);
   if (!draw) return H;
 

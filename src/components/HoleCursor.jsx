@@ -58,6 +58,8 @@ function Inner() {
     const pick = (el) => {
       // the Atelier uses the real pointer: the hole would sit right on the thread
       s.text = !!el?.closest?.(TEXTY) || !!el?.closest?.('[data-cursor="native"]');
+      // over a peek hotspot the ring frames the lens (the hotspot itself does the revealing)
+      s.peek = Number(el?.closest?.('[data-peek]')?.dataset.peek) || 0;
       s.over = !s.text && !!el?.closest?.(INTERACTIVE);
     };
     const onMove = (e) => {
@@ -86,7 +88,7 @@ function Inner() {
     let lastBg = '';
     const tick = () => {
       raf = requestAnimationFrame(tick);
-      s.target = !s.seen || s.text ? SIZE.hidden : s.down ? SIZE.press : s.over ? SIZE.hover : SIZE.idle;
+      s.target = !s.seen || s.text ? SIZE.hidden : s.peek ? s.peek * 2 : s.down ? SIZE.press : s.over ? SIZE.hover : SIZE.idle;
       if (still) {
         s.x = s.tx;
         s.y = s.ty;
@@ -107,7 +109,8 @@ function Inner() {
       const g = ring.current;
       if (!h || !g) return;
       h.style.transform = t;
-      h.style.maskSize = h.style.webkitMaskSize = `${size.toFixed(1)}px ${size.toFixed(1)}px`;
+      // the cursor no longer reveals anything by itself: only peek hotspots open a lens
+      h.style.maskSize = h.style.webkitMaskSize = '0px 0px';
       // the pink layer is pinned to the viewport, so the hole reveals it rather than dragging it along
       const bx = Math.round(-left);
       const by = Math.round(-top);
