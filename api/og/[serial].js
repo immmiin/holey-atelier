@@ -11,9 +11,14 @@ const SOCKS = {
   'grass-stain': ['Grass Stain', 6]
 };
 
-const h = (type, style, ...children) => ({ type, props: { style: { display: 'flex', ...style }, children: children.length === 1 ? children[0] : children } });
+// text gets its own element, so flex can push a label and its amount apart
+const wrap = (c) => (typeof c === 'string' ? { type: 'div', props: { children: c } } : c);
+const h = (type, style, ...children) => ({
+  type,
+  props: { style: { display: 'flex', ...style }, children: children.length === 1 ? children[0] : children.map(wrap) }
+});
 const row = (l, r, color = '#241a26') =>
-  h('div', { justifyContent: 'space-between', width: '100%', fontSize: 26, color, borderBottom: '2px dotted rgba(36,26,38,.3)', padding: '6px 0' }, l, r);
+  h('div', { justifyContent: 'space-between', width: '100%', fontSize: 26, color, borderBottom: '2px dashed rgba(36,26,38,.25)', padding: '6px 0' }, l, r);
 
 export default async function handler(request) {
   const url = new URL(request.url);
@@ -34,7 +39,7 @@ export default async function handler(request) {
       h(
         'div',
         { width: 380, height: 520, borderRadius: 28, border: '6px solid #1A0F1F', background: '#F4A9BC', alignItems: 'center', justifyContent: 'center' },
-        { type: 'img', props: { src: `${url.origin}/img/socks/sock-${n}-800.webp`, width: 340, height: 425 } }
+        { type: 'img', props: { src: `${url.origin}/img/socks/og/sock-${n}.png`, width: 340, height: 425 } }
       ),
       h(
         'div',
