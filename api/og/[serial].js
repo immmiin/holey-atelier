@@ -20,7 +20,7 @@ const h = (type, style, ...children) => ({
 const row = (l, r, color = '#241a26') =>
   h('div', { justifyContent: 'space-between', width: '100%', fontSize: 26, color, borderBottom: '2px dashed rgba(36,26,38,.25)', padding: '6px 0' }, l, r);
 
-export default async function handler(request) {
+export async function GET(request) {
   const url = new URL(request.url);
   const serial = decodeURIComponent(url.pathname.split('/').pop() || '');
   let e = null;
@@ -58,4 +58,3 @@ export default async function handler(request) {
   );
 }
 
-export const GET = handler;
