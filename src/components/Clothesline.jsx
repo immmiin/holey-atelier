@@ -17,17 +17,23 @@ const ROPE_Y = 46;
 const PEG_TOP = 18; // where the peg grips, from the top of the sock box
 const MAX_PULL = 190;
 
-function geometry(width, count, mobile) {
-  const stageW = mobile ? Math.max(width, count * 156 + 70) : width;
-  const pad = mobile ? 34 : Math.max(36, width * 0.035);
+/* variant: 'default' (shop), 'teaser' (home: calm, hangs straight), 'stage' (/atelier: bigger, all in view) */
+function geometry(width, count, mobile, variant = 'default') {
+  const fit = variant === 'stage';
+  const stageW = mobile && !fit ? Math.max(width, count * 156 + 70) : width;
+  const pad = mobile ? (fit ? 18 : 34) : Math.max(36, width * 0.035);
   const slot = (stageW - pad * 2) / count;
-  const sockW = Math.min(mobile ? 128 : 200, slot * (mobile ? 0.82 : 0.7));
+  const maxW = fit ? 240 : mobile ? 128 : 200;
+  // on a phone the stage line lets the (mostly transparent) image boxes overlap, so the socks read larger
+  const sockW = Math.min(maxW, slot * (mobile ? (fit ? 1.45 : 0.82) : fit ? 0.8 : 0.7));
   const sockH = sockW * 1.25;
-  const tagH = 64;
+  const tagH = fit && mobile ? 0 : 64;
+  const sag = variant === 'default' ? 0.085 : 0.05;
   // room for the sag (weighted rope dips ~9% of its span) + swing
   // phones: tighter bottom margin (desktop value unchanged)
-  const height = ROPE_Y + sockH + tagH + (stageW - pad * 2) * 0.085 + (mobile ? 14 : 70);
-  return { stageW, pad, slot, sockW, sockH, height };
+  const bottom = variant === 'teaser' ? (mobile ? 10 : 24) : mobile ? 14 : 70;
+  const height = ROPE_Y + sockH + tagH + (stageW - pad * 2) * sag + bottom;
+  return { stageW, pad, slot, sockW, sockH, height, slack: variant === 'default' ? 1.025 : 1.01, calm: variant !== 'default' };
 }
 
 function Sock({ p, i, refs, dragged, onHover, onQuickAdd, inCart, onPick, picked }) {
@@ -84,7 +90,7 @@ function Sock({ p, i, refs, dragged, onHover, onQuickAdd, inCart, onPick, picked
 
 /* Atelier mode (home page): `onPick` takes a sock down instead of opening its page; `picked`
    freezes that sock's peg so it can be lifted forward; `apiRef` exposes the live rope. */
-export default function Clothesline({ items, onHover, className = '', onPick, picked = null, apiRef }) {
+export default function Clothesline({ items, onHover, className = '', onPick, picked = null, apiRef, variant = 'default' }) {
   const wrap = useRef(null);
   const stage = useRef(null);
   const rope = useRef(null);
@@ -118,7 +124,7 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
       const w = el.clientWidth;
       const mobile = window.matchMedia('(max-width: 760px)').matches;
       setGeo((g) => {
-        const next = { ...geometry(w, items.length, mobile), mobile, width: w };
+        const next = { ...geometry(w, items.length, mobile, variant), mobile, width: w };
         return g && g.stageW === next.stageW && g.height === next.height ? g : next;
       });
     };
@@ -126,16 +132,16 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [items.length]);
+  }, [items.length, variant]);
 
   // simulate
   useEffect(() => {
     if (!geo) return undefined;
-    const { stageW, pad, sockW, sockH, slot } = geo;
+    const { stageW, pad, sockW, sockH, slot, slack, calm } = geo;
     const still = reducedMotion();
     const x0 = pad;
     const x1 = stageW - pad;
-    const seg = ((x1 - x0) / (N - 1)) * 1.025; // a little slack → sag
+    const seg = ((x1 - x0) / (N - 1)) * slack; // a little slack → sag
     const px = new Float32Array(N);
     const py = new Float32Array(N);
     const ox = new Float32Array(N);
@@ -145,7 +151,7 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
       const t = k / (N - 1);
       px[k] = ox[k] = x0 + (x1 - x0) * t;
       // start already sagging so the first frame isn't a twang
-      py[k] = oy[k] = ROPE_Y + Math.sin(Math.PI * t) * (x1 - x0) * 0.06;
+      py[k] = oy[k] = ROPE_Y + Math.sin(Math.PI * t) * (x1 - x0) * (calm ? 0.035 : 0.06);
     }
     const pins = items.map((_, i) => {
       const x = pad + slot * (i + 0.5);
@@ -153,7 +159,7 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
       weight[k] = 1.6;
       return k;
     });
-    const socks = items.map((_, i) => ({ th: (i % 2 ? 1 : -1) * 0.04, om: 0, vx: 0, vy: 0, rest: null }));
+    const socks = items.map((_, i) => ({ th: calm ? 0 : (i % 2 ? 1 : -1) * 0.04, om: 0, vx: 0, vy: 0, rest: null }));
     const L = sockH * 0.48;
     let drag = -1;
     const pickedIndex = () => (pickedRef.current ? items.findIndex((p) => p.slug === pickedRef.current) : -1);
@@ -253,7 +259,7 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
         const ay = (vy - s.vy) / dt;
         s.vx = vx;
         s.vy = vy;
-        const wind = Math.sin(time * 1.3 + i * 1.7) * 0.5 + Math.sin(time * 0.53 + i) * 0.35;
+        const wind = (Math.sin(time * 1.3 + i * 1.7) * 0.5 + Math.sin(time * 0.53 + i) * 0.35) * (calm ? 0.18 : 1);
         const acc = -((G + ay) * Math.sin(s.th) + ax * Math.cos(s.th)) / L - 2.6 * s.om + wind;
         s.om = Math.max(-14, Math.min(14, s.om + acc * dt));
         s.th = Math.max(-1.25, Math.min(1.25, s.th + s.om * dt));
@@ -407,8 +413,8 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
   return (
     <div
       ref={wrap}
-      className={`cl ${geo?.mobile ? 'cl--scroll' : ''} ${picked ? 'is-atelier' : ''} ${className}`}
-      data-lenis-prevent={geo?.mobile ? '' : undefined}
+      className={`cl cl--${variant} ${geo?.mobile && variant !== 'stage' ? 'cl--scroll' : ''} ${geo?.mobile ? 'cl--mobile' : ''} ${picked ? 'is-atelier' : ''} ${className}`}
+      data-lenis-prevent={geo?.mobile && variant !== 'stage' ? '' : undefined}
     >
       <div
         ref={stage}

@@ -140,22 +140,3 @@ export function printerStep() {
   o.start(t);
   o.stop(t + 0.06);
 }
-
-/** a soft wax-seal stamp */
-export function stamp() {
-  const a = live();
-  if (!a) return;
-  const t = a.currentTime;
-  const o = a.createOscillator();
-  o.type = 'sine';
-  o.frequency.setValueAtTime(110, t);
-  o.frequency.exponentialRampToValueAtTime(42, t + 0.2);
-  const g = a.createGain();
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(0.9, t + 0.008);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
-  o.connect(g).connect(master!);
-  o.start(t);
-  o.stop(t + 0.3);
-  burst(a, t, 0.09, 380, 0.8, 0.35, 'lowpass');
-}

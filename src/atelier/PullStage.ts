@@ -235,7 +235,7 @@ export class PullStage {
     this.heap.setLength(0, 0);
     this.heap.rebake(0);
     setTension(0);
-    this.canvas.style.cursor = '';
+    this.canvas.dataset.grab = '';
   }
 
   /** basket pressed: stop all labour, keep the scene alive behind the receipt */
@@ -293,8 +293,15 @@ export class PullStage {
     this.baseY = L.baseY;
     // the same peg geometry as the clothesline, scaled up with the sock
     const K = L.imgW / L.smallW;
-    this.peg = pegFor(L.smallW, K);
-    const boxTop = -this.peg.top + this.peg.h - L.imgW * 0.14;
+    // the image box sits exactly where the clothesline sock was lifted to (its peg scaled by K)...
+    const lifted = pegFor(L.smallW, K);
+    const boxTop = -lifted.top + lifted.h - L.imgW * 0.14;
+    // ...but the peg we draw keeps a sensible size: it clips over the rope and bites the cuff
+    const w0 = Math.max(18, Math.min(36, L.imgW * 0.075));
+    const hBase = (w0 * 54) / 26;
+    const cuffTop = boxTop + (m.cuff.y / m.h) * L.imgW * 1.25;
+    const h = Math.max(hBase, (cuffTop + 0.25 * hBase) / 0.75);
+    this.peg = { w: Math.max(w0, (h * 26) / 54 * 0.6), h, top: h * 0.25 };
     // the peg sits on the centre of the image box, as on the clothesline
     this.pivL = { x: m.w / 2, y: -boxTop / this.s };
     this.yw = Math.max(1.5, m.gauge * this.s * 0.95) * tune.yarn;
@@ -661,12 +668,12 @@ export class PullStage {
     if (!this.holding && this.pulling) {
       const near = this.rope1.nearest(q.x, q.y);
       this.hover = !this.finished && (near.dist < this.grabR() || this.heap.hit(q.x, q.y, 6));
-      this.canvas.style.cursor = this.hover ? 'grab' : '';
+      this.canvas.dataset.grab = this.hover ? '1' : '';
     }
   };
   onUp = () => {
     if (this.holding && !this.auto.active) this.release();
-    this.canvas.style.cursor = this.hover ? 'grab' : '';
+    this.canvas.dataset.grab = this.hover ? '1' : '';
   };
   onKey = (e: KeyboardEvent) => {
     if (e.code !== 'Space' || !this.pulling) return;
@@ -734,7 +741,7 @@ export class PullStage {
     this.P = { x, y };
     this.Hd = { x, y };
     if (this.laborStart < 0) this.laborStart = this.now;
-    this.canvas.style.cursor = 'grabbing';
+    this.canvas.dataset.grab = '2';
     return true;
   }
 
@@ -1076,7 +1083,7 @@ export class PullStage {
       ctx.save();
       ctx.globalAlpha = a;
       ctx.fillStyle = '#1F5B3A';
-      ctx.font = `800 ${Math.round(13 * Math.max(0.85, u))}px Nunito, system-ui, sans-serif`;
+      ctx.font = `900 ${Math.round(Math.max(15, 15 * u))}px Nunito, system-ui, sans-serif`;
       ctx.textBaseline = 'middle';
       // label on whichever side of the thread end has room
       const label = 'pull the loose thread';
@@ -1095,10 +1102,9 @@ export class PullStage {
   /** the site's clothes peg (pink, ink outline), scaled up with the sock */
   drawPin(ctx: CanvasRenderingContext2D) {
     const { w, h, top } = this.peg;
-    const k = w / 26;
     ctx.save();
     ctx.translate(-w / 2, -top);
-    ctx.scale(k, k);
+    ctx.scale(w / 26, h / 54);
     ctx.fillStyle = 'rgba(26,15,31,0.15)';
     ctx.beginPath();
     ctx.roundRect(3 + 3, 2 + 4, 20, 50, 7);
@@ -1121,13 +1127,12 @@ export class PullStage {
     ctx.fill();
     ctx.stroke();
     ctx.restore();
-    void h;
   }
 
-  // ------------------------------------------------------------ snapshots for the receipt & certificate
+  // ------------------------------------------------------------ snapshot for the receipt
 
   /** line drawing: the original silhouette faint, what is left of the sock in ink. maxW/maxH in CSS px, drawn at 2× */
-  outlineImage(maxW: number, maxH: number, ghostOnly = false) {
+  outlineImage(maxW: number, maxH: number) {
     const m = this.model!;
     const sc = Math.min(maxW / m.w, maxH / m.h) * 2;
     const w = m.w * sc, h = m.h * sc;
@@ -1142,10 +1147,9 @@ export class PullStage {
     }
     const out = mk(w, h);
     const o = out.getContext('2d')!;
-    o.globalAlpha = ghostOnly ? 0.35 : 0.28;
+    o.globalAlpha = 0.28;
     o.drawImage(outline(full, '#1A0F1F', 1.6), 0, 0);
     o.globalAlpha = 1;
-    if (ghostOnly) return out;
     const tint = mk(w, h), t = tint.getContext('2d')!;
     t.drawImage(rem, 0, 0);
     t.globalCompositeOperation = 'source-in';
@@ -1154,23 +1158,6 @@ export class PullStage {
     o.drawImage(tint, 0, 0);
     o.drawImage(outline(rem, '#1A0F1F', 2.4), 0, 0);
     return out;
-  }
-
-  /** the remaining sock exactly as rendered (photo + live loops), and the heap, at device pixels */
-  artwork() {
-    const sock = mk(this.sockCv.width, this.sockCv.height);
-    if (!this.finished) sock.getContext('2d')!.drawImage(this.sockCv, 0, 0);
-    const heap = mk(this.heap.canvas.width, this.heap.canvas.height);
-    heap.getContext('2d')!.drawImage(this.heap.canvas, 0, 0);
-    return {
-      sock,
-      heap,
-      dpr: this.dpr,
-      s: this.s,
-      pad: this.sockPad,
-      heapBox: { ox: this.heap.ox, oy: this.heap.oy, cx: this.heap.cx, base: this.heap.base, w: this.heap.width, h: this.heap.height },
-      sockBox: { w: this.model!.w * this.s, h: this.model!.h * this.s },
-    };
   }
 
   // ------------------------------------------------------------ debug / test hooks

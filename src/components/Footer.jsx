@@ -101,7 +101,7 @@ export default function Footer() {
             <li><Link to="/shop">Shop all</Link></li>
             <li><Link to="/about">About</Link></li>
             <li><Link to="/faq">FAQ</Link></li>
-            <li><Link to="/#atelier">The Atelier</Link></li>
+            <li><Link to="/atelier">The Atelier</Link></li>
             <li><Link to="/contact">Contact</Link></li>
           </TagList>
           <TagList title="Fine print" tilt={-1.5}>

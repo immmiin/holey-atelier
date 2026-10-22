@@ -19,6 +19,7 @@ const About = lazy(() => import('./pages/About.jsx'));
 const Faq = lazy(() => import('./pages/Faq.jsx'));
 const Contact = lazy(() => import('./pages/Contact.jsx'));
 const Checkout = lazy(() => import('./pages/Checkout.jsx'));
+const AtelierPage = lazy(() => import('./pages/AtelierPage.jsx'));
 const Legal = lazy(() => import('./pages/Legal.jsx'));
 const NotFound = lazy(() => import('./pages/NotFound.jsx'));
 
@@ -84,6 +85,7 @@ function WashedRoutes() {
             <Route path="/faq" element={<Faq />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/atelier" element={<AtelierPage />} />
             <Route path="/legal/:page" element={<Legal />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -115,6 +117,12 @@ function useAtelierSound() {
   }, []);
 }
 
+/* the Atelier is one full screen: no footer under it */
+function SiteFooter() {
+  const { pathname } = useLocation();
+  return pathname.startsWith('/atelier') ? null : <Footer />;
+}
+
 export default function App() {
   useAtelierSound();
   useEffect(() => {
@@ -131,7 +139,7 @@ export default function App() {
         </a>
         <Nav />
         <WashedRoutes />
-        <Footer />
+        <SiteFooter />
         <BasketDrawer />
         <Toast />
         <Grain />

@@ -34,14 +34,14 @@ export default function Hero() {
         <p className="kicker hero2__kicker">
           <span>Est. one sock ago</span>
         </p>
-        <BounceText as="h1" id="hero-title" immediate delay={0.15} text={'One sock.\nOne hole.\nNo notes.'} className="display hero2__title" />
+        <BounceText as="h1" id="hero-title" immediate delay={0.15} text={'One sock.\nOne hole.\nNo refunds.'} className="display hero2__title" />
         <p className="lead hero2__lead">
-          The world’s most premium single sock. Pre-distressed by hand, sold alone, on purpose. <strong>$9.</strong>
+          The world’s most premium single sock, sold alone, on purpose. Now hand-distressed by you. <strong>From $9.</strong>
         </p>
         <div className="hero2__ctas">
-          <Btn to="/shop">Shop the sock</Btn>
-          <Btn to="/#atelier" variant="care" tilt={1.5}>
-            Pull a thread
+          <Btn to="/atelier">Enter the Atelier</Btn>
+          <Btn to="/shop" variant="care" tilt={1.5}>
+            Shop the socks
           </Btn>
         </div>
       </div>

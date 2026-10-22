@@ -12,26 +12,28 @@
   --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
   --red: #c9302c;
   --spring-soft: cubic-bezier(0.3, 1.35, 0.5, 1);
+  --edge: max(32px, 3.5vw);
+}
+
+/* ---------------------------------------------------------------- the room: one screen, no scroll */
+
+.atp {
   position: relative;
-  padding-block: var(--section) clamp(24px, 3vw, 48px);
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--sec-bg, var(--cream));
   transition: background-color 0.6s var(--ease);
-  scroll-margin-top: 90px;
 }
-
-.atl__head {
-  transition: opacity 0.5s var(--ease);
-}
-.atl.is-active .atl__head {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ---------------------------------------------------------------- the room */
-
 .atl__room {
   position: relative;
-  transition: height 0.6s var(--spring-soft);
+  flex: 1;
+  min-height: 0;
+}
+.atp .atl__line {
+  margin-top: clamp(0px, 1.5vh, 18px);
 }
 .atl__stage {
   position: absolute;
@@ -48,8 +50,9 @@
 .atl.is-active .atl__line {
   pointer-events: none;
 }
-.atl.is-active .cl--scroll {
-  overflow-x: hidden;
+/* on phones the stage line has no room for name tags */
+.cl--stage.cl--mobile .cl__tag {
+  display: none;
 }
 
 /* the work floor fades in under the picked sock */
@@ -58,7 +61,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 22%;
+  height: 20%;
   z-index: 0;
   opacity: 0;
   transform: translateY(24px) scaleY(0.6);
@@ -89,9 +92,9 @@
     opacity 0.6s var(--ease);
 }
 .cl.is-atelier .cl__sock:not(.is-picked) .cl__body {
-  transform: translate(calc(var(--par, 0) * -9px), -10px) scale(0.85);
-  filter: blur(2.5px) saturate(0.6);
-  opacity: 0.7;
+  transform: translate(calc(var(--par, 0) * -10px), -14px) scale(0.75);
+  filter: blur(3px) saturate(0.6);
+  opacity: 0.65;
 }
 .cl.is-atelier .cl__sock.is-picked {
   z-index: 4;
@@ -100,6 +103,11 @@
   /* off the line and into the room: no sticker edge, a deep soft shadow instead */
   filter: drop-shadow(10px 26px 18px rgba(26, 15, 31, 0.32));
   transition: filter 0.6s var(--ease);
+}
+.cl.is-atelier .cl__sock.is-picked .cl__peg {
+  /* the canvas draws its own peg at a sensible size */
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 .cl.is-atelier .cl__sock.is-picked .cl__tag {
   opacity: 0;
@@ -117,9 +125,9 @@
 
 .atl__back {
   position: absolute;
-  left: clamp(12px, 2.5vw, 36px);
-  top: 72px;
-  z-index: 5;
+  left: var(--edge);
+  top: 10px;
+  z-index: 6;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -129,7 +137,7 @@
   background: var(--paper);
   box-shadow: var(--shadow-sm);
   font-weight: 900;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   cursor: pointer;
   animation: atl-pop 0.45s var(--spring) both;
 }
@@ -138,13 +146,13 @@
 }
 .atl__msg {
   position: absolute;
-  left: clamp(14px, 2.5vw, 36px);
-  bottom: clamp(14px, 3vh, 30px);
+  left: var(--edge);
+  bottom: clamp(16px, 3.4vh, 34px);
   z-index: 4;
-  max-width: min(32vw, 440px);
+  max-width: min(34vw, 460px);
   margin: 0;
   font-family: var(--f-display);
-  font-size: clamp(22px, 2.9vw, 40px);
+  font-size: clamp(24px, 2.8vw, 40px);
   line-height: 1.02;
   pointer-events: none;
   animation: atl-pop 0.45s var(--spring) both;
@@ -156,13 +164,47 @@
   }
 }
 
+/* added to the basket: a small toast with where to go next */
+.atl__added {
+  position: absolute;
+  right: var(--edge);
+  bottom: clamp(16px, 3.4vh, 34px);
+  z-index: 7;
+  display: grid;
+  gap: 10px;
+  max-width: 340px;
+  padding: 14px 16px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  animation: atl-pop 0.45s var(--spring) both;
+}
+.atl__added p {
+  margin: 0;
+  font-weight: 700;
+}
+.atl__added .wage {
+  color: var(--red);
+  font-weight: 900;
+}
+.atl__added-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.atl__added-actions .abtn {
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
 /* ---------------------------------------------------------------- price tag (HUD) */
 
 .atl__tag {
   position: absolute;
-  right: clamp(12px, 3.5vw, 56px);
+  right: var(--edge);
   top: 70px;
-  width: clamp(150px, 15vw, 210px);
+  width: clamp(180px, 15vw, 224px);
   z-index: 5;
   transform-origin: 50% 0;
   opacity: 0;
@@ -288,20 +330,7 @@
   }
 }
 
-/* ---------------------------------------------------------------- receipt + certificate layer */
-
-.atl-layer {
-  --lux: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
-  --red: #c9302c;
-  position: fixed;
-  inset: 0;
-  z-index: 900;
-  pointer-events: none;
-}
-.atl-layer > * {
-  pointer-events: auto;
-}
+/* ---------------------------------------------------------------- buttons (sticker style, like the site) */
 
 .abtn {
   display: inline-flex;
@@ -351,274 +380,38 @@
   outline-offset: 3px;
 }
 
-/* receipt: a thermal strip feeding out of a slot under the price tag */
-.rc-col {
-  position: absolute;
-  bottom: 0;
-  width: 340px;
-  transform: translateX(-50%);
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  padding: 0 10px 28px;
-  scrollbar-width: none;
-}
-.rc-col::-webkit-scrollbar {
-  display: none;
-}
-.rc-col.is-centered {
-  left: 50%;
-  width: min(100vw, 340px);
-}
-.rc-col.is-inline {
-  position: relative;
-  bottom: auto;
-  transform: none;
-  overflow: visible;
-  margin-inline: auto;
-}
-.rc-slot {
-  position: sticky;
-  top: 0;
-  height: 9px;
-  margin: 0 -2px;
-  border-radius: 0 0 6px 6px;
-  background: linear-gradient(#2a1d2e, var(--ink));
-  box-shadow: 0 2px 6px rgba(26, 15, 31, 0.3);
-  z-index: 2;
-}
-.rc-feed {
-  overflow: hidden;
-  margin-top: -3px;
-}
-.rc-shadow {
-  filter: drop-shadow(0 8px 10px rgba(26, 15, 31, 0.16)) drop-shadow(0 1px 1px rgba(26, 15, 31, 0.12));
-}
-.rc-paper {
-  position: relative;
-  padding: 22px 22px 24px;
-  color: #241a26;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  line-height: 1.55;
-  background-color: #fffcf6;
-  background-image:
-    linear-gradient(90deg, rgba(60, 40, 30, 0.07), rgba(60, 40, 30, 0) 7%, rgba(60, 40, 30, 0) 93%, rgba(60, 40, 30, 0.06)),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-}
-.rc-head {
-  text-align: center;
-}
-.rc-house {
-  font-family: var(--lux);
-  font-weight: 900;
-  font-size: 17px;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  padding-left: 0.32em;
-}
-.rc-sub {
-  margin: 2px 0 12px;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  opacity: 0.75;
-}
-.rc-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 10.5px;
-}
-.rc-rule {
-  border: 0;
-  border-top: 1.5px dashed rgba(36, 26, 38, 0.45);
-  margin: 12px 0;
-}
-.rc-rule-double {
-  border-top: 3px double rgba(36, 26, 38, 0.7);
-}
-.rc-lines {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.rc-lines li {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-.rc-l {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.rc-dots {
-  flex: 1;
-  min-width: 10px;
-  border-bottom: 1.5px dotted rgba(36, 26, 38, 0.45);
-  transform: translateY(-3px);
-}
-.rc-r {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.rc-lines .is-red .rc-r,
-.rc-lines .is-red .rc-l {
-  color: var(--red);
-}
-.rc-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-family: var(--lux);
-  font-weight: 900;
-  font-size: 30px;
-  line-height: 1.1;
-}
-.rc-total span:first-child {
-  font-size: 15px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-.rc-vis {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 10px;
-  margin: 18px 0 4px;
-  min-height: 150px;
-}
-.rc-sil {
-  display: block;
-  height: 150px;
-  width: auto;
-}
-.rc-holebox {
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  min-width: 84px;
-  font-size: 10.5px;
-}
-.rc-hole {
-  border-radius: 50%;
-}
-.rc-remaining {
-  text-align: center;
-  font-size: 10.5px;
-  letter-spacing: 0.06em;
-  margin-bottom: 14px;
-}
-.rc-barcode {
-  display: block;
-  width: 100%;
-  height: 44px;
-  fill: #241a26;
-}
-.rc-code {
-  text-align: center;
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  margin-top: 2px;
-}
-.rc-foot {
-  margin-top: 14px;
-  text-align: center;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.rc-actions {
-  display: grid;
-  gap: 10px;
-  padding: 18px 6px 0;
-  animation: atl-pop 0.4s ease both;
-}
-
-/* certificate */
-.cert-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 950;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  background: rgba(26, 15, 31, 0.45);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  animation: atl-fade 0.3s ease both;
-}
-@keyframes atl-fade {
-  from {
-    opacity: 0;
-  }
-}
-.cert {
-  width: min(92vw, 520px);
-  margin: clamp(16px, 4vh, 40px) auto;
-}
-.cert-paper {
-  position: relative;
-  box-shadow: 0 24px 50px -20px rgba(26, 15, 31, 0.6);
-  animation: atl-pop 0.5s var(--spring) both;
-}
-.cert-canvas {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.cert-seal {
-  position: absolute;
-  height: auto;
-  opacity: 0;
-  pointer-events: none;
-}
-.cert-seal.is-pressing {
-  animation: cert-stamp 0.75s cubic-bezier(0.5, 0, 0.3, 1) 0.1s both;
-}
-@keyframes cert-stamp {
-  0% {
-    opacity: 0;
-    transform: scale(2.4) rotate(-14deg);
-    filter: blur(2px);
-  }
-  55% {
-    opacity: 1;
-    transform: scale(0.9) rotate(4deg);
-    filter: none;
-  }
-  75% {
-    transform: scale(1.04) rotate(2deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(3deg);
-  }
-}
-.cert-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  padding: 18px 0 8px;
-}
-.cert-actions .abtn-link {
-  color: var(--cream);
-}
-
 /* ---------------------------------------------------------------- phones */
 
 @media (max-width: 759px) {
+  .atl {
+    --edge: 10px;
+  }
+  /* docked: a compact tag top-right, under the nav */
   .atl__tag {
-    width: 126px;
-    top: 64px;
-    right: 10px;
+    width: 122px;
+    top: 8px !important;
+    rotate: 0deg !important;
+  }
+  .atl__tag::before {
+    display: none;
   }
   .tag-card {
-    padding: 16px 9px 9px;
+    padding: 14px 9px 9px;
+  }
+  .tag-eyelet {
+    top: 5px;
+    width: 7px;
+    height: 7px;
+  }
+  .tag-house {
+    font-size: 9px;
+  }
+  .tag-name {
+    font-size: 10px;
+  }
+  .tag-price {
+    margin: 4px 0 6px;
+    font-size: 26px;
   }
   .tag-rows {
     font-size: 10.5px;
@@ -628,22 +421,25 @@
     font-size: 12px;
   }
   .atl__msg {
-    left: 12px;
-    right: 12px;
+    right: var(--edge);
     max-width: none;
-    text-align: center;
     font-size: clamp(19px, 5.6vw, 26px);
   }
   .atl__back {
-    top: auto;
-    bottom: 64px;
+    top: 8px;
     font-size: 0.8rem;
     padding: 6px 11px;
+  }
+  .atl__added {
+    left: var(--edge);
+    right: var(--edge);
+    max-width: none;
+    bottom: 12px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .atl__room,
+  .atp,
   .cl__body,
   .atl__floor,
   .atl__tag {
@@ -651,13 +447,28 @@
   }
   .atl__msg,
   .atl__back,
-  .rc-actions,
-  .cert-paper,
+  .atl__added,
   .tag-basket.is-ready {
     animation: none;
   }
-  .cert-seal.is-pressing {
-    animation: none;
-    opacity: 1;
-  }
+}
+
+/* ---------------------------------------------------------------- the real cursor in the Atelier */
+/* the hole cursor would sit right on the thread; here you get the system pointer, grab and all */
+html.hole-cursor [data-cursor='native'],
+html.hole-cursor [data-cursor='native'] * {
+  cursor: default !important;
+}
+html.hole-cursor [data-cursor='native'] button:not(:disabled),
+html.hole-cursor [data-cursor='native'] a,
+html.hole-cursor [data-cursor='native'] .cl__sock {
+  cursor: pointer !important;
+}
+html.hole-cursor .atl__stage[data-grab='1'],
+.atl__stage[data-grab='1'] {
+  cursor: grab !important;
+}
+html.hole-cursor .atl__stage[data-grab='2'],
+.atl__stage[data-grab='2'] {
+  cursor: grabbing !important;
 }

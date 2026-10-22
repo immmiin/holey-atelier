@@ -25,14 +25,18 @@
   --r-lg: 34px;
 
   --pad: clamp(16px, 4vw, 64px);
-  --section: clamp(72px, 10vw, 160px);
+  /* one spacing scale: 64 / 96 / 128 */
+  --space-1: 64px;
+  --space-2: clamp(64px, 7vw, 96px);
+  --space-3: clamp(64px, 9vw, 128px);
+  --section: var(--space-3);
   --max: 1360px;
 
   --f-display: 'Bagel Fat One', 'Arial Rounded MT Bold', system-ui, sans-serif;
   --f-body: 'Nunito', ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --fs-hero: clamp(3.2rem, 9.4vw, 9.5rem);
-  --fs-h2: clamp(2.3rem, 5.6vw, 5.4rem);
+  --fs-h2: clamp(2.2rem, 4.8vw, 4.6rem);
   --fs-h3: clamp(1.5rem, 2.6vw, 2.4rem);
   --fs-lead: clamp(1.08rem, 1.45vw, 1.4rem);
   --fs-body: clamp(0.98rem, 1.05vw, 1.08rem);
@@ -326,4 +330,13 @@ button {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

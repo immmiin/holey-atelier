@@ -1,7 +1,7 @@
 // Flags any page that scrolls sideways, and names the widest offenders.
 import { chromium } from 'playwright';
 const base = process.argv[2] || 'http://localhost:5173';
-const paths = ['/', '/shop', '/socks/heel-yeah', '/socks/grass-stain', '/about', '/faq', '/contact', '/legal/terms', '/checkout', '/nope'];
+const paths = ['/', '/atelier', '/shop', '/socks/heel-yeah', '/socks/grass-stain', '/about', '/faq', '/contact', '/legal/terms', '/checkout', '/nope'];
 const browser = await chromium.launch({ channel: 'chrome' });
 for (const w of [375, 768, 1440]) {
   const page = await (await browser.newContext({ viewport: { width: w, height: 800 } })).newPage();

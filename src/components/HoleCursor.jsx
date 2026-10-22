@@ -41,7 +41,8 @@ const THREADS = threads();
 const MASK = `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><path d='${HOLE}' fill='black'/></svg>`)}")`;
 
 const BOX = 120; // px — max hole size; the hole itself scales inside it
-const SIZE = { idle: 34, hover: 92, press: 74, hidden: 0 };
+// hover stays small so the hole never covers a button's label
+const SIZE = { idle: 34, hover: 46, press: 40, hidden: 0 };
 const INTERACTIVE = 'a, button, [role="button"], label, summary, select, [data-cursor="grow"]';
 const TEXTY = 'input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]), textarea, [contenteditable="true"]';
 
@@ -55,7 +56,8 @@ function Inner() {
     const s = { x: -200, y: -200, tx: -200, ty: -200, size: 0, vSize: 0, target: SIZE.idle, over: false, down: false, text: false, seen: false };
 
     const pick = (el) => {
-      s.text = !!el?.closest?.(TEXTY);
+      // the Atelier uses the real pointer: the hole would sit right on the thread
+      s.text = !!el?.closest?.(TEXTY) || !!el?.closest?.('[data-cursor="native"]');
       s.over = !s.text && !!el?.closest?.(INTERACTIVE);
     };
     const onMove = (e) => {

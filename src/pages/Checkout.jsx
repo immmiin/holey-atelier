@@ -3,18 +3,16 @@ import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
 import Btn from '../components/Btn.jsx';
 import { lineNote, linePrice, useCart } from '../context/CartContext.jsx';
-import Receipt from '../atelier/Receipt.tsx';
-import Certificate from '../atelier/Certificate.tsx';
-import { loadSale } from '../atelier/sale.ts';
-import '@fontsource/jetbrains-mono/400.css';
-import '@fontsource/jetbrains-mono/700.css';
-import '../atelier/atelier.css';
 import { bySlug, money, sockSrc } from '../data/products.js';
 import { reducedMotion } from '../lib/scroll.js';
 import useTitle from '../lib/useTitle.js';
+import ReceiptPrint from '../atelier/ReceiptPrint.tsx';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/700.css';
+import '../atelier/atelier.css';
 import './checkout.css';
 
-const KEY = 'holey-last-order';
+const KEY = 'holey-last-order-v2';
 
 function readOrder() {
   try {
@@ -24,62 +22,72 @@ function readOrder() {
   }
 }
 
+/** the cart, frozen into an order for the receipt */
+function toOrder(lines) {
+  return {
+    id: `HOL-${String(1000 + Math.floor(Math.random() * 9000))}`,
+    date: new Date().toISOString(),
+    lines: lines.map((l) => {
+      const p = bySlug[l.slug];
+      return {
+        slug: p.slug,
+        n: p.n,
+        name: p.name,
+        base: p.price,
+        price: linePrice(l),
+        hole: l.hole,
+        laborMs: l.laborMs,
+        outline: l.outline
+      };
+    })
+  };
+}
+
+/* Checkout: the order, a few fields filled in good faith, "Place order" — and then the receipt
+   (the only place it prints). */
 export default function Checkout() {
-  useTitle('Order placed');
-  const { items, lines, clear } = useCart();
+  useTitle('Checkout');
+  const { lines, clear } = useCart();
   const navigate = useNavigate();
-  // freeze the cart into an order the moment we land here
-  const [order] = useState(() => {
-    if (items.length) {
-      const o = { id: `HOLEY-${String(Date.now()).slice(-6)}`, items: [...items], lines: lines.map((l) => ({ ...l })) };
-      try {
-        sessionStorage.setItem(KEY, JSON.stringify(o));
-      } catch {
-        /* fine */
-      }
-      return o;
+  const [order, setOrder] = useState(() => (lines.length ? null : readOrder()));
+  const [phase, setPhase] = useState(() => (lines.length ? 'form' : readOrder() ? 'printed' : 'empty'));
+  const [shipTo, setShipTo] = useState('');
+
+  const place = (e) => {
+    e.preventDefault();
+    const o = toOrder(lines);
+    try {
+      sessionStorage.setItem(KEY, JSON.stringify(o));
+    } catch {
+      /* the receipt still prints */
     }
-    return readOrder();
-  });
-  const [phase, setPhase] = useState(order && items.length ? 'processing' : 'done');
-  // socks hand-distressed at the Atelier get their own receipt (and certificate) at checkout
-  const [sales, setSales] = useState([]);
-  const [cert, setCert] = useState(null);
-  useEffect(() => {
-    const done = (order?.lines || []).filter((l) => l.serial);
-    if (!done.length) return undefined;
-    let alive = true;
-    Promise.all(done.map((l) => loadSale(l.slug, l.serial))).then((list) => alive && setSales(list.filter(Boolean)));
-    return () => {
-      alive = false;
-    };
-  }, [order]);
+    setOrder(o);
+    clear();
+    setPhase('counting');
+  };
 
   useEffect(() => {
-    if (items.length) clear();
-    if (phase !== 'processing') return undefined;
-    const t = setTimeout(() => setPhase('done'), reducedMotion() ? 0 : 1900);
+    if (phase !== 'counting') return undefined;
+    const t = setTimeout(() => setPhase('printed'), reducedMotion() ? 0 : 1100);
     return () => clearTimeout(t);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [phase]);
 
-  if (!order) {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [phase]);
+
+  if (phase === 'empty') {
     return (
       <section className="co co--empty">
         <img src="/logo/holey_04_nail-icon-holey.svg" alt="" className="co__empty-icon" />
         <h1 className="h2">Nothing to check out.</h1>
         <p className="lead">Your basket is empty, which is also very on brand.</p>
-        <Btn to="/shop">Find the one</Btn>
+        <Btn to="/atelier">Pull a thread</Btn>
       </section>
     );
   }
 
-  const orderLines = order.lines || order.items.map((slug) => ({ slug }));
-  const lineOf = (slug) => orderLines.find((l) => l.slug === slug) || { slug };
-  const socks = order.items.map((s) => bySlug[s]).filter(Boolean);
-  const total = socks.reduce((t, p) => t + linePrice(lineOf(p.slug)), 0);
-  const lead = socks[0];
-
-  if (phase === 'processing') {
+  if (phase === 'counting') {
     return (
       <section className="co co--processing" aria-live="polite">
         <motion.img
@@ -95,84 +103,85 @@ export default function Checkout() {
     );
   }
 
+  if (phase === 'printed' && order) {
+    return (
+      <section className="cko cko--printed">
+        <div className="cko__head">
+          <p className="kicker">Order {order.id} · placed</p>
+          <h1 className="h2">Here’s your receipt.</h1>
+          <p className="lead">Your sock is on its way to find its other half. Estimated reunion: never, probably.</p>
+        </div>
+        <ReceiptPrint order={order} onBack={() => navigate('/atelier')} />
+      </section>
+    );
+  }
+
+  const subtotal = lines.reduce((t, l) => t + linePrice(l), 0);
+
   return (
-    <section className="co" style={{ '--sock': lead?.color || 'var(--pink)' }}>
-      <div className="co__stage" aria-hidden="true">
-        <svg className="co__path" viewBox="0 0 600 160" preserveAspectRatio="none">
-          <path d="M40 120 C 180 -20, 380 220, 560 50" />
-        </svg>
-        <motion.div
-          className="co__sock"
-          initial={{ x: '-40%', rotate: -18, opacity: 0 }}
-          animate={{ x: ['-40%', '0%', '-6%'], rotate: [-18, 6, -4], opacity: 1, y: [0, -14, 0] }}
-          transition={{ default: { duration: 3.2, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }, opacity: { duration: 0.6 } }}
-        >
-          {lead && <img src={sockSrc(lead.n, 400)} alt="" />}
-        </motion.div>
-        <motion.div
-          className="co__ghost"
-          animate={{ opacity: [0.35, 0.9, 0.35], scale: [1, 1.03, 1] }}
-          transition={{ duration: 2.4, repeat: Infinity }}
-        >
-          {lead && <img src={sockSrc(lead.n, 400)} alt="" />}
-          <span>?</span>
-        </motion.div>
+    <section className="cko">
+      <div className="cko__head">
+        <p className="kicker">Checkout</p>
+        <h1 className="h2">Almost yours.</h1>
       </div>
+      <div className="cko__grid">
+        <form className="cko__form" onSubmit={place}>
+          <h2 className="h3">Details, roughly</h2>
+          <label className="cko__field">
+            <span>Name on the sock</span>
+            <input value="You" readOnly aria-readonly="true" />
+          </label>
+          <label className="cko__field">
+            <span>Ship to</span>
+            <input value={shipTo} onChange={(e) => setShipTo(e.target.value)} placeholder="Wherever the other one went" autoComplete="off" />
+          </label>
+          <label className="cko__field">
+            <span>Card number</span>
+            <input value="•••• •••• •••• 0000" readOnly aria-readonly="true" />
+            <small>Payment is taken in good faith. Declined, then approved.</small>
+          </label>
+          <label className="cko__check">
+            <input type="checkbox" defaultChecked required />
+            <span>I understand this is one sock.</span>
+          </label>
+          <button type="submit" className="abtn abtn-primary cko__place">
+            Place order · {money(subtotal)}
+          </button>
+        </form>
 
-      <motion.div className="co__copy" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}>
-        <p className="kicker co__kicker">Order {order.id} · confirmed</p>
-        <h1 className="co__title">Your sock is on its way to find its other half.</h1>
-        <p className="co__sub lead">
-          Estimated reunion: never, probably. We'll email you if it gets close. You were not charged — this is a school project, and the sock is
-          fictional. Its feelings are not.
-        </p>
-      </motion.div>
-
-      <motion.div className="co__receipt" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.4 }}>
-        <ul>
-          {socks.map((p) => (
-            <li key={p.slug}>
-              <span className="co__thumb" style={{ background: p.color }}>
-                <img src={sockSrc(p.n, 400)} alt="" />
-              </span>
-              <span className="co__name">
-                {p.name}
-                <span className="lead">
-                  {lineNote(lineOf(p.slug)) || p.subtitle} · Qty 1
-                </span>
-              </span>
-              <span className="lead">{money(linePrice(lineOf(p.slug)))}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="co__row">
-          <span className="lead">Shipping</span>
-          <span className="lead">Free. It’s light.</span>
-        </div>
-        <div className="co__row co__total">
-          <span>Total</span>
-          <span>{money(total)}</span>
-        </div>
-        <div className="co__row">
-          <span className="lead">Paid with</span>
-          <span className="lead">Good faith (declined, then approved)</span>
-        </div>
-      </motion.div>
-
-      {sales.length > 0 && (
-        <div className="co__atelier">
-          <p className="kicker">Printed at the Atelier</p>
-          <div className="co__receipts">
-            {sales.map((sale) => (
-              <Receipt key={sale.serial} inline sale={sale} onCert={() => setCert(sale)} onAnother={() => navigate('/#atelier')} />
-            ))}
+        <aside className="cko__summary" aria-label="Order summary">
+          <h2 className="h3">Your basket</h2>
+          <ul>
+            {lines.map((l) => {
+              const p = bySlug[l.slug];
+              const note = lineNote(l);
+              return (
+                <li key={l.slug}>
+                  <span className="cko__thumb" style={{ background: p.color }}>
+                    <img src={sockSrc(p.n, 400)} alt="" />
+                  </span>
+                  <span className="cko__name">
+                    {p.name}
+                    <small>{note || `${p.subtitle} · as sold`}</small>
+                  </span>
+                  <span className="cko__price">{money(linePrice(l))}</span>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="cko__row">
+            <span>Shipping</span>
+            <span>Free. It’s light.</span>
           </div>
-        </div>
-      )}
-      {cert && <Certificate sale={cert} onAnother={() => navigate('/#atelier')} onClose={() => setCert(null)} />}
-
-      <div className="co__cta">
-        <Btn to="/shop">Lose another</Btn>
+          <div className="cko__row">
+            <span>Artisan wage</span>
+            <span className="cko__wage">$0.00</span>
+          </div>
+          <div className="cko__row cko__total">
+            <span>Total</span>
+            <span>{money(subtotal)}</span>
+          </div>
+        </aside>
       </div>
     </section>
   );

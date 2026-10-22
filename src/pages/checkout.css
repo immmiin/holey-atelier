@@ -168,17 +168,174 @@
   font-weight: 400;
 }
 
-/* receipts from the Atelier */
-.co__atelier {
-  width: 100%;
-  margin-top: clamp(28px, 4vw, 56px);
-  text-align: center;
+/* ================= checkout → receipt ================= */
+.cko {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding: calc(var(--nav-h) + var(--space-1)) var(--pad) var(--space-3);
 }
-.co__receipts {
+.cko__head {
+  display: grid;
+  gap: 10px;
+  margin-bottom: clamp(24px, 3vw, 44px);
+}
+.cko--printed .cko__head {
+  text-align: center;
+  justify-items: center;
+}
+.cko__grid {
+  display: grid;
+  gap: clamp(20px, 3vw, 40px);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .cko__grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+}
+.cko__form,
+.cko__summary {
+  display: grid;
+  gap: 16px;
+  padding: clamp(18px, 2.4vw, 32px);
+  background: var(--paper);
+  border: var(--line) solid var(--ink);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+}
+.cko__field {
+  display: grid;
+  gap: 6px;
+  font-weight: 800;
+}
+.cko__field input {
+  padding: 12px 14px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: var(--r-sm);
+  background: var(--cream);
+  font: inherit;
+  font-weight: 700;
+}
+.cko__field small {
+  font-weight: 600;
+  opacity: 0.65;
+}
+.cko__check {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-weight: 700;
+}
+.cko__check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--green);
+}
+.cko__place {
+  justify-self: start;
+  font-size: 1.05rem;
+  padding: 14px 24px;
+}
+.cko__summary ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.cko__summary li {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.cko__thumb {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.cko__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.cko__name {
+  display: grid;
+  font-weight: 900;
+}
+.cko__name small {
+  font-weight: 700;
+  opacity: 0.7;
+}
+.cko__price {
+  font-weight: 900;
+}
+.cko__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1.5px dashed rgba(26, 15, 31, 0.3);
+  font-weight: 700;
+}
+.cko__wage {
+  color: #c9302c;
+  font-weight: 900;
+}
+.cko__total {
+  font-family: var(--f-display);
+  font-size: var(--fs-h3);
+  border-top-style: solid;
+}
+
+/* the printer and its paper */
+.rprint {
+  display: grid;
+  justify-items: center;
+}
+.rprint__printer {
+  position: relative;
+  z-index: 2;
+  width: 356px;
+  max-width: 100%;
+  height: 34px;
+  border: var(--line) solid var(--ink);
+  border-radius: 14px 14px 8px 8px;
+  background: var(--green);
+  box-shadow: var(--shadow-sm);
+}
+.rprint__slot {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 6px;
+  height: 6px;
+  border-radius: 4px;
+  background: var(--ink);
+}
+.rprint__feed {
+  overflow: hidden;
+  margin-top: -9px;
+  width: 340px;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.rprint__shadow {
+  filter: drop-shadow(0 8px 10px rgba(26, 15, 31, 0.16)) drop-shadow(0 1px 1px rgba(26, 15, 31, 0.12));
+}
+.rprint__paper {
+  display: block;
+}
+.rprint__actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 24px;
-  margin-top: 14px;
-  text-align: left;
+  gap: 12px;
+  margin-top: 28px;
+  animation: atl-pop 0.4s ease both;
 }

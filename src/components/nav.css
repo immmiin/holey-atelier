@@ -326,3 +326,8 @@
     font-size: 0.7rem;
   }
 }
+.tagmenu__links a.active {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+}

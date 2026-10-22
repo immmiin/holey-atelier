@@ -6,8 +6,9 @@ import { reducedMotion } from '../lib/scroll.js';
 const CartContext = createContext(null);
 const KEY = 'holey-cart-v1';
 
-/* Each line is { slug } for a sock as sold, or { slug, price, hole, serial } for one you
-   hand-distressed at the Atelier. Older saves were plain slug strings. */
+/* Each line is { slug } for a sock as sold, or { slug, price, hole, laborMs, serial, outline } for
+   one you hand-distressed at the Atelier (outline: a small line drawing of what's left, for the
+   receipt). Older saves were plain slug strings. */
 function load() {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || '[]');
@@ -102,20 +103,20 @@ export function CartProvider({ children }) {
     img.remove();
   }, []);
 
-  /* opts.distressed = { price, hole, serial } from the Atelier; opts.openDrawer = false to skip the drawer */
+  /* opts.distressed = { price, hole, laborMs, serial, outline } from the Atelier; opts.openDrawer = false to skip the drawer */
   const add = useCallback(
     async (slug, fromEl, opts = {}) => {
-      const { distressed, openDrawer = true } = opts;
+      const { distressed, openDrawer = true, quiet = false } = opts;
       const had = items.includes(slug);
       if (had && !distressed) {
         say("It's one sock. You already have it.");
         return false;
       }
       const p = bySlug[slug];
-      const line = distressed ? { slug, price: distressed.price, hole: distressed.hole, serial: distressed.serial } : { slug };
+      const line = distressed ? { slug, ...distressed } : { slug };
       const flight = fly(fromEl, p.n);
       setLines((cur) => (had ? cur.map((l) => (l.slug === slug ? line : l)) : [...cur, line]));
-      if (had) say(`Updated: ${distressed.hole}% hole, now ${money(distressed.price)}.`);
+      if (had && !quiet) say(`Updated: ${distressed.hole}% hole, now ${money(distressed.price)}.`);
       await flight;
       setSpin((s) => s + 1);
       if (openDrawer) setTimeout(() => setOpen(true), reducedMotion() ? 0 : 650);

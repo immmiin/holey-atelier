@@ -60,7 +60,7 @@ const links = [
   { to: '/shop', label: 'Shop' },
   { to: '/about', label: 'About' },
   { to: '/faq', label: 'FAQ' },
-  { to: '/#atelier', label: 'The Atelier', hash: true }
+  { to: '/atelier', label: 'The Atelier' }
 ];
 
 function MenuTile({ p, onClose }) {
@@ -205,9 +205,9 @@ export default function Nav() {
               <nav className="tagmenu__links" aria-label="Mobile">
                 <Link to="/" onClick={() => setOpen(false)}>Home</Link>
                 {links.map((l) => (
-                  <Link key={l.to} to={l.to} onClick={() => setOpen(false)}>
+                  <NavLink key={l.to} to={l.to} onClick={() => setOpen(false)}>
                     {l.label}
-                  </Link>
+                  </NavLink>
                 ))}
                 <Link to="/contact" onClick={() => setOpen(false)}>Contact</Link>
               </nav>

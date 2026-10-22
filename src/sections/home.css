@@ -1018,3 +1018,208 @@
     gap: 12px;
   }
 }
+
+/* ================= REVISION: one screen hero, compact Atelier teaser, framed film, shop grid ================= */
+
+/* hero: always fits the first screen */
+.hero2 {
+  min-height: 100svh;
+  padding: calc(var(--nav-h) + clamp(12px, 3vh, 36px)) var(--pad) clamp(20px, 4vh, 44px);
+  align-content: center;
+  gap: clamp(20px, 4vw, 64px);
+}
+@media (min-width: 900px) {
+  .hero2 {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+}
+.hero2__text {
+  gap: clamp(12px, 2.2vh, 24px);
+}
+.hero2__title {
+  /* three lines, never wider than ~55% of the screen, never taller than the fold allows */
+  font-size: clamp(2.6rem, min(7vw, 11vh), 7.2rem);
+  line-height: 0.92;
+  max-width: 55vw;
+}
+.hero2__lead {
+  max-width: 34ch;
+}
+.machine {
+  width: min(440px, 34vw, calc((100svh - var(--nav-h) - 120px) * 0.86));
+}
+.hero2__polaroid {
+  width: clamp(110px, 11vw, 168px);
+}
+.hero2__sticker {
+  width: clamp(80px, 9vw, 130px);
+}
+@media (max-width: 899px) {
+  .hero2 {
+    padding-top: calc(var(--nav-h) + 14px);
+    padding-bottom: 20px;
+    gap: 18px;
+    align-content: start;
+  }
+  .hero2__title {
+    max-width: none;
+  }
+  /* the washer sits under the buttons, smaller */
+  .hero2__machine {
+    order: 0;
+  }
+  .machine {
+    width: min(232px, 58vw, calc((100svh - 560px) * 0.9));
+    min-width: 170px;
+    padding: 10px 12px 18px;
+    gap: 10px;
+    border-radius: 24px 24px 18px 18px;
+  }
+  .machine__panel {
+    padding-bottom: 8px;
+    gap: 8px;
+  }
+  .machine__knob {
+    width: 28px;
+    height: 28px;
+  }
+  .machine__screen {
+    font-size: 0.62rem;
+    padding: 4px 8px;
+  }
+  .machine__lights i {
+    width: 9px;
+    height: 9px;
+  }
+  .porthole__glass {
+    border-width: 8px;
+  }
+  .hero2__polaroid {
+    width: 92px;
+    left: 0;
+    bottom: 0;
+    padding: 6px 6px 22px;
+    font-size: 0.75rem;
+  }
+  .hero2__sticker {
+    width: 72px;
+    right: 4%;
+  }
+  .hero2__ctas .btn {
+    font-size: 0.95rem;
+  }
+}
+
+/* the Atelier teaser: one line, socks hanging straight, ~90vh max */
+.teaser {
+  padding-block: var(--space-2) var(--space-1);
+  max-height: 90svh;
+  overflow: hidden;
+  border-top: var(--line) solid var(--ink);
+  background: var(--cream);
+}
+.teaser__head {
+  display: grid;
+  gap: 16px 48px;
+  align-items: end;
+  margin-bottom: clamp(4px, 1.5vw, 18px);
+}
+@media (min-width: 900px) {
+  .teaser__head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+.teaser__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.teaser__side .lead {
+  max-width: 40ch;
+}
+@media (max-width: 899px) {
+  .teaser {
+    max-height: none;
+  }
+}
+
+/* the film: a framed 16:9 window with a caption, not a full-bleed wall */
+.laundry-sec {
+  padding: var(--space-3) var(--pad);
+  background: var(--cream);
+}
+.laundry-sec__cap {
+  max-width: 1100px;
+  margin: 0 auto 18px;
+  font-family: var(--f-display);
+  font-size: var(--fs-h3);
+  line-height: 1.05;
+}
+.laundry {
+  max-width: 1100px;
+  margin-inline: auto;
+  aspect-ratio: 16 / 9;
+  max-height: none;
+  border: var(--line) solid var(--ink);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+}
+@media (max-width: 767px) {
+  .laundry-sec {
+    padding-block: var(--space-1);
+  }
+  .laundry {
+    border-radius: var(--r);
+    box-shadow: var(--shadow);
+  }
+}
+
+/* the shop grid */
+.shopgrid {
+  padding-block: var(--space-2) var(--space-3);
+  background: var(--sec-bg, var(--cream));
+  transition: background-color 0.6s var(--ease);
+  border-top: var(--line) solid var(--ink);
+}
+.shopgrid__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 40px;
+  margin-bottom: clamp(24px, 3vw, 44px);
+}
+
+/* body copy that holds its own next to the big headings */
+.hero2__lead,
+.teaser__side .lead {
+  font-size: clamp(1.1rem, 1.55vw, 1.45rem);
+}
+/* home shop grid: six across, compact tags */
+.shopgrid .pile {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(14px, 1.6vw, 24px);
+}
+.shopgrid .tagc__body {
+  padding: 26px 10px 10px;
+}
+.shopgrid .tagc__meta {
+  padding: 8px 10px;
+}
+.shopgrid .tagc__name {
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+}
+.shopgrid .tagc__sub {
+  display: none;
+}
+@media (max-width: 1100px) {
+  .shopgrid .pile {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .shopgrid .pile {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
