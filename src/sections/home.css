@@ -1910,3 +1910,9 @@
     width: min(100%, 100cqh);
   }
 }
+@media (min-width: 900px) {
+  /* the twin's empty spot is a hover peek, not a big blank column */
+  .washer__out .washer__gap {
+    width: clamp(36px, 3vw, 48px);
+  }
+}

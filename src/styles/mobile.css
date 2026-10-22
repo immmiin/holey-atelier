@@ -1260,3 +1260,16 @@
     max-width: none;
   }
 }
+@media (max-width: 767px) {
+  /* the polaroid stays on the machine, clear of the spin hint under it */
+  html .hero2__polaroid {
+    bottom: 14%;
+  }
+  /* two CTAs side by side: text only, so both labels fit */
+  html .hero2__ctas .btn svg {
+    display: none;
+  }
+  html .hero2__ctas .btn {
+    letter-spacing: 0.02em;
+  }
+}
