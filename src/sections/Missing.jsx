@@ -8,7 +8,7 @@ import { rip, tap } from '../atelier/sound.ts';
 
 const TABS = 8;
 const PHONE = '1-800-ONE-SOCK';
-const SNAP = 74; // px of pull before the paper gives
+const SNAP = 40; // px of pull before the paper gives
 const G = 2600; // px/s²
 
 /* The poster's phone tabs tear off for real: pull one down (it resists, then snaps), it falls,
@@ -60,6 +60,8 @@ export default function Missing() {
               b.vx = 0;
               b.va = 0;
               b.a = flat;
+              // lying flat: sit on the floor at the new angle's height
+              b.y = box.height - 10 - (Math.abs(Math.cos(flat)) * b.h * 0.5 + Math.abs(Math.sin(flat)) * b.w * 0.5);
               b.rest = true;
             }
           }
@@ -107,21 +109,30 @@ export default function Missing() {
     [loop]
   );
 
-  // ---------------------------------------------------------------- pulling an attached tab
+  // ---------------------------------------------------------------- tearing an attached tab
+  // click/tap: a short wobble, then it snaps off. Drag down: it resists, then gives past SNAP px.
+  const tearNow = (i, el, vel) => {
+    if (!el || el.dataset.tearing) return;
+    el.dataset.tearing = '1';
+    el.classList.add('is-wobble');
+    setTimeout(() => detach(i, el.getBoundingClientRect(), vel), reducedMotion() ? 0 : 150);
+  };
   const onTabDown = (i) => (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();
     e.currentTarget.setPointerCapture(e.pointerId);
-    pull.current = { i, x0: e.clientX, y0: e.clientY, el: e.currentTarget, last: { x: e.clientX, y: e.clientY, t: performance.now() }, v: { x: 0, y: 0 } };
+    pull.current = { i, x0: e.clientX, y0: e.clientY, el: e.currentTarget, moved: 0, last: { x: e.clientX, y: e.clientY, t: performance.now() }, v: { x: 0, y: 0 } };
   };
   const onTabMove = (e) => {
     const p = pull.current;
-    if (!p) return;
+    if (!p || p.held) return;
     const now = performance.now();
     const dt = Math.max(0.008, (now - p.last.t) / 1000);
     p.v = { x: (e.clientX - p.last.x) / dt, y: (e.clientY - p.last.y) / dt };
     p.last = { x: e.clientX, y: e.clientY, t: now };
     const dy = Math.max(0, e.clientY - p.y0);
     const dx = e.clientX - p.x0;
+    p.moved = Math.max(p.moved, Math.hypot(dx, e.clientY - p.y0));
     if (dy > SNAP) {
       // it gives: the tab comes away in your hand
       const r = p.el.getBoundingClientRect();
@@ -131,23 +142,22 @@ export default function Missing() {
       return;
     }
     // resistance: the paper stretches a little, then a little less
-    const s = 22 * (1 - Math.exp(-dy / 40));
+    const s = 18 * (1 - Math.exp(-dy / 26));
     p.el.style.transform = `translateY(${s.toFixed(1)}px) rotate(${Math.max(-6, Math.min(6, dx * 0.06)).toFixed(2)}deg)`;
   };
   const onTabUp = () => {
     const p = pull.current;
     pull.current = null;
-    if (p?.el) {
-      p.el.style.transition = 'transform 0.35s cubic-bezier(.34,1.56,.64,1)';
-      p.el.style.transform = '';
-      setTimeout(() => p.el && (p.el.style.transition = ''), 360);
-    }
-    if (p?.held) release(p);
+    if (!p) return;
+    if (p.held) return release(p);
+    if (p.moved < 8) return tearNow(p.i, p.el, { x: (Math.random() - 0.5) * 240, y: -160 }); // a click or tap
+    p.el.style.transition = 'transform 0.35s cubic-bezier(.34,1.56,.64,1)';
+    p.el.style.transform = '';
+    setTimeout(() => p.el && (p.el.style.transition = ''), 360);
   };
-  const tearByKey = (i) => (e) => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    e.preventDefault();
-    detach(i, e.currentTarget.getBoundingClientRect(), { x: (Math.random() - 0.5) * 300, y: -200 });
+  // keyboard: Enter/Space fire a click with no pointer
+  const onTabClick = (i) => (e) => {
+    if (e.detail === 0) tearNow(i, e.currentTarget, { x: (Math.random() - 0.5) * 300, y: -200 });
   };
 
   // ---------------------------------------------------------------- holding / tossing a torn tab
@@ -251,7 +261,7 @@ export default function Missing() {
                     onPointerMove={onTabMove}
                     onPointerUp={onTabUp}
                     onPointerCancel={onTabUp}
-                    onKeyDown={tearByKey(i)}
+                    onClick={onTabClick(i)}
                     aria-label={`Tear off tab ${i + 1}: ${PHONE}`}
                   >
                     <span>{PHONE}</span>
@@ -267,7 +277,7 @@ export default function Missing() {
         <div className="missing__side">
           <p className="kicker">Notice board</p>
           <p className="h3">If found, do not return it.</p>
-          <p className="lead">It’s happier this way. And honestly, so are we. Pull a tab down to take one. Nobody has called yet.</p>
+          <p className="lead">It’s happier this way. And honestly, so are we. Tear off a tab: tap it, or pull it down. Nobody has called yet.</p>
           <AnimatePresence mode="wait">
             {left === 0 ? (
               <motion.div
@@ -278,7 +288,7 @@ export default function Missing() {
                 transition={{ type: 'spring', stiffness: 380, damping: 12 }}
                 role="status"
               >
-                <p>All tabs taken. Still nobody’s called.</p>
+                <p>All tabs taken. Still no one called.</p>
                 <Btn tone="pink" tilt={2} onClick={reprint}>
                   Print another
                 </Btn>

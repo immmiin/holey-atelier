@@ -1479,3 +1479,233 @@
   text-align: center;
   border-radius: 6px;
 }
+
+/* ================= FINAL: hero fills the first screen ================= */
+.hero2 {
+  --machine-w: min(calc(70svh * 0.9), 100%, 720px);
+  max-width: 1280px;
+  min-height: 100svh;
+  padding: calc(var(--nav-h) + clamp(12px, 2vh, 28px)) clamp(24px, 5vw, 80px) clamp(16px, 3vh, 36px);
+  align-content: center;
+  align-items: center;
+  gap: clamp(24px, 3.5vw, 64px);
+}
+@media (min-width: 900px) {
+  .hero2 {
+    grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+  }
+}
+.hero2__title {
+  font-size: clamp(56px, min(7vw, 12.5vh), 120px);
+  max-width: none;
+}
+.hero2__alt {
+  font-size: clamp(56px, min(7vw, 12.5vh), 120px);
+}
+.hero2__lead {
+  max-width: 420px;
+}
+.hero2__machine {
+  justify-self: center;
+  width: 100%;
+}
+/* the washer is the big visual: ~70vh tall */
+.machine {
+  width: var(--machine-w);
+  max-width: 100%;
+}
+.porthole__glass {
+  width: min(100%, 100cqh);
+}
+.hero2__polaroid {
+  width: calc(var(--machine-w) * 0.3);
+  min-width: 110px;
+  left: calc(50% - var(--machine-w) / 2 - var(--machine-w) * 0.08);
+  bottom: 4%;
+}
+.hero2__sticker {
+  width: calc(var(--machine-w) * 0.22);
+  min-width: 72px;
+  right: calc(50% - var(--machine-w) / 2 - var(--machine-w) * 0.06);
+}
+@media (max-width: 899px) {
+  .hero2 {
+    --machine-w: 85vw;
+    min-height: 0;
+    align-content: start;
+  }
+  .machine {
+    width: 85vw;
+    min-width: 0;
+    padding: 14px 16px 22px;
+    gap: 12px;
+    border-radius: 28px 28px 22px 22px;
+  }
+  .machine__knob {
+    width: 38px;
+    height: 38px;
+  }
+  .machine__screen {
+    font-size: 0.72rem;
+    padding: 6px 10px;
+  }
+  .porthole__glass {
+    border-width: 11px;
+  }
+  .hero2__polaroid {
+    width: 26vw;
+    left: 0;
+    bottom: 2%;
+  }
+  .hero2__sticker {
+    width: 18vw;
+    right: 0;
+  }
+}
+
+/* ================= FINAL: MISSING — one centred composition ================= */
+.missing__inner {
+  max-width: 1200px;
+  margin-inline: auto;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(36px, 5vw, 80px);
+}
+@media (min-width: 900px) {
+  .missing__inner {
+    grid-template-columns: minmax(0, 470px) minmax(0, 460px);
+  }
+}
+.poster {
+  width: 100%;
+  max-width: 470px;
+  justify-self: center;
+  padding: 20px 22px 0;
+  transform: rotate(-2.5deg);
+}
+.poster__title {
+  font-size: clamp(3.2rem, 6.2vw, 5.4rem);
+}
+.poster__sub {
+  margin: 2px 0 10px;
+  font-size: 1rem;
+}
+.poster__photo {
+  width: 52%;
+}
+.poster__facts {
+  margin: 12px 0 6px;
+  font-size: 0.92rem;
+}
+.poster__facts div {
+  grid-template-columns: 9em 1fr;
+}
+.poster__reward {
+  margin: 6px 0 14px;
+  font-size: 1.45rem;
+}
+.poster__tabs {
+  margin-inline: -22px;
+  height: 96px;
+}
+.missing__side {
+  min-height: 0;
+  justify-content: center;
+  align-self: center;
+  max-width: 460px;
+}
+.missing__side .h3 {
+  font-size: clamp(1.9rem, 3vw, 2.8rem);
+}
+/* the tabs: nothing sits on top of them */
+.poster__tabs,
+.tab {
+  position: relative;
+  z-index: 7;
+}
+.tab__paper {
+  position: relative;
+  z-index: 1;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.tab__paper.is-wobble {
+  animation: tab-snap 0.15s ease-in-out both;
+}
+@keyframes tab-snap {
+  0% {
+    transform: rotate(0);
+  }
+  35% {
+    transform: rotate(-6deg) translateY(4px);
+  }
+  70% {
+    transform: rotate(5deg) translateY(8px);
+  }
+  100% {
+    transform: rotate(-2deg) translateY(12px);
+  }
+}
+@media (max-width: 899px) {
+  .missing__inner {
+    justify-items: center;
+  }
+  .poster {
+    width: 88vw;
+    max-width: 88vw;
+  }
+  .poster__tabs {
+    margin-inline: -22px;
+  }
+  .missing__side {
+    max-width: 88vw;
+  }
+}
+
+/* hero: the washer's wrappers span the column, so its width resolves */
+.hero2__machine,
+.washer {
+  width: 100%;
+}
+/* three lines that fit the 45% column (the longest line is ~5.6em) */
+.hero2__title,
+.hero2__alt {
+  font-size: clamp(56px, min(7vw, 12.5vh, calc((min(100vw, 1280px) - 2 * clamp(24px, 5vw, 80px)) * 0.078)), 120px);
+}
+/* MISSING poster: ~590px tall */
+.poster__photo {
+  width: 44%;
+}
+.poster__title {
+  font-size: clamp(3rem, 5.6vw, 4.8rem);
+}
+.poster__facts {
+  margin: 10px 0 4px;
+  gap: 2px;
+  font-size: 0.88rem;
+}
+.poster__reward {
+  margin: 4px 0 12px;
+  font-size: 1.35rem;
+}
+.poster__tabs {
+  height: 88px;
+}
+
+/* wide screens: the hero container grows a little (1280 → 1440), so the washer stays ~70vh */
+.hero2 {
+  --hero-max: clamp(1280px, 75vw, 1440px);
+  max-width: var(--hero-max);
+}
+.hero2__title,
+.hero2__alt {
+  font-size: clamp(56px, min(7vw, 12.5vh, calc((min(100vw, var(--hero-max)) - 2 * clamp(24px, 5vw, 80px)) * 0.074)), 120px);
+}
+
+/* phones: a strip of floor under the notice board for the torn tabs to land on */
+@media (max-width: 899px) {
+  .missing {
+    padding-bottom: calc(var(--space-1) + 120px);
+  }
+}
