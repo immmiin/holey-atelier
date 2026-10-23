@@ -8,7 +8,7 @@ async function call(path, opts = {}) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), TIMEOUT);
   try {
-    const r = await fetch(path, { ...opts, signal: ctrl.signal });
+    const r = await fetch(path, { cache: 'no-store', ...opts, signal: ctrl.signal });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     return await r.json();
   } finally {

@@ -141,18 +141,7 @@ export default function Product() {
         <div className="pdp2__info">
           <p className="pdp2__chip">{p.subtitle}</p>
           <BounceText as="h1" immediate text={p.name} className="display pdp2__title" />
-          <p className="lead">{p.description}</p>
-          <div className="pdp2__label stitched">
-            <p className="kicker">Care label</p>
-            <dl>
-              {p.specs.map(([k, v]) => (
-                <div key={k}>
-                  <dt>{k}</dt>
-                  <dd>{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+          {/* emphasis runs title → price & basket → description → care label */}
           <div className="pdp2__buy">
             <p className="pdp2__price">{money(p.price)}</p>
             <LockedQty />
@@ -163,6 +152,21 @@ export default function Product() {
           <p id="pdp-note" className="small pdp2__note">
             {inCart ? 'Already yours. We only have the one.' : 'Ships alone, as intended. Free returns on the sock, not the feelings.'}
           </p>
+          <p className="pdp2__desc">{p.description}</p>
+          <div className="pdp2__label stitched">
+            <div className="pdp2__label-head">
+              <h2 className="pdp2__label-title">Care label</h2>
+              <p className="pdp2__label-no">{p.careNo}</p>
+            </div>
+            <dl>
+              {p.specs.map(([k, v]) => (
+                <div key={k}>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
       </section>
       <Receipts title="Other people’s receipts." kicker="They bought one too" />

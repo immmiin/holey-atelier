@@ -3,6 +3,7 @@ export const products = [
   {
     slug: 'heel-yeah',
     n: 1,
+    careNo: 'No. 001', // care label style number, unique per sock
     name: 'Heel Yeah',
     subtitle: 'Worn Heel X Pure Confidence',
     color: '#F2A7B5',
@@ -21,6 +22,7 @@ export const products = [
   {
     slug: 'lost-in-laundry',
     n: 2,
+    careNo: 'No. 002',
     name: 'Lost in Laundry',
     subtitle: 'Tumble Dry X Missing Twin',
     color: '#A9C6EE',
@@ -39,6 +41,7 @@ export const products = [
   {
     slug: 'purple-reign',
     n: 3,
+    careNo: 'No. 003',
     name: 'Purple Reign',
     subtitle: 'Ube X Unmatched',
     color: '#D4B8EE',
@@ -57,6 +60,7 @@ export const products = [
   {
     slug: 'big-toe-energy',
     n: 4,
+    careNo: 'No. 004',
     name: 'Big Toe Energy',
     subtitle: 'Left Foot X Right Hole',
     color: '#F6E7A0',
@@ -75,6 +79,7 @@ export const products = [
   {
     slug: 'toe-jam',
     n: 5,
+    careNo: 'No. 005',
     name: 'Toe Jam',
     subtitle: 'Strawberry X Stubbed Toe',
     color: '#F2EADB',
@@ -93,6 +98,7 @@ export const products = [
   {
     slug: 'grass-stain',
     n: 6,
+    careNo: 'No. 006',
     name: 'Grass Stain',
     subtitle: 'Picnic X Knee Slide',
     color: '#C9DEC1',

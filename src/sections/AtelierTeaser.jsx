@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import Clothesline from '../components/Clothesline.jsx';
 import Btn from '../components/Btn.jsx';
@@ -9,6 +10,36 @@ import { products } from '../data/products.js';
 // takes it to the Atelier to be distressed.
 export default function AtelierTeaser() {
   const navigate = useNavigate();
+  const line = useRef(null);
+  const foot = useRef(null);
+
+  // the counter stays in normal flow; its top margin is measured so it sits exactly GAP below the
+  // lowest price tag, whatever the rope's sag at this width (re-measured on resize and as socks settle)
+  useEffect(() => {
+    const GAP = 40;
+    const fit = () => {
+      const l = line.current, f = foot.current;
+      if (!l || !f) return;
+      // mid-animation (the socks dropping in) the tags aren't where they'll rest
+      if (l.getAnimations?.({ subtree: true }).some((a) => a.playState === 'running')) return;
+      const tags = [...l.querySelectorAll('.cl__tag')].map((t) => t.getBoundingClientRect().bottom);
+      if (!tags.length) return;
+      const lowest = Math.max(...tags);
+      const below = l.getBoundingClientRect().bottom - lowest; // room the stage already leaves
+      f.style.marginTop = `${Math.round(GAP - below)}px`;
+    };
+    const ro = new ResizeObserver(fit);
+    if (line.current) ro.observe(line.current);
+    const timers = [400, 1200, 2500, 4000, 6000].map((ms) => setTimeout(fit, ms));
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && [900, 2200, 3600].forEach((ms) => timers.push(setTimeout(fit, ms))));
+    if (line.current) io.observe(line.current);
+    return () => {
+      ro.disconnect();
+      io.disconnect();
+      timers.forEach(clearTimeout);
+    };
+  }, []);
+
   return (
     <section className="teaser" id="line" aria-labelledby="teaser-title">
       <div className="teaser__head wrap">
@@ -21,10 +52,10 @@ export default function AtelierTeaser() {
           <Btn to="/atelier">Enter the Atelier →</Btn>
         </div>
       </div>
-      <div className="wrap teaser__line">
+      <div ref={line} className="wrap teaser__line">
         <Clothesline items={products} variant="teaser" onPick={(p) => navigate(`/atelier?sock=${p.slug}`)} />
       </div>
-      <div className="wrap teaser__foot">
+      <div ref={foot} className="wrap teaser__foot">
         <LaborCounter className="teaser__counter" />
       </div>
     </section>

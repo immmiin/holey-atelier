@@ -24,8 +24,10 @@ function readOrder() {
 }
 
 /** the cart, frozen into an order for the receipt (a local serial until the Archive confirms one) */
-function toOrder(lines) {
+function toOrder(lines, name) {
   return {
+    // the name only ever lives on this device (session storage + the receipt); the Archive gets five numbers
+    name: name.trim() || 'You',
     id: `HOL-${String(1000 + Math.floor(Math.random() * 9000))}`,
     local: true,
     date: new Date().toISOString(),
@@ -54,6 +56,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [order, setOrder] = useState(() => (lines.length ? null : readOrder()));
   const [phase, setPhase] = useState(() => (lines.length ? 'form' : readOrder() ? 'printed' : 'empty'));
+  const [name, setName] = useState('');
   const [shipTo, setShipTo] = useState('');
 
   const save = (o) => {
@@ -66,7 +69,7 @@ export default function Checkout() {
 
   const place = (e) => {
     e.preventDefault();
-    const o = toOrder(lines);
+    const o = toOrder(lines, name);
     save(o);
     setOrder(o);
     clear();
@@ -141,7 +144,7 @@ export default function Checkout() {
       <section className="cko cko--printed">
         <div className="cko__head">
           <p className="kicker">Order {order.id} · placed</p>
-          <h1 className="h2">Here’s your receipt.</h1>
+          <h1 className="h2">{order.name && order.name !== 'You' ? `Here’s your receipt, ${order.name}.` : 'Here’s your receipt.'}</h1>
           <p className="lead">Your sock is on its way to find its other half. Estimated reunion: never, probably.</p>
         </div>
         <ReceiptPrint
@@ -167,17 +170,13 @@ export default function Checkout() {
           <h2 className="h3">Details, roughly</h2>
           <label className="cko__field">
             <span>Name on the sock</span>
-            <input value="You" readOnly aria-readonly="true" />
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="You" maxLength={40} autoComplete="name" />
           </label>
           <label className="cko__field">
             <span>Ship to</span>
             <input value={shipTo} onChange={(e) => setShipTo(e.target.value)} placeholder="Wherever the other one went" autoComplete="off" />
           </label>
-          <label className="cko__field">
-            <span>Card number</span>
-            <input value="•••• •••• •••• 0000" readOnly aria-readonly="true" />
-            <small>Payment is taken in good faith. Declined, then approved.</small>
-          </label>
+          <p className="cko__note">Payment is taken in good faith. Declined, then approved.</p>
           <label className="cko__check">
             <input type="checkbox" defaultChecked required />
             <span>I understand this is one sock.</span>

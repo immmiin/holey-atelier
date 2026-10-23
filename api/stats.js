@@ -6,7 +6,7 @@ export async function GET() {
   if (!store) return unavailable();
   try {
     await ensureSeeded(store);
-    return json(await readStats(store), 200, { 'cache-control': 'public, max-age=0, s-maxage=10, stale-while-revalidate=30' });
+    return json(await readStats(store), 200, { 'cache-control': 'public, max-age=0, s-maxage=5' });
   } catch {
     return unavailable();
   }

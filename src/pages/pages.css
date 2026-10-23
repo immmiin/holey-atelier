@@ -831,3 +831,76 @@
     padding-top: 11px;
   }
 }
+
+/* ---- product page type hierarchy: title → price & basket → description → care label ---- */
+.pdp2__title {
+  line-height: 0.98;
+  /* room for the descenders (and the offset shadow) before the price row */
+  margin-bottom: 14px;
+}
+.pdp2__price {
+  font-size: clamp(2.2rem, 3vw, 2.8rem);
+}
+.pdp2__note {
+  margin-top: -6px;
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+.pdp2__desc {
+  margin: 6px 0 0;
+  max-width: 52ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+/* the care label reads like a sewn-in garment tag: its title and style number on one header line */
+.pdp2__label-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: var(--line) solid var(--ink);
+}
+.pdp2__label-title {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.pdp2__label-no {
+  margin: 0;
+  font-weight: 900;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pdp2__label dl {
+  margin-top: 4px;
+}
+.pdp2__label dl div:first-child {
+  border-top: 0;
+}
+.pdp2__label dt {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--ink) 62%, var(--paper));
+}
+.pdp2__label dd {
+  font-size: 1rem;
+  font-weight: 700;
+}
+@media (max-width: 767px) {
+  .pdp2__title {
+    margin-bottom: 8px;
+  }
+  .pdp2__desc {
+    font-size: 1rem;
+  }
+  html .pdp2__label dl div {
+    grid-template-columns: minmax(96px, 38%) 1fr;
+  }
+}

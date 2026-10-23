@@ -23,9 +23,13 @@ export interface Order {
   lines: ReceiptLine[];
   /** true while the serial is only local (the Archive hasn't confirmed it yet) */
   local?: boolean;
+  /** "Name on the sock" from checkout; stays on this device, never sent to the Archive */
+  name?: string;
 }
 
 export const RECEIPT_W = 320;
+
+const fit = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
 const PAD = 22;
 const INK = '#241a26';
@@ -171,7 +175,7 @@ export async function drawReceipt(ctx: CanvasRenderingContext2D | null, o: Order
   const meta: [string, string][] = [
     ['Order No.', o.id],
     [d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })],
-    ['Artisan:', 'You'],
+    ['Artisan:', fit(o.name?.trim() || 'You', 24)],
   ];
   for (const [a, b] of meta) {
     text(a, PAD, y + 11, `400 10.5px ${MONO}`);
