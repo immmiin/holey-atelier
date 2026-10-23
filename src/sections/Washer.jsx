@@ -19,6 +19,13 @@ export default function Washer() {
   const sim = useRef(null);
   const [done, setDone] = useState(false);
   const [open, setOpen] = useState(false); // the door, after the spin
+  // "make spin obvious": the dial wobbles and the SPIN ME sticker bobs until the first spin
+  // interaction; the sticker goes once a spin has completed (with reduced motion it simply stays)
+  const [touched, setTouched] = useState(false);
+  const [spunOnce, setSpunOnce] = useState(false);
+  useEffect(() => {
+    if (done) setSpunOnce(true);
+  }, [done]);
 
   // ---------------------------------------------------------------- simulation
   useEffect(() => {
@@ -199,6 +206,7 @@ export default function Washer() {
       if (s.done) return;
       if (still) return finish();
       s.dragging = true;
+      setTouched(true);
       prev = angleAt(e);
       prevT = performance.now();
       glass.setPointerCapture(e.pointerId);
@@ -238,6 +246,7 @@ export default function Washer() {
   const kick = useCallback((dw) => {
     const s = sim.current;
     if (!s || s.done) return;
+    setTouched(true);
     if (reducedMotion()) return s.finish();
     s.w = Math.max(-28, Math.min(28, s.w + dw));
     s.wake();
@@ -253,6 +262,7 @@ export default function Washer() {
   };
   const dialDrag = useRef(null);
   const onDialDown = (e) => {
+    setTouched(true);
     e.currentTarget.setPointerCapture(e.pointerId);
     dialDrag.current = { x: e.clientX, t: performance.now() };
   };
@@ -283,8 +293,16 @@ export default function Washer() {
   };
 
   return (
-    <div className={`washer ${open ? 'is-open' : ''}`}>
+    <div className={`washer ${open ? 'is-open' : ''} ${touched ? 'is-touched' : ''} ${spunOnce ? 'has-spun' : ''}`}>
       <div className="machine">
+        <span className="spinme" aria-hidden="true">
+          <span className="spinme__label">Spin me</span>
+          {/* a hand-drawn arrow, curling down and left onto the dial */}
+          <svg className="spinme__arrow" viewBox="0 0 70 46" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M64 6c-6 18-22 30-50 31" />
+            <path d="M22 28l-9 9 11 5" />
+          </svg>
+        </span>
         <div className="machine__panel">
           <button
             ref={dialRef}
@@ -303,9 +321,13 @@ export default function Washer() {
             onPointerCancel={onDialUp}
           >
             <i />
+            <svg className="machine__knob-icon" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M19 12a7 7 0 1 1-2.05-4.95" />
+              <path d="M19 4v4h-4" />
+            </svg>
           </button>
           <span className="machine__screen" aria-live="polite">
-            {done ? 'DONE · 1 SOCK' : 'SPIN · 2 SOCKS'}
+            {done ? 'DONE · 1 SOCK' : 'DRAG TO SPIN'}
           </span>
           <span className="machine__lights" aria-hidden="true">
             <i />

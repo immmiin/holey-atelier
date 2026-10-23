@@ -521,3 +521,121 @@ html.hole-cursor .atl__stage[data-grab='2'],
     font-size: clamp(22px, 2.2vw, 32px);
   }
 }
+
+/* ---------------------------------------------------------------- the big hand (desktop, fine pointers) */
+/* follows the pointer over the thread, the heap and the sock: open when you can take hold, pinching while
+   you pull. The hotspot is at the fingertips (open) / the pinch (closed). Replaces the system cursor
+   there, so there is only ever one cursor. */
+.atl-hand {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.atl-hand.is-on {
+  opacity: 1;
+}
+.atl-hand svg {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  max-width: none; /* the global svg { max-width: 100% } would collapse it inside the 0×0 anchor */
+  fill: #fbf1e8;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  filter: drop-shadow(3px 4px 0 rgba(26, 15, 31, 0.25));
+}
+.atl-hand__open {
+  left: -24px; /* fingertips (24, 9) on the pointer */
+  top: -9px;
+}
+.atl-hand__closed {
+  left: -16px; /* the pinch (16, 21) on the pointer */
+  top: -21px;
+  display: none;
+}
+.atl-hand__closed path:nth-child(2) {
+  fill: none;
+}
+.atl-hand[data-state='closed'] .atl-hand__open {
+  display: none;
+}
+.atl-hand[data-state='closed'] .atl-hand__closed {
+  display: block;
+}
+html.hole-cursor .atl .has-hand,
+html.hole-cursor .atl .has-hand *,
+.atl__room.has-hand,
+.atl__room.has-hand .atl__stage,
+.atl__room.has-hand .atl__stage[data-grab] {
+  cursor: none !important;
+}
+@media (hover: none), (pointer: coarse) {
+  .atl-hand {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- touch: the pull-down gesture */
+.atl-finger {
+  position: absolute;
+  z-index: 4;
+  width: 40px;
+  height: 64px;
+  margin: -6px 0 0 22px; /* beside the thread, just under where you take hold … */
+  pointer-events: none;
+}
+.atl-finger--left {
+  margin-left: -62px; /* … on the side the stage's "pull the loose thread" label isn't */
+}
+.atl-finger svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.atl-finger__trail {
+  stroke-dasharray: 3 5;
+  opacity: 0.5;
+}
+.atl-finger__hand {
+  fill: #fbf1e8;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .atl-finger__hand {
+    animation: finger-pull 1.6s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+  }
+}
+@keyframes finger-pull {
+  0% {
+    translate: 0 -8px;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  70% {
+    translate: 0 22px;
+    opacity: 1;
+  }
+  100% {
+    translate: 0 26px;
+    opacity: 0;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .atl-finger {
+    display: none;
+  }
+}

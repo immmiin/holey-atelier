@@ -331,3 +331,61 @@
   text-decoration-thickness: 3px;
   text-underline-offset: 6px;
 }
+
+/* "The Atelier": the one nav item styled like the signature thread button (green pill, cream type,
+   cream stitch inside, a small pink yarn tail off its bottom-right) */
+.nav__link--atelier,
+.nav__atelier {
+  position: relative;
+  background: #1f5b3a;
+  color: #fbf1e8;
+  box-shadow: 2px 2px 0 var(--ink);
+  border: var(--line-thin) solid var(--ink);
+}
+.nav__link--atelier::after,
+.nav__atelier::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1.5px dashed #fbf1e8;
+  border-radius: 999px;
+  opacity: 0.8;
+  pointer-events: none;
+}
+.nav__link--atelier:hover,
+.nav__link--atelier.active {
+  background: #1f5b3a;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.nav__link--atelier .btn__tail,
+.nav__atelier .btn__tail {
+  right: 12px;
+  top: calc(100% - 4px);
+  width: 9px;
+  height: 18px;
+}
+.nav__link--atelier:hover .btn__tail,
+.nav__atelier:active .btn__tail {
+  transform: scaleY(1.34) rotate(-8deg);
+  transition-duration: 0.22s;
+}
+/* the phone pill: hidden wherever the full link row shows */
+.nav__atelier {
+  display: none;
+}
+@media (max-width: 820px) {
+  .nav__atelier {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border-width: var(--line);
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+}

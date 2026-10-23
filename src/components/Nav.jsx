@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
 import { AnimatePresence, motion, useAnimate, useMotionValue, useSpring } from 'motion/react';
 import Logo from './Logo.jsx';
+import { YarnTail } from './Btn.jsx';
 import { Instagram, TikTok, XLogo } from './Icons.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { products, sockSrc, logoColor } from '../data/products.js';
@@ -160,12 +161,18 @@ export default function Nav() {
                   {l.label}
                 </Link>
               ) : (
-                <NavLink key={l.to} to={l.to} className="nav__link">
+                <NavLink key={l.to} to={l.to} className={`nav__link ${l.to === '/atelier' ? 'nav__link--atelier' : ''}`}>
                   {l.label}
+                  {l.to === '/atelier' && <YarnTail />}
                 </NavLink>
               )
             )}
           </nav>
+          {/* phones (and narrow tablets): the Atelier is always one tap away, next to the basket */}
+          <NavLink to="/atelier" className="nav__atelier">
+            Atelier
+            <YarnTail />
+          </NavLink>
           <BasketButton />
           <button
             type="button"

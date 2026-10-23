@@ -6,7 +6,8 @@ import { chromium } from 'playwright';
 const BASE = (process.env.BASE || 'http://localhost:5199').replace(/\/$/, '');
 const b = await chromium.launch();
 let bad = 0;
-for (const [W, H] of [[1440, 900], [1000, 800], [390, 844]]) {
+// phones show the one-sock picker (scripts/qa-picker.mjs), so only clothesline widths here
+for (const [W, H] of [[1440, 900], [1000, 800]]) {
   const m = W < 768;
   const p = await b.newPage({ viewport: { width: W, height: H }, isMobile: m, hasTouch: m });
   await p.goto(BASE + '/');

@@ -67,6 +67,8 @@ export default function AtelierPage() {
   }, []);
   const [msg, setMsg] = useState(MESSAGES[0][1]);
   const [finished, setFinished] = useState(false);
+  const [pulledOnce, setPulledOnce] = useState(false); // the touch gesture hint loops until the first pull
+  const [fingerAt, setFingerAt] = useState(null);
   const [added, setAdded] = useState(null);
   const serial = useRef('0000');
   const seed = useRef(0);
@@ -119,6 +121,7 @@ export default function AtelierPage() {
       },
       (e) => {
         if (e === 'finished') setFinished(true);
+        if (e === 'grab') setPulledOnce(true);
       }
     );
     stage.onPluck = (x, amount) => {
@@ -245,22 +248,119 @@ export default function AtelierPage() {
     requestAnimationFrame(centre);
   }, [setPhase, centre]);
 
-  // /atelier?sock=heel-yeah: straight to that sock
+  /** another sock while one is already picked: put this one back, take the new one down */
+  const switchTo = useCallback(
+    (p) => {
+      if (!p || p.slug === picked) return;
+      backToLine();
+      requestAnimationFrame(() => requestAnimationFrame(() => pick(p)));
+    },
+    [picked, backToLine, pick]
+  );
+  const onPick = useCallback((p) => (phaseRef.current === 'line' ? pick(p) : switchTo(p)), [pick, switchTo]);
+
+  // every way in lands straight in the picked state: ?sock=… when it names a sock, else Heel Yeah.
+  // (The line view stays one tap away under "Change sock".)
   const wanted = params.get('sock');
   useEffect(() => {
-    if (!wanted) return undefined;
-    const p = products.find((x) => x.slug === wanted);
-    if (!p) return undefined;
+    const p = products.find((x) => x.slug === wanted) || products[0];
     let tries = 0;
     const id = setInterval(() => {
       tries++;
       if (clApi.current && phaseRef.current === 'line') {
         clearInterval(id);
-        setTimeout(() => pick(p), 250);
-      } else if (tries > 50) clearInterval(id);
-    }, 60);
+        pick(p);
+      } else if (phaseRef.current !== 'line' || tries > 80) clearInterval(id);
+    }, 40);
     return () => clearInterval(id);
-  }, [wanted, pick]);
+  }, [wanted]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // tapping one of the blurred socks behind the picked one switches to it (the canvas covers them, so
+  // a short tap that didn't grab the thread is hit-tested against their images)
+  const tapRef = useRef(null);
+  const onStageDown = (e) => {
+    tapRef.current = stageRef.current?.holding ? null : { x: e.clientX, y: e.clientY, t: performance.now() };
+  };
+  const onStageUp = (e) => {
+    const t = tapRef.current;
+    tapRef.current = null;
+    if (!t || Math.hypot(e.clientX - t.x, e.clientY - t.y) > 8 || performance.now() - t.t > 600) return;
+    const socks = [...(clApi.current?.stage.querySelectorAll('.cl__sock:not(.is-picked)') || [])];
+    const hit = socks.find((el) => {
+      const r = el.querySelector('.cl__img').getBoundingClientRect();
+      return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    });
+    if (hit) switchTo(products[[...hit.parentElement.children].filter((c) => c.classList.contains('cl__sock')).indexOf(hit)]);
+  };
+
+  // ------------------------------------------------------------ desktop: a big hand over the thread / sock
+  const handRef = useRef(null);
+  useEffect(() => {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return undefined;
+    const room = roomRef.current, cv = canvasRef.current, hand = handRef.current;
+    if (!room || !cv || !hand) return undefined;
+    let raf = 0, last = null;
+    const update = () => {
+      raf = 0;
+      if (!last) return;
+      const g = cv.dataset.grab; // '1' over something grabbable, '2' holding it (set by the stage)
+      let show = g === '1' || g === '2';
+      const st = stageRef.current, L = layoutRef.current;
+      if (!show && st?.pulling && !st.finished && L) {
+        const r = cv.getBoundingClientRect(), b = bigBox(L);
+        const x = last.x - r.left, y = last.y - r.top;
+        show = x >= b.left && x <= b.left + b.width && y >= b.top && y <= b.top + b.height;
+      }
+      hand.dataset.state = g === '2' ? 'closed' : 'open';
+      hand.style.transform = `translate3d(${last.x}px, ${last.y}px, 0)`;
+      hand.classList.toggle('is-on', show);
+      room.classList.toggle('has-hand', show);
+    };
+    const queue = () => (raf ||= requestAnimationFrame(update));
+    const onMove = (e) => {
+      if (e.pointerType !== 'mouse') return;
+      last = { x: e.clientX, y: e.clientY };
+      queue();
+    };
+    const onLeave = () => {
+      last = null;
+      hand.classList.remove('is-on');
+      room.classList.remove('has-hand');
+    };
+    // press / release change the grab state without moving
+    const mo = new MutationObserver(queue);
+    mo.observe(cv, { attributes: true, attributeFilter: ['data-grab'] });
+    window.addEventListener('pointermove', onMove);
+    room.addEventListener('pointerleave', onLeave);
+    return () => {
+      cancelAnimationFrame(raf);
+      mo.disconnect();
+      window.removeEventListener('pointermove', onMove);
+      room.removeEventListener('pointerleave', onLeave);
+    };
+  }, []);
+
+  // ------------------------------------------------------------ touch: a finger shows the pull, beside the thread
+  useEffect(() => {
+    if (phase !== 'pull' || pulledOnce) return undefined;
+    const place = () => {
+      const st = stageRef.current, d = st?.debug?.();
+      if (!d?.grabPoint) return;
+      // the stage writes "pull the loose thread" on whichever side of the thread end has room; the
+      // finger takes the other side (same rule as PullStage's hint)
+      const u = st.unit || 1;
+      const c = document.createElement('canvas').getContext('2d');
+      c.font = `900 ${Math.round(Math.max(15, 15 * u))}px Nunito, system-ui, sans-serif`;
+      const labelLeft = d.end.x - 18 * u - c.measureText('pull the loose thread').width > 8;
+      setFingerAt({ x: Math.round(d.grabPoint.x), y: Math.round(d.grabPoint.y), side: labelLeft ? 'right' : 'left' });
+    };
+    const t = setTimeout(place, 300);
+    window.addEventListener('resize', place);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('resize', place);
+    };
+  }, [phase, picked, pulledOnce]);
 
   // keep everything aligned on resize / rotation
   useEffect(() => {
@@ -333,16 +433,40 @@ export default function AtelierPage() {
       <div ref={roomRef} className="atl__room" onPointerMove={onPointerMove}>
         <div className="atl__floor" aria-hidden="true" />
         <LaborCounter className="atl__counter" />
-        <Clothesline items={products} onPick={pick} picked={picked} apiRef={clApi} variant="stage" className="atl__line" />
+        <Clothesline items={products} onPick={onPick} picked={picked} apiRef={clApi} variant="stage" className="atl__line" />
         <canvas
           ref={canvasRef}
+          onPointerDown={onStageDown}
+          onPointerUp={onStageUp}
           className="atl__stage"
           aria-label={def ? `${def.name} hanging on the big peg. Drag its loose thread down, or hold Space, to unravel it.` : undefined}
         />
 
+        <div ref={handRef} className="atl-hand" aria-hidden="true">
+          {/* open: fingertips at the hotspot */}
+          <svg className="atl-hand__open" viewBox="0 0 56 56">
+            <path d="M14 31V18a3.5 3.5 0 0 1 7 0v8V11a3.5 3.5 0 0 1 7 0v15V13a3.5 3.5 0 0 1 7 0v13v-9a3.5 3.5 0 0 1 7 0v17c0 10-6 17-15 17h-3c-6 0-9-3-12-8l-7-11a3.5 3.5 0 0 1 5.5-4.2Z" />
+          </svg>
+          {/* closed: pinching the yarn between thumb and index, the pinch at the hotspot */}
+          <svg className="atl-hand__closed" viewBox="0 0 56 56">
+            <path d="M15 24a6 6 0 0 1 6-6h15a6 6 0 0 1 6 6v10c0 9-6 15-15 15h-2c-8 0-12-6-12-13Z" />
+            <path d="M22 18v6M29 18v6M36 19v5" />
+            <path d="M15 30c-5-1-6-8-1-10l8 1c3 .5 3 5 0 6Z" />
+          </svg>
+        </div>
+        {phase === 'pull' && !pulledOnce && fingerAt && (
+          <div className={`atl-finger atl-finger--${fingerAt.side}`} style={{ left: fingerAt.x, top: fingerAt.y }} aria-hidden="true">
+            <svg viewBox="0 0 40 64">
+              <path className="atl-finger__trail" d="M20 6v40" />
+              <path className="atl-finger__arrow" d="M12 40l8 9 8-9" />
+              <path className="atl-finger__hand" d="M14 30V12a4 4 0 0 1 8 0v12l4-.5a4 4 0 0 1 4.5 4V36c0 8-5 13-12 13h-1c-5 0-8-3-10-7l-4-8a3.5 3.5 0 0 1 6-3.5Z" />
+            </svg>
+          </div>
+        )}
+
         {active && (
           <button type="button" className="atl__back" onClick={backToLine}>
-            ← Back to the line
+            Change sock
           </button>
         )}
 

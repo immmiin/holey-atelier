@@ -1934,3 +1934,104 @@
   background: var(--dash-line);
   pointer-events: none;
 }
+
+/* ================= washer: make "spin" obvious ================= */
+/* the dial at 1.4× (every breakpoint's size, scaled), with a ↻ inside */
+.machine__knob {
+  zoom: 1.4;
+}
+.machine__knob > i {
+  display: none; /* the ↻ shows the dial's turn now */
+}
+.machine__knob-icon {
+  position: absolute;
+  inset: 26%;
+  width: 48%;
+  height: 48%;
+  stroke: var(--ink);
+  stroke-width: 3;
+  pointer-events: none;
+}
+/* the SPIN ME sticker, with a hand-drawn arrow curling onto the dial */
+.spinme {
+  position: absolute;
+  z-index: 4;
+  left: clamp(64px, 22%, 120px);
+  top: -22px;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease), scale 0.3s var(--ease);
+}
+.spinme__label {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--hi);
+  border: var(--line) solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 3px 3px 0 var(--ink);
+  font-family: var(--f-display);
+  font-size: clamp(15px, 1.25vw, 19px);
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  rotate: -7deg;
+}
+.spinme__arrow {
+  position: absolute;
+  right: 100%;
+  top: 12px;
+  width: clamp(46px, 4vw, 60px);
+  height: clamp(30px, 2.7vw, 40px);
+  margin-right: -8px;
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* until the first spin: the dial wobbles every 3s, the sticker bobs */
+  .washer:not(.is-touched) .machine__knob {
+    animation: knob-wobble 3s ease-in-out infinite;
+  }
+  .washer:not(.is-touched) .spinme {
+    animation: spinme-bob 1.6s ease-in-out infinite;
+  }
+  /* after the first full spin the sticker has done its job (with reduced motion it stays) */
+  .washer.has-spun .spinme {
+    opacity: 0;
+    scale: 0.6;
+    visibility: hidden;
+    transition: opacity 0.3s var(--ease), scale 0.3s var(--ease), visibility 0s 0.3s;
+  }
+}
+@keyframes knob-wobble {
+  0%,
+  70%,
+  100% {
+    rotate: 0deg;
+  }
+  76% {
+    rotate: 12deg;
+  }
+  82% {
+    rotate: -12deg;
+  }
+  88% {
+    rotate: 6deg;
+  }
+  94% {
+    rotate: -3deg;
+  }
+}
+@media (max-width: 767px) {
+  .spinme {
+    top: -14px; /* clear of the headline above */
+  }
+}
+@keyframes spinme-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -5px;
+  }
+}

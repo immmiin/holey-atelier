@@ -21,7 +21,7 @@ export function TubIcon(props) {
 }
 
 /* the "Pull a thread" signature: a short 2-ply yarn tail hanging off the bottom-right corner */
-function YarnTail() {
+export function YarnTail() {
   return (
     <span className="btn__tail" aria-hidden="true">
       <svg viewBox="0 0 14 30" fill="none" strokeLinecap="round">
