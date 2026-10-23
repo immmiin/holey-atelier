@@ -41,6 +41,7 @@ export function scrollToTop() {
 
 export function scrollTo(target, opts = {}) {
   if (lenis) lenis.scrollTo(target, { offset: 0, ...opts });
+  else if (typeof target === 'number') window.scrollTo({ top: target + (opts.offset || 0), behavior: reducedMotion() ? 'auto' : 'smooth' });
   else {
     const el = typeof target === 'string' ? document.querySelector(target) : target;
     el?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth' });

@@ -24,6 +24,9 @@ export default function Washer() {
   const rootRef = useRef(null);
   const [touched, setTouched] = useState(false);
   const [spunOnce, setSpunOnce] = useState(false);
+  // where the result slip goes: 'in' the machine, over the drum the open door reveals, or 'below' it
+  // (then the page scrolls it into view)
+  const [slip, setSlip] = useState('in');
   useEffect(() => {
     if (done) setSpunOnce(true);
   }, [done]);
@@ -47,6 +50,11 @@ export default function Washer() {
       return undefined;
     }
     if (!open) return undefined; // measure once the door (and its slip offset) is set
+    if (slip === 'in') {
+      hero.style.marginBottom = '';
+      if (pol) pol.style.translate = '';
+      return undefined;
+    }
     const raf = requestAnimationFrame(() => {
       const out = root.querySelector('.washer__out');
       if (!out) return;
@@ -57,13 +65,27 @@ export default function Washer() {
           pol.style.translate = `0 ${Math.round(polaroidTop.current - now)}px`;
         }
       } else {
-        const slip = parseFloat(root.style.getPropertyValue('--slip-top')) || 16;
-        const bottom = root.getBoundingClientRect().top + root.offsetHeight + slip + out.offsetHeight;
+        const slipTop = parseFloat(root.style.getPropertyValue('--slip-top')) || 16;
+        const bottom = root.getBoundingClientRect().top + root.offsetHeight + slipTop + out.offsetHeight;
         hero.style.marginBottom = `${Math.max(0, Math.ceil(bottom + 48 - hero.getBoundingClientRect().bottom))}px`;
       }
     });
-    return () => cancelAnimationFrame(raf);
-  }, [done, open]);
+    // below the washer it'd be off-screen: once it's in, bring the whole card into view
+    const t = setTimeout(() => {
+      const out = root.querySelector('.washer__out');
+      if (!out) return;
+      const r = out.getBoundingClientRect();
+      const nav = document.querySelector('.nav')?.getBoundingClientRect().bottom ?? 0;
+      if (r.bottom > window.innerHeight - 16 || r.top < nav + 8) {
+        const y = window.scrollY + r.bottom + 16 - window.innerHeight;
+        scrollTo(Math.max(0, Math.min(y, window.scrollY + r.top - nav - 16)), { offset: 0, duration: 0.8 });
+      }
+    }, 1300);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t);
+    };
+  }, [done, open, slip]);
 
   // the door comes forward as far as it can without covering the nav (+16px) or leaving the screen:
   // −55° / 1.35 if it fits (overshoot included), else the most of it that does. Measured just before
@@ -103,7 +125,8 @@ export default function Washer() {
       pick = [-15, 1.02, 900];
     }
     // the result slip goes below wherever the open door ends up (desktop)
-    const rb = box(pick[0], pick[1]).bottom;
+    const door = box(pick[0], pick[1]);
+    const rb = door.bottom;
     const wb = root.getBoundingClientRect().bottom;
     g.style.transform = '';
     void g.offsetWidth; // back to closed, so the swing animates from shut
@@ -113,6 +136,33 @@ export default function Washer() {
     root.style.setProperty('--door-angle', `${pick[0]}deg`);
     root.style.setProperty('--door-scale', String(pick[1]));
     root.style.setProperty('--slip-top', `${Math.max(16, Math.ceil(rb - wb) + 16)}px`);
+
+    // …or, better, INSIDE the machine: in the strip of drum the open door reveals (right of the door,
+    // under the panel and the H badge), centred on the drum — so it's on the first screen
+    const out = root.querySelector('.washer__out');
+    const mr = root.querySelector('.machine').getBoundingClientRect();
+    const pr = root.querySelector('.porthole').getBoundingClientRect();
+    const panelB = root.querySelector('.machine__panel').getBoundingClientRect().bottom;
+    const badgeEl = root.closest('.hero2__machine')?.querySelector('.hero2__sticker');
+    const bb = badgeEl && getComputedStyle(badgeEl).display !== 'none' ? badgeEl.getBoundingClientRect() : null;
+    const wr = root.getBoundingClientRect();
+    const left = door.right + 14, right = mr.right - 18;
+    const top = Math.max(panelB, bb && bb.left < right && bb.right > left ? bb.bottom : 0) + 12, bottom = Math.min(mr.bottom, window.innerHeight) - 20;
+    let mode = 'below';
+    if (out && right - left >= 150) {
+      root.classList.add('slip-in');
+      root.style.setProperty('--slip-x', `${Math.round(left - wr.left)}px`);
+      root.style.setProperty('--slip-w', `${Math.floor(right - left)}px`);
+      const h = out.offsetHeight + 8; // + the -2° tilt
+      if (h <= bottom - top) {
+        const cy = pr.top + pr.height / 2;
+        const y = Math.max(top, Math.min(bottom - h, cy - h / 2));
+        root.style.setProperty('--slip-y', `${Math.round(y - wr.top)}px`);
+        mode = 'in';
+      }
+      root.classList.remove('slip-in');
+    }
+    setSlip(mode);
   };
 
 
@@ -384,7 +434,7 @@ export default function Washer() {
   };
 
   return (
-    <div ref={rootRef} className={`washer ${open ? 'is-open' : ''} ${touched ? 'is-touched' : ''} ${spunOnce ? 'has-spun' : ''}`}>
+    <div ref={rootRef} className={`washer slip-${slip} ${open ? 'is-open' : ''} ${touched ? 'is-touched' : ''} ${spunOnce ? 'has-spun' : ''}`}>
       <div className="machine">
         <span className="spinme" aria-hidden="true">
           <span className="spinme__label">Spin me</span>

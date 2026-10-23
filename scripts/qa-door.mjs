@@ -55,6 +55,7 @@ for (const [name, opts] of [['1440x900', { viewport: { width: 1440, height: 900 
       thumbDx: img && thumb ? img.left + img.width / 2 - (thumb.left + thumb.width / 2) : null,
       thumbDy: img && thumb ? img.top + img.height / 2 - (thumb.top + thumb.height / 2) : null,
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      inDrum: document.querySelector('.washer').classList.contains('slip-in'),
       card2: (() => { const c = document.querySelector('.washer__out'); if (!c) return null; const cs = getComputedStyle(c); return { bg: cs.backgroundColor, color: cs.color, rot: cs.rotate, cols: cs.gridTemplateColumns, gap: cs.columnGap, eyebrow: getComputedStyle(c.querySelector('.washer__eyebrow')).color, h: getComputedStyle(c.querySelector('.washer__msg')).fontSize, hits: [...c.querySelectorAll('a, button')].map((e) => Math.round(e.getBoundingClientRect().height)) }; })()
     };
   });
@@ -76,9 +77,11 @@ for (const [name, opts] of [['1440x900', { viewport: { width: 1440, height: 900 
     const d = Math.max(Math.abs(after[k].x - before[k].x), Math.abs(after[k].y - before[k].y), Math.abs(after[k].w - before[k].w), Math.abs(after[k].h - before[k].h));
     check(`${name} ${k === 'badge' ? 'H badge' : k === 'dial' ? 'dial' : k === 'polaroid' ? 'polaroid' : 'status bar'} unchanged before/after (±1px)`, `max Δ ${r1(d)}px`, d <= 1);
   }
-  check(`${name} result card ∩ door / drum / nav`, ['door', 'drum', 'nav'].filter((k) => hit(m.card, k === 'nav' ? m.navBar : m[k])).join(', ') || 'none', !hit(m.card, m.door) && !hit(m.card, m.drum) && !hit(m.card, m.navBar));
+  // in the machine the slip sits ON the revealed drum (by design); below it, it must clear the drum
+  const against = m.inDrum ? ['door', 'nav'] : ['door', 'drum', 'nav'];
+  check(`${name} result card (${m.inDrum ? 'in the drum' : 'below the washer'}) ∩ ${against.join(' / ')}`, against.filter((k) => hit(m.card, k === 'nav' ? m.navBar : m[k])).join(', ') || 'none', !against.some((k) => hit(m.card, k === 'nav' ? m.navBar : m[k])));
   check(`${name} sock thumbnail centred in its 96px column (±2px)`, `Δx ${r1(m.thumbDx)}px, Δy ${r1(m.thumbDy)}px`, Math.abs(m.thumbDx) <= 2 && Math.abs(m.thumbDy) <= 2);
-  check(`${name} card style`, JSON.stringify(m.card2), m.card2 && m.card2.bg === 'rgb(31, 91, 58)' && m.card2.color === 'rgb(251, 241, 232)' && m.card2.rot === '-2deg' && m.card2.cols.startsWith('96px') && m.card2.gap === (name === '390x844' ? '16px' : '20px') && m.card2.eyebrow === 'rgb(245, 245, 106)' && m.card2.hits.every((h) => h >= 44));
+  check(`${name} card style`, JSON.stringify(m.card2), m.card2 && m.card2.bg === 'rgb(31, 91, 58)' && m.card2.color === 'rgb(251, 241, 232)' && m.card2.rot === '-2deg' && (m.inDrum ? !/\s/.test(m.card2.cols.trim()) : m.card2.cols.startsWith('96px') && m.card2.gap === (name === '390x844' ? '16px' : '20px')) && m.card2.eyebrow === 'rgb(245, 245, 106)' && m.card2.hits.every((h) => h >= 44));
   await ctx.close();
 }
 for (const x of rows) console.log(`${x.ok ? 'PASS' : 'FAIL'}  ${x.label}: ${x.got}`);

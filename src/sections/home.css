@@ -2209,3 +2209,71 @@ html body .washer__again {
     animation: none;
   }
 }
+
+/* ---- "Spin complete" INSIDE the machine: in the strip of drum the open door reveals (Washer.jsx
+   measures it: --slip-x / --slip-y / --slip-w), stacked, on the first screen. In 300ms after the door
+   has finished opening (120ms latch + 800ms swing + 300ms). ---- */
+html body .washer {
+  position: relative;
+}
+html body .washer.slip-in .washer__out {
+  position: absolute;
+  left: var(--slip-x, 0px);
+  top: var(--slip-y, 0px);
+  right: auto;
+  width: var(--slip-w, 220px);
+  max-width: none;
+  margin: 0;
+  z-index: 7;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  row-gap: 8px;
+  padding: 14px 12px;
+  text-align: center;
+  animation: washer-slip-in 0.4s cubic-bezier(0.2, 0.9, 0.3, 1) 1.22s both;
+}
+@keyframes washer-slip-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+html body .washer.slip-in .washer__thumb {
+  width: 64px;
+  height: 64px;
+}
+html body .washer.slip-in .washer__returned {
+  height: 62px;
+}
+html body .washer.slip-in .washer__text {
+  justify-items: center;
+}
+html body .washer.slip-in .washer__links {
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+}
+html body .washer.slip-in .washer__where {
+  padding: 6px 12px;
+  white-space: normal;
+  line-height: 1.2;
+}
+/* text minimums wherever the slip is: eyebrow 13, headline 22, actions 15 */
+html body .washer__eyebrow {
+  font-size: 13px;
+}
+html body .washer__msg {
+  font-size: max(22px, min(26px, 2vw));
+}
+html body .washer__links {
+  font-size: 15px;
+}
+html body .washer.slip-below .washer__out {
+  animation-delay: 1.22s;
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .washer.slip-in .washer__out {
+    animation: none;
+  }
+}
