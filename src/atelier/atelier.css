@@ -508,12 +508,13 @@ html.hole-cursor .atl__stage[data-grab='2'],
   }
 }
 
-/* picked (desktop): the floor belongs to the heap and the thread, so the stage message moves to the
-   top-left of the scene, under "← Back to the line" (it collided with the heap at ~768px wide) */
+/* picked (desktop): the stage message sits bottom-left, just above the floor line, on the container's
+   left edge — clear of the line, the sock, the thread, the heap, the tag and "Change sock" */
 @media (min-width: 768px) {
   .atl.is-active .atl__msg {
-    top: 76px; /* clear of the line's left knob */
-    bottom: auto;
+    top: auto;
+    bottom: calc(20% + 16px);
+    left: max(var(--pad), (100% - var(--max)) / 2);
     max-width: min(30vw, 420px);
     padding: 6px 14px;
     border-radius: 14px;
@@ -637,5 +638,224 @@ html.hole-cursor .atl .has-hand *,
 @media (hover: hover) and (pointer: fine) {
   .atl-finger {
     display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- the price tag, hung from the line */
+/* .atl__hang sits on the pin's grip point (set every frame from the live rope, 85% along the line) and
+   rotates there: the pin, the string and the tag swing together. 1.4× the old tag. */
+.atl__hang {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease);
+  --tag-w: clamp(252px, 21vw, 314px);
+}
+.atl.is-active .atl__hang {
+  opacity: 1;
+}
+.atl__tagpin {
+  position: absolute;
+  left: -10px;
+  top: -15px; /* its grip (≈15px down) on the line */
+  width: 20px;
+  height: auto;
+  max-width: none; /* the global svg { max-width: 100% } would collapse it in the 0×0 hanger */
+  z-index: 2;
+}
+.atl__tagpin rect {
+  fill: var(--hi);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+.atl__tagpin path {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.atl__tagpin circle {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.atl__tagstring {
+  position: absolute;
+  left: -1px;
+  top: 22px; /* from under the pin… */
+  width: 2px;
+  height: 43px; /* …to the tag's eyelet */
+  background: var(--ink);
+}
+@media (min-width: 768px) {
+  .atl__hang .atl__tag {
+    position: absolute;
+    left: calc(var(--tag-w) / -2);
+    right: auto;
+    top: 46px;
+    width: var(--tag-w);
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+  .atl__hang .atl__tag::before {
+    display: none; /* the string is .atl__tagstring now */
+  }
+  .atl__hang .tag-card {
+    padding: 34px 24px 20px;
+  }
+  .atl__hang .tag-eyelet {
+    top: 12px;
+    width: 14px;
+    height: 14px;
+  }
+  .atl__hang .tag-house {
+    font-size: clamp(14px, 1.26vw, 17.5px);
+  }
+  .atl__hang .tag-name {
+    font-size: clamp(14.5px, 1.2vw, 16.8px);
+  }
+  .atl__hang .tag-price {
+    margin: 10px 0 12px;
+    font-size: clamp(48px, 5vw, 72px);
+  }
+  .atl__hang .tag-rows {
+    font-size: clamp(15px, 1.26vw, 18px);
+    padding-top: 8px;
+  }
+  .atl__hang .tag-basket {
+    margin-top: 14px;
+    padding: 12px 14px;
+    font-size: clamp(16px, 1.33vw, 19.5px);
+  }
+}
+@media (max-width: 767px) {
+  .atl__hang {
+    display: none; /* phones keep the bottom bar */
+  }
+}
+
+/* the live price: counts up, warms in colour (set inline), stamps at the milestones */
+.tag-pricebox {
+  position: relative;
+}
+.tag-price {
+  transition: color 0.3s linear;
+}
+.tag-price.is-stamp {
+  animation: tag-stamp 0.42s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes tag-stamp {
+  0% {
+    scale: 1;
+  }
+  35% {
+    scale: 1.22;
+    rotate: -3deg;
+  }
+  100% {
+    scale: 1;
+    rotate: 0deg;
+  }
+}
+.tag-delta {
+  position: absolute;
+  right: -4px;
+  top: 0;
+  font-family: var(--f-body);
+  font-weight: 900;
+  font-size: 16px;
+  pointer-events: none;
+  animation: tag-delta 0.95s ease-out forwards;
+}
+@keyframes tag-delta {
+  0% {
+    opacity: 0;
+    translate: 0 6px;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 6px -30px;
+  }
+}
+.tag-card.is-bounce {
+  animation: tag-bounce 0.36s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes tag-bounce {
+  40% {
+    scale: 1.03 0.97;
+  }
+  100% {
+    scale: 1;
+  }
+}
+/* "Your wage $0.00": never moves, never changes colour — it only flinches when the price jumps */
+.tag-rows .wage {
+  display: inline-block;
+}
+.tag-rows .wage.is-flinch {
+  animation: wage-flinch 0.3s linear;
+}
+@keyframes wage-flinch {
+  25% {
+    translate: -2px 0;
+  }
+  50% {
+    translate: 2px 0;
+  }
+  75% {
+    translate: -1px 0;
+  }
+}
+.tag-sold {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  z-index: 3;
+  padding: 2px 10px;
+  border: 3px solid #b3122a;
+  border-radius: 6px;
+  color: #b3122a;
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  font-family: var(--f-display);
+  font-size: 22px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  translate: -50% -50%;
+  rotate: -14deg;
+  opacity: 0;
+  pointer-events: none;
+}
+.tag-sold.is-on {
+  opacity: 0.92;
+  animation: tag-sold 0.4s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+@keyframes tag-sold {
+  0% {
+    scale: 2.2;
+    opacity: 0;
+  }
+  100% {
+    scale: 1;
+    opacity: 0.92;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tag-delta {
+    display: none;
+  }
+  .tag-card.is-bounce,
+  .tag-price.is-stamp,
+  .tag-rows .wage.is-flinch,
+  .tag-sold.is-on {
+    animation: none;
   }
 }

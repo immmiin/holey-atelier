@@ -11,6 +11,7 @@ import { SOCKS } from '../atelier/socks.ts';
 import { twang } from '../atelier/sound.ts';
 import { clock, money } from '../atelier/receiptDraw.ts';
 import { distressedOf, holeOf, newSeed, newSerial } from '../atelier/distress.js';
+import { PriceTag } from '../atelier/priceTag.js';
 import LaborCounter from '../components/LaborCounter.jsx';
 import { OpenHand, PinchHand } from '../components/HandCursor.jsx';
 import '../atelier/atelier.css';
@@ -58,6 +59,17 @@ export default function AtelierPage() {
   const barStatsRef = useRef(null);
   const hud = useRef(null);
   const layoutRef = useRef(null);
+  const hangRef = useRef(null);
+  const cardRef = useRef(null);
+  const wageRef = useRef(null);
+  const soldRef = useRef(null);
+  const tagFx = useRef(null);
+  useEffect(() => {
+    tagFx.current = new PriceTag(
+      { hang: hangRef.current, tag: tagRef.current, card: cardRef.current, price: priceRef.current, wage: wageRef.current, sold: soldRef.current },
+      reducedMotion()
+    );
+  }, []);
   const [top, setTop] = useState(84);
   const [picked, setPicked] = useState(null);
   const [phase, setPhaseState] = useState('line'); // line → lifting → pull → frozen
@@ -102,18 +114,19 @@ export default function AtelierPage() {
       canvasRef.current,
       (h) => {
         hud.current = h;
-        if (priceRef.current) priceRef.current.textContent = money(h.phase === 'idle' ? 9 : h.price);
         if (pctRef.current) pctRef.current.textContent = `${holeOf(h)}%`;
         if (laborRef.current) laborRef.current.textContent = clock(h.laborMs);
         if (barPriceRef.current) barPriceRef.current.textContent = money(h.phase === 'idle' ? 9 : h.price);
         if (barStatsRef.current) barStatsRef.current.textContent = `Hole ${holeOf(h)}% · Labor ${clock(h.laborMs)}`;
-        const tag = tagRef.current, L = layoutRef.current, api = clApi.current;
-        if (tag && L && api && !L.mobile) {
-          // the tag hangs from the line itself
-          const r = tag.offsetWidth;
-          const x = L.W - Math.max(32, L.W * 0.035) - r / 2;
-          tag.style.top = `${(L.offY + api.ropeYAt(x - L.offX) + 26).toFixed(1)}px`;
-          tag.style.rotate = `${(-2 + h.shiver * 1.4).toFixed(2)}deg`;
+        // the tag: count-up, colour, pops; on desktop it hangs from a pin on the live line (85% along)
+        const fx = tagFx.current, L = layoutRef.current, api = clApi.current;
+        if (fx) {
+          fx.frame(h, stageRef.current?.pops ?? 0);
+          if (L && api && !L.mobile) {
+            const sw = api.stage.clientWidth;
+            const x = 12 + 0.85 * (sw - 24); // the line runs between posts 12px in from each end
+            fx.place(L.offX + x, L.offY + api.ropeYAt(x));
+          }
         }
         if (h.phase === 'pull') {
           const m = messageFor(h.p, h.finished);
@@ -131,6 +144,8 @@ export default function AtelierPage() {
     };
     stageRef.current = stage;
     window.__holey = stage;
+    // test hook: the picked sock's box on the canvas
+    window.__holeySockBox = () => (layoutRef.current ? bigBox(layoutRef.current) : null);
     // warm the knit models in the worker
     (window.requestIdleCallback || ((f) => setTimeout(f, 200)))(() => SOCKS.reduce((p, s) => p.then(() => sockModel(s.id)), Promise.resolve()));
     return () => stage.dispose();
@@ -231,6 +246,7 @@ export default function AtelierPage() {
       if (phaseRef.current !== 'lifting') return;
       const L2 = computeLayout();
       layoutRef.current = L2;
+      tagFx.current?.reset();
       stageRef.current.open(sdef, m, { ...L2 });
       serial.current = newSerial();
       seed.current = newSeed();
@@ -456,18 +472,33 @@ export default function AtelierPage() {
           </button>
         )}
 
+        {/* the tag hangs from a clothespin clipped on the line, on a short string (desktop) */}
+        <div className="atl__hang" ref={hangRef}>
+          <svg className="atl__tagpin" viewBox="0 0 26 54" aria-hidden="true">
+            <rect x="3" y="2" width="20" height="50" rx="7" />
+            <path d="M13 6v42" />
+            <circle cx="13" cy="20" r="3.2" />
+          </svg>
+          <span className="atl__tagstring" aria-hidden="true" />
         <div className="atl__tag" ref={tagRef} aria-hidden={!active || undefined}>
-          <div className="tag-card">
+          <div className="tag-card" ref={cardRef}>
             <span className="tag-eyelet" aria-hidden />
+            <span className="tag-sold" ref={soldRef} aria-hidden="true">
+              Sold out
+            </span>
             <div className="tag-house">Atelier Holey</div>
             <div className="tag-name">{def ? `No. 0${def.id} · ${def.name}` : 'One sock · Hole included'}</div>
-            <div className="tag-price" ref={priceRef}>
-              $9.00
+            <div className="tag-pricebox">
+              <div className="tag-price" ref={priceRef}>
+                $9.00
+              </div>
             </div>
             <dl className="tag-rows">
               <div>
                 <dt>Your wage</dt>
-                <dd className="wage">$0.00</dd>
+                <dd className="wage" ref={wageRef}>
+                  $0.00
+                </dd>
               </div>
               <div>
                 <dt>Hole</dt>
@@ -488,6 +519,7 @@ export default function AtelierPage() {
               {phase === 'frozen' ? 'In the basket' : 'Add to basket'}
             </button>
           </div>
+        </div>
         </div>
 
         {!active && (

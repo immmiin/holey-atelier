@@ -69,7 +69,11 @@ for (const [name, opts] of [['1440', DESK], ['390', PHONE]]) {
   const target = await p.evaluate(() => {
     const el = [...document.querySelectorAll('.atl__line .cl__sock:not(.is-picked)')][3];
     const r = el.querySelector('.cl__img').getBoundingClientRect();
-    return { x: r.left + r.width / 2, y: r.top + r.height * 0.45 };
+    // tap a visible part of it (the hanging price tag can cover part of a background sock)
+    const tag = document.querySelector('.atl__hang .tag-card')?.getBoundingClientRect();
+    let x = r.left + r.width / 2;
+    if (tag && tag.width && x > tag.left - 6 && x < tag.right) x = Math.max(r.left + 8, tag.left - 14);
+    return { x, y: r.top + r.height * 0.45 };
   });
   await p.mouse.click(target.x, target.y);
   await waitPulling(p);
