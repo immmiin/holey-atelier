@@ -952,7 +952,7 @@
 }
 
 /* ================= About: final spacing pass =================
-   1. the lead steps away from the headline and sits under the sticker, on the right
+   1. the lead stays left under the headline, clear of the "p" descender in "purpose"
    2. the notes follow the hero at a normal section rhythm, not a second nav gap
    3. the polaroids and the CTA get real breathing room
    4. the CTA → footer distance is one deliberate section gap */
@@ -960,7 +960,18 @@ html body .about__hero {
   padding-bottom: 0;
 }
 html body .about__lead {
-  margin: clamp(20px, 2.4vw, 36px) 0 0;
+  align-self: flex-start;
+  max-width: 36ch;
+  /* measured: with no margin the lead's ink starts 2px (1440) – 8px (1000) under the "p" of
+     "purpose"; this leaves ≈ 40px of visible gap on desktop */
+  margin: clamp(26px, calc(12px + 1.8vw), 44px) 0 0;
+  text-align: left;
+}
+@media (max-width: 767px) {
+  html body .about__lead {
+    /* ≈ 22px visible gap under the descender on phones */
+    margin-top: 8px;
+  }
 }
 html body .about .notes {
   padding-top: clamp(56px, 6vw, 96px);
@@ -973,17 +984,4 @@ html body .about__line .about__cta {
 }
 html body:has(.about) .foot {
   margin-top: clamp(120px, 12vw, 190px);
-}
-@media (min-width: 900px) {
-  html body .about__lead {
-    align-self: flex-end;
-    max-width: 30ch;
-    margin-right: 19px; /* lines up with the sticker's right edge */
-    margin-top: clamp(28px, 3vw, 48px);
-  }
-}
-@media (max-width: 899px) {
-  html body .about__lead {
-    max-width: 40ch;
-  }
 }
