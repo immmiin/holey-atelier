@@ -64,7 +64,10 @@ export default function About() {
       </section>
       <SnapDots scroller={badgeRow} count={4} label="Number" />
 
-      <section className="about__line wrap" aria-label="The six socks">
+      <section className="about__line wrap" aria-labelledby="about-socks-label">
+        <p id="about-socks-label" className="kicker about__eyebrow">
+          The line-up · six socks, no pairs
+        </p>
         <ul ref={sockRow} className="about__socks snaprow">
           {products.map((p, i) => (
             <li key={p.slug} className="about__sock" style={{ '--sock': p.color, '--tilt': `${[-4, 3, -2, 4, -3, 2][i]}deg` }}>

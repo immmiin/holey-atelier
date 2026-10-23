@@ -30,6 +30,12 @@ const messageFor = (p, finished) => {
 };
 const LIFT_MS = 640;
 const holeOf = (h) => (h.finished ? 100 : Math.min(99, Math.floor(h.p * 100)));
+/** the line's centring shift as it is on screen this frame (mid-transition included) */
+const liveShift = (room) => {
+  const line = room?.querySelector('.atl__line');
+  const t = line ? getComputedStyle(line).translate : 'none';
+  return t && t !== 'none' ? parseFloat(t.split(' ')[1] || 0) || 0 : 0;
+};
 const navBottom = () => Math.ceil(document.querySelector('header.nav')?.getBoundingClientRect().bottom || 76);
 
 /* The Atelier: one full-screen room. Six socks on the line; pick one and it comes forward onto
@@ -64,6 +70,11 @@ export default function AtelierPage() {
   const [added, setAdded] = useState(null);
   const serial = useRef('0000');
   const seed = useRef(0);
+
+  // desktop, before a sock is picked: the line group sits centred between the counter and the headline
+  const [shift, setShift] = useState(0);
+  const shiftRef = useRef(0);
+  const [shiftAnim, setShiftAnim] = useState(false);
 
   const def = picked ? SOCKS.find((s) => s.slug === picked) : null;
   const active = phase !== 'line';
@@ -122,12 +133,46 @@ export default function AtelierPage() {
   }, []);
 
   // ------------------------------------------------------------ geometry
+  const centre = useCallback(() => {
+    const room = roomRef.current, api = clApi.current;
+    if (!room || !api || phaseRef.current !== 'line') return;
+    const msgEl = room.querySelector('.atl__msg');
+    if (window.innerWidth < 768 || !msgEl) {
+      shiftRef.current = 0;
+      setShift(0);
+      return;
+    }
+    const now = liveShift(room);
+    const posts = [...api.stage.querySelectorAll('.cl__post')].map((e) => e.getBoundingClientRect().top);
+    const tags = [...api.stage.querySelectorAll('.cl__tag')].map((e) => e.getBoundingClientRect().bottom);
+    if (!posts.length || !tags.length) return;
+    const groupTop = Math.min(...posts) - now, groupBottom = Math.max(...tags) - now;
+    const counter = room.querySelector('.atl__counter')?.getBoundingClientRect();
+    const above = Math.max(navBottom(), counter && counter.height ? counter.bottom : 0);
+    const below = msgEl.getBoundingClientRect().top;
+    const next = Math.max(0, Math.round(above + (below - above - (groupBottom - groupTop)) / 2 - groupTop));
+    shiftRef.current = next;
+    setShift(next);
+  }, []);
+
+  useEffect(() => {
+    const timers = [60, 400, 1200].map((ms) => setTimeout(centre, ms));
+    // glide only after the first placement, so the page doesn't open with the line sliding down
+    timers.push(setTimeout(() => setShiftAnim(true), 1400));
+    window.addEventListener('resize', centre);
+    return () => {
+      timers.forEach(clearTimeout);
+      window.removeEventListener('resize', centre);
+    };
+  }, [centre]);
+
   const computeLayout = useCallback(() => {
     const room = roomRef.current, api = clApi.current;
     if (!room || !api) return null;
     const r = room.getBoundingClientRect();
     const sr = api.stage.getBoundingClientRect();
-    const offX = sr.left - r.left, offY = sr.top - r.top;
+    // the picked layout is the line at rest (no centring shift), even while it glides back up
+    const offX = sr.left - r.left, offY = sr.top - r.top - liveShift(room);
     const W = r.width, H = r.height;
     const mobile = W < 760;
     const pinX = mobile ? W * 0.44 : W * 0.5;
@@ -187,7 +232,8 @@ export default function AtelierPage() {
     setPhase('line');
     setFinished(false);
     setAdded(null);
-  }, [setPhase]);
+    requestAnimationFrame(centre);
+  }, [setPhase, centre]);
 
   // /atelier?sock=heel-yeah: straight to that sock
   const wanted = params.get('sock');
@@ -269,8 +315,8 @@ export default function AtelierPage() {
 
   return (
     <section
-      className={`atp atl ${active ? 'is-active' : ''} ${pulling ? 'is-pulling' : ''}`}
-      style={{ paddingTop: top, '--sec-bg': def ? `color-mix(in srgb, ${products.find((p) => p.slug === picked).color} 22%, var(--cream))` : 'var(--cream)' }}
+      className={`atp atl ${active ? 'is-active' : ''} ${pulling ? 'is-pulling' : ''} ${shiftAnim ? 'is-gliding' : ''}`}
+      style={{ paddingTop: top, '--line-shift': `${shift}px`, '--sec-bg': def ? `color-mix(in srgb, ${products.find((p) => p.slug === picked).color} 22%, var(--cream))` : 'var(--cream)' }}
       data-cursor="native"
       aria-label="The Atelier"
     >

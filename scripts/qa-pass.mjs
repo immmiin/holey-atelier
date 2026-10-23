@@ -27,8 +27,8 @@ const ok = (c, msg) => (c || bad++, console.log(`${c ? 'PASS' : 'FAIL'}  ${msg}`
   ok(end.includes(`${m}m ${s}s`) && end.replace(/,/g, "").includes(`$${Math.round(stats.brandRevenue)}`), `counter ends at "${end}"`);
   ok(seq[0] === '0m 00s' || seq.some((x) => x !== seq[seq.length - 1]), 'counter counts up from 0 on load');
   const div = await p.evaluate(() => {
-    const cs = getComputedStyle(document.querySelector('.teaser'));
-    return { w: cs.borderTopWidth, img: cs.borderImageSource.slice(0, 60), color: cs.borderTopColor };
+    const cs = getComputedStyle(document.querySelector('.teaser'), '::before');
+    return { w: cs.height, img: cs.backgroundImage.slice(0, 60) };
   });
   ok(div.w === '3px' && div.img.includes('repeating-linear-gradient'), `hero → line-up divider: ${div.w}, ${div.img}…`);
   await ctx.close();

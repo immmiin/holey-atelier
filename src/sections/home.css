@@ -1917,10 +1917,20 @@
   }
 }
 
-/* the hero → line-up divider: same 3px ink line, dashed like the care-label button's stitching and
-   the drum's rings (6px dash, 7px gap — a CSS `dashed` border can't set its own spacing) */
+/* the hero → line-up divider: the site's dashed line, on the content container (same length, dashes
+   and weight as the stitched seam further down) */
 .teaser {
-  border-top: var(--line) solid var(--ink);
-  border-image: repeating-linear-gradient(90deg, var(--ink) 0 6px, transparent 6px 13px) 1;
-  border-image-width: var(--line) 0 0 0;
+  position: relative;
+  border-top: 0;
+  border-image: none;
+}
+.teaser::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: max(var(--pad), (100% - var(--max)) / 2);
+  right: max(var(--pad), (100% - var(--max)) / 2);
+  height: var(--line);
+  background: var(--dash-line);
+  pointer-events: none;
 }

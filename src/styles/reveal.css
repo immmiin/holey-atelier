@@ -140,9 +140,12 @@ html.rv-on .laundry {
 
 /* the stitched seam between sections */
 .seam {
-  display: block;
+  display: grid;
   height: 28px;
   margin-block: 0;
+}
+.seam > * {
+  grid-area: 1 / 1;
 }
 .seam svg {
   display: block;
@@ -151,18 +154,9 @@ html.rv-on .laundry {
   overflow: visible;
 }
 .seam__line {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-dasharray: 10 8;
-}
-.seam__draw {
-  fill: none;
-  stroke: #fff;
-  stroke-width: 8;
-  stroke-dasharray: 1 1;
-  stroke-dashoffset: 0;
+  align-self: center;
+  height: var(--line);
+  background: var(--dash-line);
 }
 .seam__loose {
   fill: none;
@@ -172,11 +166,11 @@ html.rv-on .laundry {
   transform-box: fill-box;
   transform-origin: 0% 50%;
 }
-html.rv-on .seam:not(.is-in) .seam__draw {
-  stroke-dashoffset: 1;
+html.rv-on .seam:not(.is-in) .seam__line {
+  clip-path: inset(0 100% 0 0);
 }
-html.rv-on .seam .seam__draw {
-  transition: stroke-dashoffset 1.1s cubic-bezier(0.45, 0, 0.2, 1);
+html.rv-on .seam .seam__line {
+  transition: clip-path 1.1s cubic-bezier(0.45, 0, 0.2, 1);
 }
 html.rv-on .seam:not(.is-in) .seam__loose {
   opacity: 0;

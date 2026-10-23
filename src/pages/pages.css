@@ -904,3 +904,49 @@
     grid-template-columns: minmax(96px, 38%) 1fr;
   }
 }
+
+/* About: the six polaroids lead; the numbers are a smaller row that runs straight into them */
+.badges {
+  justify-content: center;
+  gap: clamp(18px, 2.4vw, 34px);
+  padding-block: clamp(40px, 5vw, 64px) 0;
+}
+.badge {
+  width: clamp(100px, 9.5vw, 128px);
+  box-shadow: var(--shadow-sm);
+}
+.badge__n {
+  font-size: clamp(2rem, 3.4vw, 2.8rem);
+}
+.badge__l {
+  font-size: 0.72rem;
+}
+.about__line {
+  padding-top: clamp(36px, 4vw, 56px);
+  gap: clamp(16px, 2vw, 24px);
+}
+.about__eyebrow {
+  margin: 0;
+}
+@media (min-width: 768px) {
+  .badges {
+    justify-content: center;
+    padding-inline: var(--pad);
+  }
+}
+@media (max-width: 767px) {
+  html .badges.snaprow > .badge {
+    flex: 0 0 30vw;
+    width: 30vw;
+    height: 30vw;
+  }
+  html .badges .badge__n {
+    font-size: 2rem;
+  }
+  html .about__line {
+    padding-top: var(--s3);
+  }
+  html .about__eyebrow {
+    padding-inline: var(--pad);
+  }
+}

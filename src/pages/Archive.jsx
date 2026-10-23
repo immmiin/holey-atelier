@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import BounceText from '../components/motion/BounceText.jsx';
 import LaborCounter from '../components/LaborCounter.jsx';
@@ -11,6 +11,49 @@ import './archive.css';
 const CACHE = 'holey-archive-v1';
 const nameOf = (slug) => SOCKS.find((s) => s.slug === slug)?.name || 'A sock';
 const clock = (sec) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+/* the Atelier's peg, so every piece hangs from the same pin */
+const Peg = () => (
+  <svg className="arc__peg" viewBox="0 0 26 54" aria-hidden="true">
+    <rect x="3" y="2" width="20" height="50" rx="7" />
+    <path d="M13 6v42" />
+    <circle cx="13" cy="20" r="3.2" />
+  </svg>
+);
+
+const ROPE_Y = 22; // where the rope crosses a row, from the row's top (through the pegs' grip)
+
+/** one sagging rope per grid row, like the Atelier's line: posts on the grid's edges, and each piece
+ *  dropped to the rope's height at its own x (so the ones in the middle hang lowest) */
+function useRopes(grid, deps) {
+  const [ropes, setRopes] = useState(null);
+  useLayoutEffect(() => {
+    const el = grid.current;
+    if (!el) return undefined;
+    const measure = () => {
+      const cs = getComputedStyle(el);
+      const x0 = parseFloat(cs.paddingLeft) + 2;
+      const x1 = el.clientWidth - parseFloat(cs.paddingRight) - 2;
+      if (x1 <= x0) return;
+      const sag = Math.min(64, (x1 - x0) * 0.045);
+      el.style.setProperty('--sag', `${sag.toFixed(1)}px`);
+      const rows = new Map();
+      for (const li of el.children) {
+        if (!li.classList.contains('arc__item')) continue;
+        if (!rows.has(li.offsetTop)) rows.set(li.offsetTop, []);
+        rows.get(li.offsetTop).push(li);
+        const t = (li.offsetLeft + li.offsetWidth / 2 - x0) / (x1 - x0);
+        li.style.setProperty('--drop', `${(4 * sag * t * (1 - t)).toFixed(1)}px`);
+      }
+      setRopes({ w: el.clientWidth, h: el.scrollHeight, x0, x1, sag, ys: [...rows.keys()].map((top) => top + ROPE_Y) });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, deps); // eslint-disable-line react-hooks/exhaustive-deps
+  return ropes;
+}
+
 const readCache = () => {
   try {
     return JSON.parse(localStorage.getItem(CACHE) || 'null');
@@ -64,6 +107,9 @@ export default function Archive() {
     if (nextLimit > items.length && next != null) load(next);
   };
   const shown = items.slice(0, limit);
+  const grid = useRef(null);
+  const skeleton = state === 'loading' && !items.length;
+  const ropes = useRopes(grid, [shown.length, skeleton]);
   const hasMore = items.length > limit || next != null;
 
   return (
@@ -79,12 +125,30 @@ export default function Archive() {
       ) : (
         <>
           {state === 'offline' && <p className="arc__note wrap">Showing the last pieces we saw. The Archive is out for a wash.</p>}
-          <ul className="arc__grid wrap" aria-busy={state === 'loading' && !items.length}>
-            {state === 'loading' && !items.length
+          <ul ref={grid} className="arc__grid wrap" aria-busy={skeleton}>
+            {ropes && (
+              <li className="arc__ropes" role="presentation" aria-hidden="true">
+                <svg width={ropes.w} height={ropes.h}>
+                  {ropes.ys.map((y) => {
+                    // a parabola through both posts dipping `sag` at the middle: control point at 2 × sag
+                    const d = `M${ropes.x0} ${y} Q${(ropes.x0 + ropes.x1) / 2} ${y + 2 * ropes.sag} ${ropes.x1} ${y}`;
+                    return (
+                      <g key={y}>
+                        <path className="arc__rope-shadow" d={d} />
+                        <path className="arc__rope-line" d={d} />
+                        <circle className="arc__post" cx={ropes.x0} cy={y} r="9" />
+                        <circle className="arc__post" cx={ropes.x1} cy={y} r="9" />
+                      </g>
+                    );
+                  })}
+                </svg>
+              </li>
+            )}
+            {skeleton
               ? Array.from({ length: 8 }, (_, i) => (
                   <li key={i} className="arc__item arc__item--skel" aria-hidden="true">
                     <span className="arc__card">
-                      <span className="arc__peg" />
+                      <Peg />
                       <span className="skel skel--sock" />
                       <span className="skel skel--line" />
                       <span className="skel skel--line skel--short" />
@@ -94,7 +158,7 @@ export default function Archive() {
               : shown.map((it, i) => (
                   <li key={it.serial} className="arc__item" style={{ '--tilt': `${((it.unravelSeed % 7) - 3) * 0.9}deg`, '--peg': i % 2 ? 'var(--pink)' : 'var(--hi)' }}>
                     <Link to={`/r/${it.serial}`} className="arc__card" aria-label={`${it.serial}: ${nameOf(it.sockSlug)}, ${it.holePct}% hole, labor ${clock(it.laborSec)}, $${it.price.toFixed(2)}`}>
-                      <span className="arc__peg" aria-hidden="true" />
+                      <Peg />
                       <Piece slug={it.sockSlug} hole={it.holePct} w={130} h={162} />
                       <span className="arc__serial">{it.serial}</span>
                       <span className="arc__meta">

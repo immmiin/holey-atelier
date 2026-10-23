@@ -31,6 +31,8 @@
   --space-3: clamp(64px, 9vw, 128px);
   --section: var(--space-3);
   --max: 1360px;
+  /* the site's dashed divider: 3px ink, 6px dash / 7px gap (the care-label stitching, the drum rings) */
+  --dash-line: repeating-linear-gradient(90deg, var(--ink) 0 6px, transparent 6px 13px);
   /* the one container: 1360 of content + the side padding */
   --wrap: calc(var(--max) + 2 * var(--pad));
 

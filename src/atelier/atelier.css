@@ -496,3 +496,14 @@ html.hole-cursor .atl__stage[data-grab='2'],
     margin-inline: auto;
   }
 }
+
+/* default state (desktop): the line group is centred between the counter and the headline; picking a
+   sock glides it back to its resting spot, which is where the zoomed layout is measured from */
+@media (min-width: 768px) {
+  .atp:not(.is-active) .atl__line {
+    translate: 0 var(--line-shift, 0px);
+  }
+  .atp.is-gliding .atl__line {
+    transition: translate 0.62s var(--spring-soft);
+  }
+}

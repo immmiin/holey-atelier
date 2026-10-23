@@ -1119,7 +1119,6 @@
   html .arc__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 36px 10px;
-    --row: 332px;
   }
 }
 @media (max-width: 767px) {

@@ -27,7 +27,8 @@ for (const [W, H] of sizes) {
         return s.id ? '#' + s.id : '.' + String(s.className).split(/\s+/)[0];
       }, i);
       // the shop's line belongs to its header block: it starts 48px under the filter row by design
-      if (!name || name === '.shop__line') continue;
+      // …and the About polaroids run straight on from the numbers above them (one flow, by design)
+      if (!name || name === '.shop__line' || name === '.about__line') continue;
       await p.waitForTimeout(1300); // reveals finish rising
       const r = await p.evaluate((k) => {
         const s = [...document.querySelectorAll('#main > *, #main > * > section, #main > * > header')][k];

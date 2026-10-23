@@ -13,11 +13,11 @@ export default function Home() {
     <>
       <Hero />
       <AtelierTeaser />
-      <Seam id="seam-film" />
+      <Seam />
       <LaundryDay />
       <Missing />
       <Receipts />
-      <Seam id="seam-foot" />
+      <Seam />
     </>
   );
 }
