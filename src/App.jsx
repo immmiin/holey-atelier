@@ -47,7 +47,8 @@ function WashedRoutes() {
 
   useEffect(() => {
     pending.current = location;
-    if (samePage(location, shown)) {
+    // a colour swatch on a phone product page swaps sock in place: no washing-machine transition
+    if (samePage(location, shown) || location.state?.swatch) {
       setShown(location);
       scrollToHash(location.hash);
       return;

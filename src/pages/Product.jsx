@@ -8,6 +8,7 @@ import { Minus, Plus, Rotate } from '../components/Icons.jsx';
 import Receipts from '../sections/Receipts.jsx';
 import LineUp from '../sections/LineUp.jsx';
 import NotFound from './NotFound.jsx';
+import ProductMobile from './ProductMobile.jsx';
 import { bySlug, holeSrc, holeSrcSet, logoColor, money, products, sockSrc } from '../data/products.js';
 import { useCart } from '../context/CartContext.jsx';
 import { pushAccent } from '../lib/accent.js';
@@ -78,8 +79,22 @@ function LockedQty() {
   );
 }
 
+const PHONE = '(max-width: 767px)';
+/** phones get their own product page layout (ProductMobile); desktop renders exactly as before */
+function usePhone() {
+  const [phone, setPhone] = useState(() => typeof window !== 'undefined' && window.matchMedia(PHONE).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(PHONE);
+    const on = () => setPhone(mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  return phone;
+}
+
 export default function Product() {
   const { slug } = useParams();
+  const phone = usePhone();
   const p = bySlug[slug];
   useTitle(p ? p.name : 'Not found');
   const cart = useCart();
@@ -90,6 +105,7 @@ export default function Product() {
   useEffect(() => (p ? pushAccent(logoColor(p)) : undefined), [p]);
 
   if (!p) return <NotFound />;
+  if (phone) return <ProductMobile p={p} />;
   const gallery = galleryFor(p);
   const cur = gallery[active] || gallery[0];
   const inCart = cart.has(p.slug);

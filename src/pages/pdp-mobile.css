@@ -1,0 +1,407 @@
+/* Phone product page (ProductMobile.jsx). Phones only; spacing on the 8 / 16 / 24 / 40 scale. */
+@media (max-width: 767px) {
+  .mpdp {
+    --g: 20px;
+    padding: calc(var(--nav-reserve, var(--nav-h)) + 16px) 0 40px;
+  }
+  /* the sticky bar never covers the end of the page (footer included) */
+  body:has(.mpdp) {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ---- gallery: 4:5 card, two swipeable slides, dots ---- */
+  .mpdp__gallery {
+    position: relative;
+    margin-inline: var(--g);
+  }
+  .mpdp__slides {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    aspect-ratio: 4 / 5;
+    border: var(--line) solid var(--ink);
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.55), transparent 60%),
+      color-mix(in srgb, var(--sock) 48%, var(--paper));
+    box-shadow: var(--shadow);
+  }
+  .mpdp__slides::-webkit-scrollbar {
+    display: none;
+  }
+  .mpdp__slide {
+    position: relative;
+    flex: 0 0 100%;
+    height: 100%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    overflow: hidden;
+  }
+  .mpdp__slide:first-child {
+    border-radius: 21px 0 0 21px;
+  }
+  .mpdp__slide:last-child {
+    border-radius: 0 21px 21px 0;
+  }
+  .mpdp__slide > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .mpdp__slide .sock3d {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .mpdp__slide .sock3d__hint {
+    bottom: 16px;
+    padding: 8px 16px;
+    border-width: 2px;
+    font-size: 13px;
+    gap: 8px;
+  }
+  .mpdp__slide .sock3d__hint svg {
+    width: 13px;
+    height: 13px;
+  }
+  .mpdp__edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 16%;
+    z-index: 2;
+    touch-action: pan-x pan-y;
+  }
+  .mpdp__edge--l {
+    left: 0;
+  }
+  .mpdp__edge--r {
+    right: 0;
+  }
+  .mpdp__dots {
+    display: flex;
+    justify-content: center;
+    /* the 44px tap row overlaps the (non-interactive) space below, so the name block starts ≈ 16px
+       under the dots */
+    margin-bottom: -8px;
+  }
+  .mpdp__dots button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  .mpdp__dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--ink) 30%, transparent);
+    transition: width 0.25s var(--ease), background-color 0.25s;
+  }
+  .mpdp__dots .is-on span {
+    width: 24px;
+    background: var(--ink);
+  }
+
+  /* ---- name + price (16px under the gallery: the dots' 44px hit row sits in between) ---- */
+  .mpdp__head {
+    display: grid;
+    justify-items: start;
+    gap: 8px;
+    margin: 0 var(--g);
+  }
+  .mpdp__chip {
+    margin: 0;
+    padding: 4px 8px;
+    background: var(--pink);
+    border: var(--line-thin) solid var(--ink);
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 13px;
+    line-height: 1.2;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .mpdp__title {
+    margin: 0;
+    font-family: var(--f-display);
+    font-size: clamp(32px, 9vw, 40px);
+    line-height: 1.05;
+    color: var(--green);
+    text-shadow: 3px 3px 0 color-mix(in srgb, var(--sock) 80%, var(--pink));
+  }
+  .mpdp__price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0;
+  }
+  .mpdp__price b {
+    font-size: 22px;
+    font-weight: 900;
+  }
+  .mpdp__price span {
+    font-size: 13px;
+    font-weight: 700;
+    color: color-mix(in srgb, var(--ink) 60%, var(--cream));
+  }
+
+  /* ---- colour swatches ---- */
+  .mpdp__colors {
+    margin: 24px var(--g) 0;
+  }
+  .mpdp__colors-label {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .mpdp__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .mpdp__swatch {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+  }
+  .mpdp__swatch span {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: var(--line-thin) solid var(--ink);
+    background: linear-gradient(135deg, var(--a) 0 50%, var(--b) 50% 100%);
+  }
+  .mpdp__swatch.is-on span {
+    box-shadow:
+      0 0 0 2px var(--cream),
+      0 0 0 4px var(--ink);
+    width: 36px;
+    height: 36px;
+  }
+
+  /* ---- description: 4 lines, then "Read more" ---- */
+  .mpdp__desc {
+    margin: 24px var(--g) 0;
+  }
+  .mpdp__desc p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.55;
+    font-weight: 500;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+  }
+  .mpdp__desc p.is-open {
+    display: block;
+    -webkit-line-clamp: unset;
+    line-clamp: none;
+  }
+  .mpdp__more {
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 900;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ---- care label: one collapsible, closed by default; the dashed rows inside ---- */
+  .mpdp__care {
+    margin: 24px var(--g) 0;
+    background: var(--paper);
+    border: var(--line) solid var(--ink);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .mpdp__care-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 56px;
+    padding: 8px 16px;
+    border: 0;
+    background: none;
+    font-family: var(--f-display);
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .mpdp__care-icon {
+    position: relative;
+    width: 16px;
+    height: 16px;
+  }
+  .mpdp__care-icon::before,
+  .mpdp__care-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--ink);
+    transition: rotate 0.25s var(--ease);
+  }
+  .mpdp__care-icon::after {
+    rotate: 90deg;
+  }
+  .mpdp__care.is-open .mpdp__care-icon::after {
+    rotate: 0deg;
+  }
+  .mpdp__care-body {
+    margin: 0 8px 8px;
+    padding: 8px 16px 16px;
+    border: 2px dashed color-mix(in srgb, var(--ink) 50%, transparent);
+    border-radius: 8px;
+  }
+  .mpdp__care-no {
+    margin: 0 0 8px;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-align: right;
+  }
+  .mpdp__care dl {
+    margin: 0;
+  }
+  .mpdp__care dl div {
+    display: grid;
+    grid-template-columns: minmax(96px, 40%) 1fr;
+    gap: 8px;
+    padding-block: 8px;
+    border-top: 2px dashed rgba(26, 15, 31, 0.3);
+  }
+  .mpdp__care dt {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--ink) 62%, var(--paper));
+  }
+  .mpdp__care dd {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  /* ---- the rest of the line ---- */
+  .mpdp__rest {
+    margin: 40px var(--g) 0;
+  }
+  .mpdp__rest-title {
+    margin: 0 0 16px;
+    font-family: var(--f-display);
+    font-size: 24px;
+    line-height: 1.1;
+  }
+  .mpdp__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .mpdp__card {
+    display: grid;
+    gap: 8px;
+    padding: 8px 8px 16px;
+    background: var(--cream);
+    border: 1.5px solid var(--ink);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .mpdp__card-img {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--sock) 40%, var(--paper));
+  }
+  .mpdp__card-img img {
+    width: 76%;
+    height: 76%;
+    object-fit: contain;
+  }
+  .mpdp__card-name {
+    padding-inline: 8px;
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+  .mpdp__card-price {
+    padding-inline: 8px;
+    margin-top: -8px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* ---- sticky buy bar ---- */
+  .mpdp__bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: var(--paper);
+    border-top: var(--line) solid var(--ink);
+  }
+  .mpdp__bar-price {
+    margin-right: auto;
+    font-size: 22px;
+    font-weight: 900;
+  }
+  .mpdp__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 16px;
+    border: var(--line) solid var(--ink);
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 14px;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .mpdp__btn--ghost {
+    background: var(--paper);
+    padding-inline: 8px;
+    min-height: 44px;
+    border-width: 2px;
+  }
+  .mpdp__btn--primary {
+    background: var(--hi);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .mpdp__btn--primary.is-in {
+    background: var(--paper);
+  }
+}
