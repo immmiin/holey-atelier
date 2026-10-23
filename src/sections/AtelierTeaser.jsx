@@ -14,28 +14,40 @@ export default function AtelierTeaser() {
   const foot = useRef(null);
 
   // the counter stays in normal flow; its top margin is measured so it sits exactly GAP below the
-  // lowest price tag, whatever the rope's sag at this width (re-measured on resize and as socks settle)
+  // lowest price tag. Everything is measured against the stage, so the scroll position never matters;
+  // the rope is pre-settled (Clothesline), so the first measurement is already the resting one.
   useEffect(() => {
     const GAP = 40;
     const fit = () => {
       const l = line.current, f = foot.current;
-      if (!l || !f) return;
+      const st = l?.querySelector('.cl__stage');
+      if (!st || !f) return;
       // mid-animation (the socks dropping in) the tags aren't where they'll rest
       if (l.getAnimations?.({ subtree: true }).some((a) => a.playState === 'running')) return;
-      const tags = [...l.querySelectorAll('.cl__tag')].map((t) => t.getBoundingClientRect().bottom);
+      const top = st.getBoundingClientRect().top;
+      const tags = [...l.querySelectorAll('.cl__tag')].map((t) => t.getBoundingClientRect().bottom - top);
       if (!tags.length) return;
       const lowest = Math.max(...tags);
-      const below = l.getBoundingClientRect().bottom - lowest; // room the stage already leaves
-      f.style.marginTop = `${Math.round(GAP - below)}px`;
+      const below = l.getBoundingClientRect().bottom - top - lowest; // room the stage already leaves
+      const next = Math.round(GAP - below);
+      // the socks sway a pixel or two: only real layout changes move the counter
+      if (f.style.marginTop && Math.abs(parseFloat(f.style.marginTop) - next) < 2) return;
+      f.style.marginTop = `${next}px`;
     };
+    // once right after mount (two frames: the stage has measured itself and drawn), then on resize
+    let raf = requestAnimationFrame(() => (raf = requestAnimationFrame(fit)));
     const ro = new ResizeObserver(fit);
     if (line.current) ro.observe(line.current);
+    window.addEventListener('resize', fit);
+    // a safety net
     const timers = [400, 1200, 2500, 4000, 6000].map((ms) => setTimeout(fit, ms));
     const io = new IntersectionObserver(([e]) => e.isIntersecting && [900, 2200, 3600].forEach((ms) => timers.push(setTimeout(fit, ms))));
     if (line.current) io.observe(line.current);
     return () => {
+      cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
+      window.removeEventListener('resize', fit);
       timers.forEach(clearTimeout);
     };
   }, []);

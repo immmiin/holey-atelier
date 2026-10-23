@@ -287,11 +287,21 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
       });
     };
 
+    // settle the rope before the first frame, so the line and its tags start at their resting sag
+    // (the loop itself only runs once the stage is on screen), then drop any leftover motion
+    for (let n = 0; n < 600; n++) step(1 / 120, 0);
+    socks.forEach((s, i) => {
+      s.th = calm ? 0 : (i % 2 ? 1 : -1) * 0.04;
+      s.om = 0;
+      s.vx = 0;
+      s.vy = 0;
+    });
+    ox.set(px);
+    oy.set(py);
     draw();
     if (still) {
-      // settle once, then freeze
-      for (let n = 0; n < 600; n++) step(1 / 120, 0);
-      socks.forEach((s) => ((s.th = 0), (s.om = 0)));
+      // reduced motion: hang straight and stay put
+      socks.forEach((s) => (s.th = 0));
       draw();
       return undefined;
     }
