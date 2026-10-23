@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Peek from '../components/Peek.jsx';
 import { sockSrc } from '../data/products.js';
 import { reducedMotion, scrollTo } from '../lib/scroll.js';
-import { dialClick, doorPop, setRumble } from '../atelier/sound.ts';
+import { clunk, dialClick, doorPop, setRumble } from '../atelier/sound.ts';
 
 const SOCK = 1; // two of the same: Heel Yeah
 const DETENT = Math.PI / 6;
@@ -21,11 +21,100 @@ export default function Washer() {
   const [open, setOpen] = useState(false); // the door, after the spin
   // "make spin obvious": the dial wobbles and the SPIN ME sticker bobs until the first spin
   // interaction; the sticker goes once a spin has completed (with reduced motion it simply stays)
+  const rootRef = useRef(null);
   const [touched, setTouched] = useState(false);
   const [spunOnce, setSpunOnce] = useState(false);
   useEffect(() => {
     if (done) setSpunOnce(true);
   }, [done]);
+
+  // make room for the result slip, so it never sits on what's around it: desktop — the hero grows
+  // below (nothing above moves); phones — the polaroid stays exactly where it was on the machine
+  const polaroidTop = useRef(null);
+  useEffect(() => {
+    const root = rootRef.current;
+    const pol = root?.closest('.hero2__machine')?.querySelector('.hero2__polaroid');
+    if (pol && !done) polaroidTop.current = pol.getBoundingClientRect().top + window.scrollY;
+  });
+  useEffect(() => {
+    const root = rootRef.current;
+    const hero = root?.closest('.hero2');
+    const pol = root?.closest('.hero2__machine')?.querySelector('.hero2__polaroid');
+    if (!root || !hero) return undefined;
+    if (!done) {
+      hero.style.marginBottom = '';
+      if (pol) pol.style.translate = '';
+      return undefined;
+    }
+    if (!open) return undefined; // measure once the door (and its slip offset) is set
+    const raf = requestAnimationFrame(() => {
+      const out = root.querySelector('.washer__out');
+      if (!out) return;
+      if (window.matchMedia('(max-width: 767px)').matches) {
+        if (pol && polaroidTop.current != null) {
+          pol.style.translate = '';
+          const now = pol.getBoundingClientRect().top + window.scrollY;
+          pol.style.translate = `0 ${Math.round(polaroidTop.current - now)}px`;
+        }
+      } else {
+        const slip = parseFloat(root.style.getPropertyValue('--slip-top')) || 16;
+        const bottom = root.getBoundingClientRect().top + root.offsetHeight + slip + out.offsetHeight;
+        hero.style.marginBottom = `${Math.max(0, Math.ceil(bottom + 48 - hero.getBoundingClientRect().bottom))}px`;
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [done, open]);
+
+  // the door comes forward as far as it can without covering the nav (+16px) or leaving the screen:
+  // −55° / 1.35 if it fits (overshoot included), else the most of it that does. Measured just before
+  // the door opens, so the swing starts with the right numbers.
+  const fitDoor = useRef(() => {});
+  fitDoor.current = () => {
+    const root = rootRef.current, g = root?.querySelector('.porthole__glass');
+    if (!g) return;
+    const navB = document.querySelector('.nav')?.getBoundingClientRect().bottom ?? 0;
+    const vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    const box = (a, sc) => {
+      g.style.transform = `rotateY(${a}deg) scale(${sc})`;
+      return g.getBoundingClientRect();
+    };
+    const ok = (r) => r.top >= navB + 16 && r.bottom <= vh && r.left >= 0 && r.right <= vw;
+    // the overshoot (~5% further on both) is the widest moment: it has to fit too
+    const fits = (a, sc) => ok(box(a * 1.1, sc * 1.055));
+    const prev = g.style.transition;
+    g.style.transition = 'none';
+    // the most dramatic swing that fits: the full −55° first (a deeper perspective tames how much the
+    // near edge looms, when 900px is too much for the screen), with as much of the 1.35 pop as fits
+    const porthole = g.parentElement?.closest('.porthole') || root.querySelector('.porthole');
+    const setP = (P) => porthole && (porthole.style.perspective = `${P}px`);
+    let pick = null;
+    for (let a = -55; a <= -20 && !pick; a += 5)
+      for (const P of [900, 1200, 1600, 2200, 3000]) {
+        setP(P);
+        let sc = 1.35;
+        while (sc >= 1.05 && !fits(a, sc)) sc -= 0.03;
+        if (sc >= 1.05) {
+          pick = [a, +sc.toFixed(2), P];
+          break;
+        }
+      }
+    if (!pick) {
+      setP(900);
+      pick = [-15, 1.02, 900];
+    }
+    // the result slip goes below wherever the open door ends up (desktop)
+    const rb = box(pick[0], pick[1]).bottom;
+    const wb = root.getBoundingClientRect().bottom;
+    g.style.transform = '';
+    void g.offsetWidth; // back to closed, so the swing animates from shut
+    g.style.transition = prev;
+    setP(pick[2]);
+    root.style.setProperty('--door-persp', `${pick[2]}px`);
+    root.style.setProperty('--door-angle', `${pick[0]}deg`);
+    root.style.setProperty('--door-scale', String(pick[1]));
+    root.style.setProperty('--slip-top', `${Math.max(16, Math.ceil(rb - wb) + 16)}px`);
+  };
+
 
   // ---------------------------------------------------------------- simulation
   useEffect(() => {
@@ -174,7 +263,9 @@ export default function Washer() {
       setDone(true);
       setTimeout(() => {
         s.out = true;
+        fitDoor.current();
         setOpen(true);
+        clunk(); // the door swings out and comes forward
         draw();
       }, 120);
     }
@@ -293,7 +384,7 @@ export default function Washer() {
   };
 
   return (
-    <div className={`washer ${open ? 'is-open' : ''} ${touched ? 'is-touched' : ''} ${spunOnce ? 'has-spun' : ''}`}>
+    <div ref={rootRef} className={`washer ${open ? 'is-open' : ''} ${touched ? 'is-touched' : ''} ${spunOnce ? 'has-spun' : ''}`}>
       <div className="machine">
         <span className="spinme" aria-hidden="true">
           <span className="spinme__label">Spin me</span>
@@ -375,29 +466,21 @@ export default function Washer() {
 
       {done && (
         <div className="washer__out" role="status">
-          <div className="washer__pair">
+          <span className="washer__thumb">
             <img className="washer__returned" src={sockSrc(SOCK, 400)} alt="One sock, returned by the washer." />
-            <Peek
-              className="washer__gap"
-              r={56}
-              altClassName="washer__ghost"
-              alt={
-                <>
-                  <img src={sockSrc(SOCK, 400)} alt="" />
-                  <b>missing</b>
-                </>
-              }
-            />
+          </span>
+          <div className="washer__text">
+            <p className="washer__eyebrow">Spin complete</p>
+            <p className="washer__msg">1 sock returned.</p>
+            <p className="washer__links">
+              <a href="#missing" className="washer__where" onClick={(e) => (e.preventDefault(), scrollTo('#missing', { offset: -80 }))}>
+                Where did the other one go? ↓
+              </a>
+              <button type="button" className="washer__again" onClick={again}>
+                Spin again ↻
+              </button>
+            </p>
           </div>
-          <p className="washer__msg">Spin complete. 1 sock returned.</p>
-          <p className="washer__links">
-            <a href="#missing" onClick={(e) => (e.preventDefault(), scrollTo('#missing', { offset: -80 }))}>
-              Where did the other one go? ↓
-            </a>
-            <button type="button" className="washer__again" onClick={again}>
-              Spin again
-            </button>
-          </p>
         </div>
       )}
     </div>

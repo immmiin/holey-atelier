@@ -2035,3 +2035,178 @@
     translate: 0 -5px;
   }
 }
+
+/* ================= the washer door: the big, dramatic opening ================= */
+/* it swings out on its left hinge AND comes forward: scale 1 → 1.35, overshooting to ~1.42 on the
+   way (the curve does the overshoot), with a deeper shadow. Only the door (.porthole__glass) moves:
+   the H badge, the dial and the status bar are siblings on the machine body and never transform.
+   Washer.jsx measures the swing when it opens and trims --door-angle / --door-scale until the whole
+   swing (overshoot included) stays below the nav (+16px) and inside the screen. */
+.porthole {
+  perspective: 900px;
+}
+html body .porthole__glass {
+  transform-origin: 0% 50%;
+  transition:
+    transform 0.8s cubic-bezier(0.3, 1.9, 0.5, 1),
+    filter 0.5s ease;
+}
+html body .washer.is-open .porthole__glass {
+  transform: rotateY(var(--door-angle, -55deg)) scale(var(--door-scale, 1.35));
+  filter: drop-shadow(16px 24px 0 rgba(26, 15, 31, 0.32)) drop-shadow(0 30px 40px rgba(26, 15, 31, 0.25));
+  z-index: 6;
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .porthole__glass {
+    transition: none;
+  }
+}
+
+/* ================= "Spin complete": a green slip below the machine ================= */
+html body .washer__out {
+  position: relative;
+  inset: auto;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 20px;
+  width: max-content;
+  max-width: 100%;
+  margin: 20px 0 0 auto;
+  padding: 16px 20px;
+  background: #1f5b3a;
+  color: #fbf1e8;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  rotate: -2deg;
+  transform: none;
+  justify-items: stretch;
+  text-align: left;
+  /* in after the door has finished opening (120ms latch + 800ms swing) + 200ms */
+  animation: washer-slip 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) 1.12s both;
+}
+@keyframes washer-slip {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
+}
+html body .washer__thumb {
+  display: grid;
+  place-items: center; /* the sock sits dead centre of its 96px column */
+  width: 96px;
+  height: 96px;
+}
+html body .washer__returned {
+  display: block;
+  width: auto;
+  height: 92px;
+  max-width: 96px;
+  aspect-ratio: auto;
+  object-fit: contain;
+  rotate: 0deg;
+  filter: drop-shadow(2px 0 0 var(--ink)) drop-shadow(-2px 0 0 var(--ink)) drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 -2px 0 var(--ink));
+}
+html body .washer__text {
+  display: grid;
+  justify-items: start;
+  min-width: 0;
+}
+html body .washer__eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f5f56a;
+}
+html body .washer__msg {
+  margin: 2px 0 0;
+  font-family: var(--f-display);
+  font-size: 26px;
+  line-height: 1.1;
+  color: #fbf1e8;
+}
+html body .washer__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px 16px;
+  margin: 16px 0 0;
+  font-size: 15px;
+  font-weight: 900;
+}
+html body .washer__where {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: #f5f56a;
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+html body .washer__again {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fbf1e8;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+@media (min-width: 768px) {
+  /* desktop: just below the machine, aligned to its bottom-right, without moving anything */
+  html body .washer {
+    position: relative;
+  }
+  html body .washer__out {
+    position: absolute;
+    top: calc(100% + var(--slip-top, 16px)); /* below the machine and the open door */
+    right: 0;
+    margin: 0;
+  }
+}
+@media (max-width: 767px) {
+  /* phones: full width under the washer (inset a hair so the -2° tilt stays on screen) */
+  html body .washer__out {
+    width: calc(100% - 8px);
+    margin: 20px auto 0;
+    padding: 16px;
+    column-gap: 16px;
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+  html body .washer__msg {
+    font-size: 24px;
+  }
+  html body .washer__links {
+    font-size: 14px;
+    gap: 4px 12px;
+  }
+  html body .washer__links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  html body .washer__where {
+    padding: 6px 12px;
+    white-space: normal;
+    line-height: 1.2;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .washer__out {
+    animation: none;
+  }
+}

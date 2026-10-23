@@ -229,3 +229,22 @@ export function pinClick() {
   burst(a, a.currentTime, 0.012, 2400, 2.5, 0.16);
   burst(a, a.currentTime + 0.035, 0.016, 1500, 2, 0.1);
 }
+
+/** the washer door swinging open: a short, low clunk */
+export function clunk() {
+  const a = live();
+  if (!a) return;
+  const t = a.currentTime;
+  const o = a.createOscillator();
+  o.type = 'triangle';
+  o.frequency.setValueAtTime(120, t);
+  o.frequency.exponentialRampToValueAtTime(48, t + 0.14);
+  const g = a.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.6, t + 0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+  o.connect(g).connect(master!);
+  o.start(t);
+  o.stop(t + 0.22);
+  burst(a, t, 0.04, 380, 0.8, 0.35, 'lowpass');
+}
