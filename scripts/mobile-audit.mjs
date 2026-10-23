@@ -43,6 +43,8 @@ async function audit(label, scope = 'body') {
       if (!n.textContent.trim()) continue;
       const el = n.parentElement;
       if (!el || !vis(el)) continue;
+      // the home counter's stat labels are 12px caps by request (value 18px above each)
+      if (el.matches('.teaser__counter > span')) continue;
       const fs = parseFloat(getComputedStyle(el).fontSize);
       if (fs < 12.95) tiny.set(name(el), `${fs.toFixed(1)}px`);
     }

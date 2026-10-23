@@ -74,7 +74,9 @@ export default function AtelierTeaser() {
         </div>
         <div className="teaser__side">
           <p className="lead">Tap “+” to buy one as it is. Or take it down and pull the loose thread: the less sock, the higher the price.</p>
-          <Btn to="/atelier">Enter the Atelier →</Btn>
+          <Btn to="/atelier" variant="thread">
+            Enter the Atelier →
+          </Btn>
         </div>
       </div>
       <div ref={line} className="wrap teaser__line">

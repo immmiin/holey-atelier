@@ -221,3 +221,11 @@ export function doorPop() {
   o.stop(t + 0.2);
   burst(a, t, 0.05, 2400, 1, 0.2);
 }
+
+/** a soft wooden clothespin click (the home line-up switching socks) */
+export function pinClick() {
+  const a = live();
+  if (!a) return;
+  burst(a, a.currentTime, 0.012, 2400, 2.5, 0.16);
+  burst(a, a.currentTime + 0.035, 0.016, 1500, 2, 0.1);
+}

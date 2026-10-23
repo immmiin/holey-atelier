@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { AnimatePresence, motion } from 'motion/react';
 import SockStage from '../components/sock3d/SockStage.jsx';
+import Btn from '../components/Btn.jsx';
 import { holeSrc, holeSrcSet, money, products, sockSrc } from '../data/products.js';
 import { useCart } from '../context/CartContext.jsx';
 import './pdp-mobile.css';
@@ -175,9 +176,9 @@ export default function ProductMobile({ p }) {
 
       <div className="mpdp__bar">
         <b className="mpdp__bar-price">{money(p.price)}</b>
-        <Link to={`/atelier?sock=${p.slug}`} className="mpdp__btn mpdp__btn--ghost">
+        <Btn to={`/atelier?sock=${p.slug}`} variant="thread" tilt={0} className="mpdp__pull">
           Pull a thread
-        </Link>
+        </Btn>
         <button
           ref={addRef}
           type="button"

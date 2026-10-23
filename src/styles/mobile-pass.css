@@ -50,18 +50,27 @@
   .tpick {
     display: grid;
     justify-items: center;
-    margin-top: 24px;
+  }
+  /* the line + the hanging sock: one stage that takes sideways drags (vertical swipes still scroll) */
+  .tpick__stage {
+    position: relative;
+    width: 100%;
+    display: grid;
+    justify-items: center;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grab;
   }
   .tpick__line {
     width: 72%;
     height: 24px;
     position: relative;
     z-index: 2;
+    pointer-events: none;
   }
   .tpick__rope {
     display: block;
-    width: 100%;
-    height: 100%;
     overflow: visible;
   }
   .tpick__rope path {
@@ -69,22 +78,23 @@
     stroke: var(--ink);
     stroke-width: 3.5;
     stroke-linecap: round;
-    vector-effect: non-scaling-stroke;
   }
   .tpick__rope circle {
     fill: var(--hi);
     stroke: var(--ink);
     stroke-width: 3;
-    vector-effect: non-scaling-stroke;
   }
   .tpick__sock {
     position: relative;
+    z-index: 3;
     display: grid;
     justify-items: center;
     width: 52vw;
     max-width: 240px;
-    margin: -20px 0 0;
-    transform-origin: 50% 0;
+    /* the peg's grip (14px into it) sits exactly on the line (12px into its strip) */
+    margin: -26px 0 0;
+    transform-origin: 50% 14px;
+    will-change: transform;
   }
   .tpick__peg {
     position: relative;
@@ -112,14 +122,17 @@
     height: auto;
     aspect-ratio: 4 / 5;
     object-fit: contain;
+    pointer-events: none;
+    -webkit-user-drag: none;
     filter: drop-shadow(2px 0 0 var(--ink)) drop-shadow(-2px 0 0 var(--ink)) drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 -2px 0 var(--ink))
       drop-shadow(5px 6px 0 rgba(26, 15, 31, 0.18));
   }
+  /* sock → swatches 20, swatches → name/price 16, name/price → buttons 16 (measured on the boxes) */
   .tpick__swatches {
     display: flex;
     justify-content: center;
     gap: 8px;
-    margin-top: 16px;
+    margin-top: 24px; /* 20 visible: the sock hangs 4px lower than its box (the pin's weight on the line) */
   }
   .tpick__swatch {
     display: grid;
@@ -162,16 +175,16 @@
     margin: 0;
     font-weight: 900;
     font-size: 18px;
+    line-height: 1.1;
   }
   .tpick__actions {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
     gap: 8px;
     width: 100%;
     margin-top: 16px;
   }
-  .tpick__add,
-  .tpick__pull {
+  .tpick__add {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -179,24 +192,78 @@
     padding: 0 16px;
     border: var(--line) solid var(--ink);
     border-radius: 999px;
+    background: var(--hi);
+    box-shadow: 3px 3px 0 var(--ink);
     font-weight: 900;
     font-size: 15px;
     white-space: nowrap;
-    text-decoration: none;
     color: var(--ink);
-  }
-  .tpick__add {
-    background: var(--hi);
-    box-shadow: 3px 3px 0 var(--ink);
   }
   .tpick__add.is-in {
     background: var(--paper);
   }
-  .tpick__pull {
-    background: var(--paper);
+  html body .tpick__pull {
+    min-height: 48px;
+    padding: 0 16px;
+    font-size: 14px;
   }
+  /* paragraph → line 24 (the posts' tops) */
+  html body .teaser__head {
+    margin-bottom: 0;
+  }
+  html body .teaser__line {
+    margin-top: 20px; /* + the posts' 4px inset in the line's strip = 24 */
+  }
+  /* buttons → counter 24; counter → "Laundry Day." 56 */
   html body .teaser__foot {
     margin-top: 24px;
+  }
+  html body .teaser {
+    padding-bottom: 0;
+  }
+  html body .laundry-sec {
+    padding-top: 56px;
+  }
+  /* the counter as three stats: value (18px bold) over label (12px caps); no sentence, no "·" */
+  html body .teaser__counter {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start; /* the three values share one baseline row, labels hang under them */
+    gap: 8px;
+    width: 100%;
+    padding: 12px 8px;
+    border-radius: 16px;
+    text-align: center;
+  }
+  html body .teaser__counter > [aria-hidden='true'],
+  html body .teaser__counter .labor__dot {
+    display: none;
+  }
+  html body .teaser__counter > span {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  html body .teaser__counter b {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  html body .mpdp__pull {
+    min-height: 48px;
+    padding: 0 12px;
+    font-size: 13px;
+    letter-spacing: 0.06em;
   }
 
   /* ---- 5. MISSING: tabs → "NOTICE BOARD" 56, eyebrow → H2 8, H2 → body 12, body → counter 20,
@@ -245,7 +312,20 @@
     left: var(--pad);
   }
   html body .atl.is-active .atl__line {
-    /* clear the button by its whole stage box (the posts sit 37px into it): stage starts below the button */
-    margin-top: 56px;
+    /* clear the button by its whole stage box (the posts sit 37px into it), and leave a band between
+       the button and the line for the stage message */
+    margin-top: 64px;
+  }
+  /* the stage message lives in that band (button bottom 50 → knobs 101), centred, one line; the floor
+     below is reserved for the heap and the thread */
+  html body .atl__msg {
+    top: 58px;
+    bottom: auto;
+    padding: 4px 16px;
+    font-size: 26px; /* AtelierPage.fitMsg steps it down to fit, never under 18px */
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    z-index: 5;
   }
 }

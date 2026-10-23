@@ -66,7 +66,7 @@ export default function NotFound() {
           <p className="lead">The link may be wrong, or the page wandered off like the other sock. It happens to the best of us.</p>
           <div className="nf3__ctas">
             <Btn to="/">Back home</Btn>
-            <Btn to="/atelier" variant="care" tilt={1.5}>
+            <Btn to="/atelier" variant="thread" tilt={1.5}>
               Pull a thread
             </Btn>
           </div>

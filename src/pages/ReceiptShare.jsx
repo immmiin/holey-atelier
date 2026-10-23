@@ -77,7 +77,9 @@ export default function ReceiptShare() {
           <p className="lead">It may not exist, or the Archive is out for a moment. Try again soon.</p>
         </div>
         <div className="share__ctas">
-          <Btn to="/atelier">Pull your own →</Btn>
+          <Btn to="/atelier" variant="thread">
+            Pull your own →
+          </Btn>
           <Btn to="/archive" variant="care" tilt={1.5}>
             See the Archive
           </Btn>
@@ -98,7 +100,9 @@ export default function ReceiptShare() {
           <figure className="share__piece">
             <Piece slug={slug} hole={order.lines[0]?.hole ?? 0} w={240} h={300} label={`What is left of the sock: ${order.lines[0]?.hole ?? 0}% hole.`} />
             <figcaption>{order.lines[0]?.hole ?? 0}% hole · sold</figcaption>
-            <Btn to={`/atelier${slug ? `?sock=${slug}` : ''}`}>Pull your own →</Btn>
+            <Btn to={`/atelier${slug ? `?sock=${slug}` : ''}`} variant="thread">
+              Pull your own →
+            </Btn>
           </figure>
         )}
         <ReceiptPrint order={order} instant link={`${location.origin}/r/${order.id}`} onArchive={() => navigate('/archive')} onBack={() => navigate('/atelier')} />

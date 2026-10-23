@@ -20,9 +20,21 @@ export function TubIcon(props) {
   );
 }
 
+/* the "Pull a thread" signature: a short 2-ply yarn tail hanging off the bottom-right corner */
+function YarnTail() {
+  return (
+    <span className="btn__tail" aria-hidden="true">
+      <svg viewBox="0 0 14 30" fill="none" strokeLinecap="round">
+        <path className="btn__ply btn__ply--a" d="M5 1c3 3-3 6 0 9s-3 6 0 9 -3 6 0 9" />
+        <path className="btn__ply btn__ply--b" d="M9 1c-3 3 3 6 0 9s3 6 0 9 3 6 0 9" />
+      </svg>
+    </span>
+  );
+}
+
 /**
- * <Btn> — sticker (default) or care-label button.
- * variant: 'sticker' | 'care' | 'ghost'; tone: 'hi' | 'pink' | 'green' | 'paper'
+ * <Btn> — sticker (default), care-label, or the "thread" signature button.
+ * variant: 'sticker' | 'care' | 'ghost' | 'thread' (every CTA into the Atelier); tone: 'hi' | 'pink' | 'green' | 'paper'
  */
 const Btn = forwardRef(function Btn({ to, variant = 'sticker', tone = 'hi', tilt = -2, icon, children, className = '', ...rest }, ref) {
   const cls = `btn btn--${variant} btn--${tone} ${className}`;
@@ -31,6 +43,7 @@ const Btn = forwardRef(function Btn({ to, variant = 'sticker', tone = 'hi', tilt
       {variant === 'care' && <TubIcon className="btn__care-icon" />}
       {icon}
       <span className="btn__label">{children}</span>
+      {variant === 'thread' && <YarnTail />}
     </>
   );
   const motionProps = {

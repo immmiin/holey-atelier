@@ -86,3 +86,78 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* "thread": the signature button for every way into the Atelier (Pull a thread / Enter the Atelier /
+   Pull your own). Brand green, cream type, a cream stitch inside, and a short pink 2-ply yarn tail off
+   the bottom-right corner that idles in a gentle wiggle and stretches out when pressed or hovered. */
+.btn--thread {
+  --bg: #1f5b3a;
+  --fg: #fbf1e8;
+  border-radius: 16px;
+  letter-spacing: 0.08em;
+  overflow: visible;
+}
+.btn--thread::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1.5px dashed #fbf1e8;
+  border-radius: 11px;
+  opacity: 0.8;
+  pointer-events: none;
+}
+.btn__tail {
+  position: absolute;
+  right: 18px;
+  top: calc(100% - 6px);
+  width: 14px;
+  height: 30px;
+  transform-origin: 50% 0;
+  pointer-events: none;
+  transition: transform 0.55s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.btn__tail svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 50% 0;
+}
+.btn__ply {
+  stroke-width: 3.2;
+}
+.btn__ply--a {
+  stroke: #f4a9bc;
+}
+.btn__ply--b {
+  stroke: #e08aa2;
+}
+/* a thin ink edge under both plies so the tail reads on any background */
+.btn__tail svg {
+  filter: drop-shadow(0.8px 0 0 var(--ink)) drop-shadow(-0.8px 0 0 var(--ink)) drop-shadow(0 0.8px 0 var(--ink));
+}
+.btn--thread:hover .btn__tail,
+.btn--thread:focus-visible .btn__tail,
+.btn--thread:active .btn__tail {
+  /* pulled: ~10px longer, then it snaps back on the spring */
+  transform: scaleY(1.34) rotate(-8deg);
+  transition-duration: 0.22s;
+  transition-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn__tail svg {
+    animation: tail-wiggle 2.6s ease-in-out infinite;
+  }
+}
+@keyframes tail-wiggle {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  30% {
+    rotate: 7deg;
+  }
+  60% {
+    rotate: -5deg;
+  }
+}

@@ -118,7 +118,9 @@ export default function Checkout() {
         <img src="/logo/holey_04_nail-icon-holey.svg" alt="" className="co__empty-icon" />
         <h1 className="h2">Your basket has a hole in it.</h1>
         <p className="lead">Nothing to check out. Which is also very on brand.</p>
-        <Btn to="/atelier">Pull a thread</Btn>
+        <Btn to="/atelier" variant="thread">
+          Pull a thread
+        </Btn>
       </section>
     );
   }

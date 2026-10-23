@@ -132,6 +132,16 @@ export default function AtelierPage() {
     return () => stage.dispose();
   }, []);
 
+  /** phones: the stage message sits on one line in the band above the line; shrink it to fit (≥ 18px) */
+  const fitMsg = useCallback((el) => {
+    if (!el) return;
+    el.style.fontSize = '';
+    if (!window.matchMedia('(max-width: 767px)').matches) return;
+    let fs = 26;
+    el.style.fontSize = `${fs}px`;
+    while (el.scrollWidth > el.clientWidth + 1 && fs > 18) el.style.fontSize = `${--fs}px`;
+  }, []);
+
   // ------------------------------------------------------------ geometry
   const centre = useCallback(() => {
     const room = roomRef.current, api = clApi.current;
@@ -399,7 +409,7 @@ export default function AtelierPage() {
           </div>
         )}
 
-        <p className="atl__msg" key={active ? msg : 'line'} aria-live="polite">
+        <p className="atl__msg" ref={fitMsg} key={active ? msg : 'line'} aria-live="polite">
           {phase === 'line' ? 'Pick a sock. Never a pair.' : phase === 'lifting' ? 'Taking it down…' : msg}
         </p>
 
