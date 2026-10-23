@@ -2,6 +2,7 @@ import './styles/global.css';
 import './styles/mobile.css';
 import './styles/reveal.css';
 import './styles/navclear.css';
+import './styles/mobile-pass.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';

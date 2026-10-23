@@ -4,7 +4,8 @@
 import { chromium } from 'playwright';
 
 const BASE = (process.env.BASE || 'http://localhost:5199').replace(/\/$/, '');
-const sizes = [[1440, 900], [1280, 800], [1024, 768], [390, 844]];
+// phones show the one-sock picker (no tags to collide with), so only the clothesline widths are checked
+const sizes = [[1440, 900], [1280, 800], [1024, 768]];
 const b = await chromium.launch();
 let bad = 0;
 for (const [W, H] of sizes) {

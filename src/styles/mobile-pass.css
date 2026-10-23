@@ -1,0 +1,251 @@
+/* Phone spacing pass (≤767px only; desktop untouched). Loaded last; `html body` outranks the earlier
+   phone rules. Every number below was measured in the browser (scripts/qa-mobile-pass.mjs). */
+@media (max-width: 767px) {
+  /* ---- 1. hero top: header → pill 20, pill → H1 12, H1 → washer 20; H1 fills ~92% of the column ---- */
+  html body .hero2 {
+    gap: 0;
+    /* the pill is tilted: its visible top sits 5px above its box's padding edge */
+    padding-top: calc(var(--nav-reserve) + 25px);
+    /* 3. CTAs → dashed divider: 40 */
+    padding-bottom: 40px;
+  }
+  html body .hero2__kicker {
+    margin: 0;
+    line-height: 1;
+  }
+  html body .hero2__peek {
+    margin-top: 17px; /* 12 visible: the tilted pill's low corner hangs 5px under its box */
+  }
+  html body .hero2__title,
+  html body .hero2__alt {
+    /* measured: at 15.1vw "No refunds." spans 92% of the column (13.5vw only reached 82%) */
+    font-size: clamp(48px, 15.1vw, 66px);
+  }
+  html body .hero2__machine {
+    margin-top: 20px;
+  }
+
+  /* ---- 2. under the washer: washer → hint 16, hint → copy 24, copy → CTAs 20 ---- */
+  html body .washer__hint {
+    margin: 16px 0 0;
+    line-height: 1.2;
+  }
+  html body .hero2__lead {
+    margin-top: 24px;
+  }
+  html body .hero2__ctas {
+    margin-top: 20px;
+  }
+
+  /* ---- 3. the dashed divider sits midway: 40 above (hero padding) and 40 below ---- */
+  html body .teaser {
+    padding-top: calc(var(--line) + 36px); /* the eyebrow's line box starts 4px above its letters' box */
+  }
+
+  /* ---- 4. the line-up as one sock + swatches (TeaserPicker); no swipe row, no "swipe →" ---- */
+  html body .teaser__line .snapdots,
+  html body .teaser__line .snaphint {
+    display: none;
+  }
+  .tpick {
+    display: grid;
+    justify-items: center;
+    margin-top: 24px;
+  }
+  .tpick__line {
+    width: 72%;
+    height: 24px;
+    position: relative;
+    z-index: 2;
+  }
+  .tpick__rope {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .tpick__rope path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .tpick__rope circle {
+    fill: var(--hi);
+    stroke: var(--ink);
+    stroke-width: 3;
+    vector-effect: non-scaling-stroke;
+  }
+  .tpick__sock {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    width: 52vw;
+    max-width: 240px;
+    margin: -20px 0 0;
+    transform-origin: 50% 0;
+  }
+  .tpick__peg {
+    position: relative;
+    z-index: 3;
+    width: 18px;
+    height: auto;
+    margin-bottom: -8px;
+  }
+  .tpick__peg rect {
+    fill: var(--pink);
+    stroke: var(--ink);
+    stroke-width: 3;
+  }
+  .tpick__peg path {
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+  .tpick__peg circle {
+    fill: var(--paper);
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+  .tpick__sock img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: contain;
+    filter: drop-shadow(2px 0 0 var(--ink)) drop-shadow(-2px 0 0 var(--ink)) drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 -2px 0 var(--ink))
+      drop-shadow(5px 6px 0 rgba(26, 15, 31, 0.18));
+  }
+  .tpick__swatches {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .tpick__swatch {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+  }
+  .tpick__swatch span {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: var(--line-thin) solid var(--ink);
+    background: linear-gradient(135deg, var(--a) 0 50%, var(--b) 50% 100%);
+  }
+  .tpick__swatch.is-on span {
+    width: 36px;
+    height: 36px;
+    box-shadow:
+      0 0 0 2px var(--cream),
+      0 0 0 4px var(--ink);
+  }
+  .tpick__info {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .tpick__name {
+    margin: 0;
+    font-family: var(--f-display);
+    font-size: 24px;
+    line-height: 1.1;
+  }
+  .tpick__price {
+    margin: 0;
+    font-weight: 900;
+    font-size: 18px;
+  }
+  .tpick__actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 8px;
+    width: 100%;
+    margin-top: 16px;
+  }
+  .tpick__add,
+  .tpick__pull {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 16px;
+    border: var(--line) solid var(--ink);
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 15px;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .tpick__add {
+    background: var(--hi);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .tpick__add.is-in {
+    background: var(--paper);
+  }
+  .tpick__pull {
+    background: var(--paper);
+  }
+  html body .teaser__foot {
+    margin-top: 24px;
+  }
+
+  /* ---- 5. MISSING: tabs → "NOTICE BOARD" 56, eyebrow → H2 8, H2 → body 12, body → counter 20,
+          bottom padding 56 (the tabs' tilt hangs below the poster's box, measured: see --tab-hang) ---- */
+  html body .missing {
+    padding-bottom: 56px;
+  }
+  html body .missing__inner {
+    row-gap: 0;
+  }
+  html body .missing__side {
+    gap: 0;
+    min-height: 0;
+    margin-top: 61px; /* 56 visible: the tilted tabs hang 5px below the poster's box */
+  }
+  html body .missing__side > .kicker {
+    margin: 0;
+  }
+  html body .missing__side > .h3 {
+    margin: 8px 0 0;
+  }
+  html body .missing__side > .lead {
+    margin: 12px 0 0;
+  }
+  html body .missing__side > .missing__count,
+  html body .missing__side > .missing__out {
+    margin: 20px 0 0;
+  }
+
+  /* ---- 6. footer: wave → heading 56, heading (32px) → form card 28 ---- */
+  html body .foot__title {
+    font-size: 32px;
+    line-height: 1.05;
+    margin: 0;
+  }
+  html body .foot__inner {
+    padding-top: 17px; /* + the footer's own 40px top padding, under a wave that ends 1px in = 56 */
+  }
+  html body .foot__top {
+    gap: 32px; /* 28 visible: the form card's 1.2° tilt lifts its corner 4px above its box */
+  }
+
+  /* ---- 7. /atelier picked: "← Back to the line" on its own row 12px under the header, the line ≥ 24px below ---- */
+  html body .atl__back {
+    top: 6px; /* the room starts 6px under the header */
+    left: var(--pad);
+  }
+  html body .atl.is-active .atl__line {
+    /* clear the button by its whole stage box (the posts sit 37px into it): stage starts below the button */
+    margin-top: 56px;
+  }
+}
