@@ -40,7 +40,7 @@ export function scrollToTop() {
 }
 
 export function scrollTo(target, opts = {}) {
-  if (lenis) lenis.scrollTo(target, { offset: -90, ...opts });
+  if (lenis) lenis.scrollTo(target, { offset: 0, ...opts });
   else {
     const el = typeof target === 'string' ? document.querySelector(target) : target;
     el?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth' });

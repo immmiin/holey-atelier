@@ -33,7 +33,7 @@ function scrollToHash(hash) {
   // give lazy sections a beat to mount
   setTimeout(() => {
     const el = document.getElementById(decodeURIComponent(hash.slice(1)));
-    if (el) scrollTo(el, { offset: -100 });
+    if (el) scrollTo(el); // sections reserve the nav's space themselves (--nav-clear)
   }, 120);
 }
 

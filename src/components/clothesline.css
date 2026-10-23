@@ -178,3 +178,11 @@
     font-size: 0.8rem;
   }
 }
+
+/* levelTags: the price tags line up on one baseline under a sagging rope */
+.cl--level .cl__tag {
+  translate: 0 var(--tag-drop, 0px);
+}
+.cl--level .cl__tag::before {
+  height: calc(12px + var(--tag-drop, 0px));
+}

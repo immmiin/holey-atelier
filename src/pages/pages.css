@@ -807,3 +807,27 @@
     flex-wrap: nowrap;
   }
 }
+
+/* Shop header (desktop): eyebrow, a one-line H1, then filters + sort + count in one row under it,
+   left-aligned to the container; the clothesline's posts start 48px below that row */
+@media (min-width: 768px) {
+  .shop__head {
+    display: block;
+  }
+  .shop__title {
+    font-size: clamp(56px, 6vw, 96px);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .shop__tools {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    margin-top: 24px;
+    /* the chips' tilt leans the first one ~2px past the edge */
+    padding-left: 3px;
+  }
+  /* the stage draws its posts 37px below its top (ROPE_Y 46 − r 9): 48 − 37 */
+  html body .shop .shop__line {
+    padding-top: 11px;
+  }
+}

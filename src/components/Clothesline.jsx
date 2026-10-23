@@ -108,7 +108,7 @@ function Sock({ p, i, refs, dragged, onHover, onQuickAdd, inCart, onPick, picked
 
 /* Atelier mode (home page): `onPick` takes a sock down instead of opening its page; `picked`
    freezes that sock's peg so it can be lifted forward; `apiRef` exposes the live rope. */
-export default function Clothesline({ items, onHover, className = '', onPick, picked = null, apiRef, variant = 'default' }) {
+export default function Clothesline({ items, onHover, className = '', onPick, picked = null, apiRef, variant = 'default', levelTags = false }) {
   const wrap = useRef(null);
   const stage = useRef(null);
   const rope = useRef(null);
@@ -219,9 +219,12 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
       for (let k = 1; k < N; k++) d += `L${px[k].toFixed(1)} ${py[k].toFixed(1)}`;
       rope.current?.setAttribute('d', d);
       shadow.current?.setAttribute('d', d);
+      // levelTags: every price tag hangs on one baseline, its string longer where the rope rides higher
+      const low = levelTags ? Math.max(...pins.map((k) => py[k])) : 0;
       pins.forEach((k, i) => {
         const el = sockEls.current[i];
         if (!el) return;
+        if (levelTags) el.style.setProperty('--tag-drop', `${(low - py[k]).toFixed(1)}px`);
         el.style.transform = `translate3d(${(px[k] - sockW / 2).toFixed(1)}px, ${(py[k] - PEG_TOP).toFixed(1)}px, 0) rotate(${socks[i].th.toFixed(4)}rad)`;
       });
     };
@@ -426,12 +429,12 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
       st.removeEventListener('pointerup', onUp);
       st.removeEventListener('pointercancel', onCancel);
     };
-  }, [geo, items, apiRef]);
+  }, [geo, items, apiRef, levelTags]);
 
   return (
     <div
       ref={wrap}
-      className={`cl cl--${variant} ${geo?.mobile && variant !== 'stage' ? 'cl--scroll' : ''} ${geo?.mobile ? 'cl--mobile' : ''} ${picked ? 'is-atelier' : ''} ${className}`}
+      className={`cl cl--${variant} ${geo?.mobile && variant !== 'stage' ? 'cl--scroll' : ''} ${geo?.mobile ? 'cl--mobile' : ''} ${picked ? 'is-atelier' : ''} ${levelTags ? 'cl--level' : ''} ${className}`}
       data-lenis-prevent={geo?.mobile && variant !== 'stage' ? '' : undefined}
     >
       <div

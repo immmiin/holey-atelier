@@ -1,0 +1,28 @@
+/* The fixed nav is reserved space: whenever a section's top reaches the top of the viewport (an
+   anchor jump, or plain scrolling), its first content still starts ≥ 48px below the nav's bottom.
+   --nav-reserve is the nav's lowest edge (desktop: the hanging tag, 14px down + 70px tall at the
+   top of the page); --nav-clear adds the 48px breathing room. Loaded last, so it wins. */
+:root {
+  --nav-reserve: 84px;
+  --nav-clear: calc(var(--nav-reserve) + 48px);
+}
+@media (max-width: 767px) {
+  :root {
+    --nav-reserve: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
+  }
+}
+
+html body :is(.teaser, .rv, .laundry-sec, .missing, .notes, .about__line, .shop__line, .shop__pile) {
+  padding-top: var(--nav-clear);
+}
+/* first sections of a page sit under the nav at scroll 0 */
+html body :is(.hero2, .about__hero, .faq2, .shop, .arc) {
+  padding-top: var(--nav-clear);
+}
+html body .shop__line {
+  /* the posts and pegs already sit ~60px into the line's stage */
+  padding-top: calc(var(--nav-clear) - 56px);
+}
+html body .about__sticker {
+  top: calc(var(--nav-clear) + 40px);
+}

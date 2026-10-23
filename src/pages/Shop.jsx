@@ -69,7 +69,7 @@ export default function Shop() {
 
       <section className="shop__line" aria-label="Socks on the line">
         <div className="wrap shop__linewrap">
-          <Clothesline key={filter} items={list} onHover={setHover} />
+          <Clothesline key={filter} items={list} onHover={setHover} levelTags />
         </div>
       </section>
 
