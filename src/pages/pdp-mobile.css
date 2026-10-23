@@ -404,4 +404,57 @@
   .mpdp__btn--primary.is-in {
     background: var(--paper);
   }
+
+  /* ---- pull to set your price ---- */
+  .mpdp__slide--pull .pullcard {
+    position: absolute;
+    inset: 0;
+  }
+  .mpdp__pull-links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin: 0 0 8px;
+  }
+  .mpdp__pull-links button,
+  .mpdp__pull-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .mpdp__pull-links a {
+    color: var(--green);
+  }
+  .mpdp__bar-info {
+    display: grid;
+    margin-right: auto;
+    min-width: 0;
+  }
+  .mpdp__bar-info .mpdp__bar-price {
+    margin: 0;
+    line-height: 1.1;
+  }
+  .mpdp__bar-hud {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+  .mpdp__bar-hud b {
+    color: #c9302c;
+  }
+  .mpdp__btn--primary:disabled {
+    opacity: 0.6;
+    box-shadow: none;
+    filter: grayscale(0.4);
+  }
 }

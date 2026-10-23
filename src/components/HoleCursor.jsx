@@ -57,7 +57,8 @@ function Inner() {
 
     const pick = (el) => {
       // the Atelier uses the real pointer: the hole would sit right on the thread
-      s.text = !!el?.closest?.(TEXTY) || !!el?.closest?.('[data-cursor="native"]');
+      // …and over the line-ups the big hand takes over
+      s.text = !!el?.closest?.(TEXTY) || !!el?.closest?.('[data-cursor="native"]') || !!el?.closest?.('[data-hand]');
       // over a peek hotspot the ring frames the lens (the hotspot itself does the revealing)
       s.peek = Number(el?.closest?.('[data-peek]')?.dataset.peek) || 0;
       s.over = !s.text && !!el?.closest?.(INTERACTIVE);

@@ -6,20 +6,24 @@ import { reducedMotion } from '../lib/scroll.js';
 const CartContext = createContext(null);
 const KEY = 'holey-cart-v1';
 
-/* Each line is { slug } for a sock as sold, or { slug, price, hole, laborMs, serial, outline } for
-   one you hand-distressed at the Atelier (outline: a small line drawing of what's left, for the
-   receipt). Older saves were plain slug strings. */
+/* Every line is a sock you pulled yourself: { slug, price, hole, laborMs, serial, outline } (outline: a
+   small line drawing of what's left, for the receipt). Pulling is the only way in, so older saves
+   (plain slug strings, or { slug } "as sold") are dropped on load. */
 function load() {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || '[]');
     if (!Array.isArray(raw)) return [];
-    return raw.map((e) => (typeof e === 'string' ? { slug: e } : e)).filter((e) => e && bySlug[e.slug]);
+    return raw.filter((e) => e && typeof e === 'object' && bySlug[e.slug] && e.hole > 0 && Number.isFinite(e.price));
   } catch {
     return [];
   }
 }
 
-export const lineNote = (line) => (line?.hole != null ? `Hand-distressed, ${line.hole}% hole` : null);
+const laborOf = (ms = 0) => {
+  const s = Math.round(ms / 1000);
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+};
+export const lineNote = (line) => (line?.hole != null ? `${line.hole}% hole · labor ${laborOf(line.laborMs)}` : null);
 export const linePrice = (line) => (line?.price != null ? line.price : bySlug[line.slug].price);
 
 export function CartProvider({ children }) {
@@ -107,13 +111,14 @@ export function CartProvider({ children }) {
   const add = useCallback(
     async (slug, fromEl, opts = {}) => {
       const { distressed, openDrawer = true, quiet = false } = opts;
-      const had = items.includes(slug);
-      if (had && !distressed) {
-        say("It's one sock. You already have it.");
+      // the only way into the basket is pulling the thread first
+      if (!distressed || !(distressed.hole > 0)) {
+        say('Pull the thread first: the hole you make sets the price.');
         return false;
       }
+      const had = items.includes(slug);
       const p = bySlug[slug];
-      const line = distressed ? { slug, ...distressed } : { slug };
+      const line = { slug, ...distressed };
       const flight = fly(fromEl, p.n);
       setLines((cur) => (had ? cur.map((l) => (l.slug === slug ? line : l)) : [...cur, line]));
       if (had && !quiet) say(`Updated: ${distressed.hole}% hole, now ${money(distressed.price)}.`);

@@ -1,0 +1,48 @@
+.hand-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.hand-cursor.is-on {
+  opacity: 1;
+}
+.hand-cursor svg {
+  position: absolute;
+  left: -24px; /* fingertips on the pointer */
+  top: -9px;
+  width: 56px;
+  height: 56px;
+  max-width: none;
+  fill: #fbf1e8;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  filter: drop-shadow(3px 4px 0 rgba(26, 15, 31, 0.25));
+}
+[data-hand],
+[data-hand] * {
+  cursor: none !important;
+}
+@media (hover: none), (pointer: coarse) {
+  .hand-cursor {
+    display: none;
+  }
+  [data-hand],
+  [data-hand] * {
+    cursor: auto !important;
+  }
+}
+/* the line-ups lift a little under the hand */
+.cl__sock[data-hand] .cl__body {
+  transition: translate 0.25s var(--spring);
+}
+.cl__sock[data-hand]:hover .cl__body {
+  translate: 0 -4px;
+}

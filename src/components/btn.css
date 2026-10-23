@@ -161,3 +161,21 @@
     rotate: -5deg;
   }
 }
+
+/* a tail you can pull (nav pill, phone pill, hero "Enter the Atelier"): it takes pointer input over a
+   generous invisible area around the yarn */
+.btn__tail--pull {
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+}
+.btn__tail--pull::before {
+  content: '';
+  position: absolute;
+  inset: -6px -14px -16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn__tail--pull {
+    pointer-events: none;
+  }
+}

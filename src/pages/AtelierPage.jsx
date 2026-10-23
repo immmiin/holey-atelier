@@ -10,7 +10,9 @@ import { sockModel } from '../atelier/models.ts';
 import { SOCKS } from '../atelier/socks.ts';
 import { twang } from '../atelier/sound.ts';
 import { clock, money } from '../atelier/receiptDraw.ts';
+import { distressedOf, holeOf, newSeed, newSerial } from '../atelier/distress.js';
 import LaborCounter from '../components/LaborCounter.jsx';
+import { OpenHand, PinchHand } from '../components/HandCursor.jsx';
 import '../atelier/atelier.css';
 
 const MESSAGES = [
@@ -29,7 +31,6 @@ const messageFor = (p, finished) => {
   return m;
 };
 const LIFT_MS = 640;
-const holeOf = (h) => (h.finished ? 100 : Math.min(99, Math.floor(h.p * 100)));
 /** the line's centring shift as it is on screen this frame (mid-transition included) */
 const liveShift = (room) => {
   const line = room?.querySelector('.atl__line');
@@ -231,8 +232,8 @@ export default function AtelierPage() {
       const L2 = computeLayout();
       layoutRef.current = L2;
       stageRef.current.open(sdef, m, { ...L2 });
-      serial.current = String(1000 + Math.floor(Math.random() * 9000));
-      seed.current = Math.floor(Math.random() * 1e6);
+      serial.current = newSerial();
+      seed.current = newSeed();
       setPhase('pull');
     },
     [computeLayout, liftSock, setPhase]
@@ -404,15 +405,8 @@ export default function AtelierPage() {
     }
     stage.freeze();
     setPhase('frozen');
-    const price = Math.round(h.price * 100) / 100;
-    const distressed = {
-      price,
-      hole: holeOf(h),
-      laborMs: Math.round(h.laborMs),
-      serial: serial.current,
-      unravelSeed: seed.current,
-      outline: stage.outlineImage(110, 150).toDataURL('image/png')
-    };
+    const distressed = distressedOf(stage, h, { serial: serial.current, unravelSeed: seed.current });
+    const price = distressed.price;
     // the sock flies from the peg into the basket
     const cr = canvasRef.current.getBoundingClientRect();
     const box = L ? bigBox(L) : null;
@@ -443,16 +437,8 @@ export default function AtelierPage() {
         />
 
         <div ref={handRef} className="atl-hand" aria-hidden="true">
-          {/* open: fingertips at the hotspot */}
-          <svg className="atl-hand__open" viewBox="0 0 56 56">
-            <path d="M14 31V18a3.5 3.5 0 0 1 7 0v8V11a3.5 3.5 0 0 1 7 0v15V13a3.5 3.5 0 0 1 7 0v13v-9a3.5 3.5 0 0 1 7 0v17c0 10-6 17-15 17h-3c-6 0-9-3-12-8l-7-11a3.5 3.5 0 0 1 5.5-4.2Z" />
-          </svg>
-          {/* closed: pinching the yarn between thumb and index, the pinch at the hotspot */}
-          <svg className="atl-hand__closed" viewBox="0 0 56 56">
-            <path d="M15 24a6 6 0 0 1 6-6h15a6 6 0 0 1 6 6v10c0 9-6 15-15 15h-2c-8 0-12-6-12-13Z" />
-            <path d="M22 18v6M29 18v6M36 19v5" />
-            <path d="M15 30c-5-1-6-8-1-10l8 1c3 .5 3 5 0 6Z" />
-          </svg>
+          <OpenHand className="atl-hand__open" />
+          <PinchHand className="atl-hand__closed" />
         </div>
         {phase === 'pull' && !pulledOnce && fingerAt && (
           <div className={`atl-finger atl-finger--${fingerAt.side}`} style={{ left: fingerAt.x, top: fingerAt.y }} aria-hidden="true">

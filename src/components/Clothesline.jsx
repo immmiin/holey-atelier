@@ -1,10 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { logoColor, money, sockSrc } from '../data/products.js';
-import { useCart } from '../context/CartContext.jsx';
 import { pushAccent } from '../lib/accent.js';
 import { reducedMotion } from '../lib/scroll.js';
-import { Plus } from './Icons.jsx';
 import Peek from './Peek.jsx';
 import './clothesline.css';
 
@@ -40,12 +38,13 @@ function geometry(width, count, mobile, variant = 'default') {
   return { stageW, pad, slot, sockW, sockH, height, slack: variant === 'default' ? 1.025 : 1.01, calm: variant !== 'default' };
 }
 
-function Sock({ p, i, refs, dragged, onHover, onQuickAdd, inCart, onPick, picked }) {
+function Sock({ p, i, refs, dragged, onHover, onQuickAdd, onPick, picked }) {
   return (
     <a
       href={`/socks/${p.slug}`}
       ref={(el) => (refs.current[i] = el)}
       className={`cl__sock ${picked ? 'is-picked' : ''}`}
+      data-hand={onPick ? undefined : ''}
       style={{ '--sock': p.color }}
       draggable="false"
       aria-label={
@@ -85,21 +84,8 @@ function Sock({ p, i, refs, dragged, onHover, onQuickAdd, inCart, onPick, picked
           }
         >
           <span className="cl__tag-name">{p.name}</span>
-          <span className="cl__tag-price">{money(p.price)}</span>
+          <span className="cl__tag-price">{onPick ? money(p.price) : `${money(p.price)} + your labor`}</span>
         </Peek>
-        <button
-          type="button"
-          className="cl__add"
-          aria-label={inCart ? `${p.name} is already in your basket` : `Add ${p.name} to basket`}
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onQuickAdd(e.currentTarget.closest('.cl__sock')?.querySelector('.cl__img'), p);
-          }}
-        >
-          <Plus />
-        </button>
       </span>
       </span>
     </a>
@@ -116,7 +102,6 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
   const sockEls = useRef([]);
   const dragged = useRef(false);
   const navigate = useNavigate();
-  const cart = useCart();
   const [geo, setGeo] = useState(null);
   const release = useRef(null);
   const pickedRef = useRef(picked);
@@ -129,10 +114,8 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
   };
   useEffect(() => () => release.current?.(), []);
 
-  const quick = (imgEl, p) => {
-    if (!imgEl) navigate(`/socks/${p.slug}`);
-    else cart.add(p.slug, imgEl);
-  };
+  // the line-ups are for browsing: a sock opens its own page (the only way into the basket is pulling)
+  const quick = (_imgEl, p) => navigate(`/socks/${p.slug}`);
 
   // measure
   useLayoutEffect(() => {
@@ -472,7 +455,6 @@ export default function Clothesline({ items, onHover, className = '', onPick, pi
               dragged={dragged}
               onHover={hover}
               onQuickAdd={quick}
-              inCart={cart.has(p.slug)}
               onPick={onPick}
               picked={picked === p.slug}
             />

@@ -44,7 +44,7 @@ export default function Hero() {
           The world’s most premium single sock, sold alone, on purpose. Now hand-distressed by you. <strong>From $9.</strong>
         </p>
         <div className="hero2__ctas">
-          <Btn to="/atelier" variant="thread">
+          <Btn to="/atelier" variant="thread" pullTo="/atelier">
             Enter the Atelier
           </Btn>
           <Btn to="/shop" variant="care" tilt={1.5}>

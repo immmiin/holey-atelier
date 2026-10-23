@@ -48,7 +48,7 @@ for (const [W, H] of [[375, 667], [390, 844], [430, 932]]) {
     });
     await p.evaluate(() => scrollTo(0, 0)); await p.waitForTimeout(600);
     await p.screenshot({ path: `${out}/${W}x${H}-${s}-full.png`, fullPage: true });
-    const ok = r.overflow === 0 && !r.small.length && !r.tiny.length && r.removed && r.addH >= 48 && !r.barCovers && r.dots === 2 && !r.careOpen && r.cards === 5 && r.gallery[0] === 20 && r.gallery[1] === 20;
+    const ok = r.overflow === 0 && !r.small.length && !r.tiny.length && r.removed && r.addH >= 48 && !r.barCovers && r.dots === 3 && !r.careOpen && r.cards === 5 && r.gallery[0] === 20 && r.gallery[1] === 20;
     if (!ok) bad++;
     console.log(`${W}x${H} ${s.padEnd(16)} overflow ${r.overflow}  text<13: ${r.small.length ? r.small.join(' ') : 'none'}  targets<44: ${r.tiny.length ? r.tiny.join(' | ') : 'none'}  clothesline/receipts gone: ${r.removed}  gallery gutters ${r.gallery[0]}/${r.gallery[1]} ratio ${r.gallery[2]}  dots ${r.dots}  care closed: ${!r.careOpen}  cards ${r.cards}  Add ${r.addH}px  bar covers content: ${r.barCovers}  ${ok ? 'PASS' : 'FAIL'}`);
   }

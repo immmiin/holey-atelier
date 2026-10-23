@@ -1,0 +1,48 @@
+/* the product page's pull scene (PullCard): a short line, the hanging sock, a floor for the heap */
+.pullcard {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.pullcard__line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+.pullcard__line path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+.pullcard__line circle {
+  fill: var(--hi);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+.pullcard__floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 11%;
+  z-index: 0;
+  border-top: var(--line-thin) solid var(--ink);
+  background:
+    repeating-linear-gradient(180deg, rgba(26, 15, 31, 0.05) 0 1px, transparent 1px 4px),
+    linear-gradient(#efdccb, #e5cfba);
+  pointer-events: none;
+}
+.pullcard__stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  /* the page (and a phone gallery) still scroll; the stage itself claims touches on the thread */
+  touch-action: manipulation;
+}

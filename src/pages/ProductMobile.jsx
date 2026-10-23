@@ -4,17 +4,19 @@ import { AnimatePresence, motion } from 'motion/react';
 import SockStage from '../components/sock3d/SockStage.jsx';
 import Btn from '../components/Btn.jsx';
 import { holeSrc, holeSrcSet, money, products, sockSrc } from '../data/products.js';
-import { useCart } from '../context/CartContext.jsx';
+import PullCard from '../atelier/PullCard.jsx';
+import usePullBuy, { laborClock } from '../atelier/usePullBuy.js';
 import './pdp-mobile.css';
 
 /* Phones (≤767px) get a standard shop product page: a swipeable gallery, name + price, colour
    swatches, a clamped description, a collapsible care label, the rest of the line as a grid, and a
    sticky buy bar. The desktop page (Product.jsx) is untouched. */
 
-function Gallery({ p }) {
+function Gallery({ p, buy }) {
   const row = useRef(null);
   const [i, setI] = useState(0);
   const slides = [
+    { kind: 'pull', label: 'Pull the thread' },
     { kind: '3d', label: '360° view' },
     { kind: 'img', label: 'The hole, up close' }
   ];
@@ -42,13 +44,16 @@ function Gallery({ p }) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
-          <div className="mpdp__slide mpdp__slide--3d" role="group" aria-roledescription="slide" aria-label={`1 of 2: ${slides[0].label}`}>
+          <div className="mpdp__slide mpdp__slide--pull" role="group" aria-roledescription="slide" aria-label={`1 of 3: ${slides[0].label}`}>
+            <PullCard ref={buy.card} product={p} onHud={buy.onHud} />
+          </div>
+          <div className="mpdp__slide mpdp__slide--3d" role="group" aria-roledescription="slide" aria-label={`2 of 3: ${slides[1].label}`}>
             <SockStage product={p} mode="drag" hint eager sizes="90vw" />
             {/* the sock takes horizontal drags (to rotate it): a swipe from either edge still moves the gallery */}
             <span className="mpdp__edge mpdp__edge--l" aria-hidden="true" />
             <span className="mpdp__edge mpdp__edge--r" aria-hidden="true" />
           </div>
-          <div className="mpdp__slide" role="group" aria-roledescription="slide" aria-label={`2 of 2: ${slides[1].label}`}>
+          <div className="mpdp__slide" role="group" aria-roledescription="slide" aria-label={`3 of 3: ${slides[2].label}`}>
             <img src={holeSrc(p.n, 1000)} srcSet={holeSrcSet(p.n)} sizes="90vw" alt={`The hole in the toe of ${p.name}, up close.`} loading="lazy" />
           </div>
         </motion.div>
@@ -60,6 +65,12 @@ function Gallery({ p }) {
           </button>
         ))}
       </div>
+      <p className="mpdp__pull-links">
+        <button type="button" onClick={buy.reset}>
+          Reset sock
+        </button>
+        <Link to={`/atelier?sock=${p.slug}`}>Open in the Atelier ↗</Link>
+      </p>
     </div>
   );
 }
@@ -112,15 +123,13 @@ function CareLabel({ p }) {
 }
 
 export default function ProductMobile({ p }) {
-  const cart = useCart();
   const navigate = useNavigate();
-  const addRef = useRef(null);
-  const inCart = cart.has(p.slug);
+  const buy = usePullBuy(p);
   const others = products.filter((x) => x.slug !== p.slug);
 
   return (
     <section className="mpdp" style={{ '--sock': p.color }}>
-      <Gallery p={p} />
+      <Gallery p={p} buy={buy} />
 
       <div className="mpdp__head">
         <p className="mpdp__chip">{p.subtitle}</p>
@@ -175,17 +184,16 @@ export default function ProductMobile({ p }) {
       </div>
 
       <div className="mpdp__bar">
-        <b className="mpdp__bar-price">{money(p.price)}</b>
-        <Btn to={`/atelier?sock=${p.slug}`} variant="thread" tilt={0} className="mpdp__pull">
-          Pull a thread
-        </Btn>
-        <button
-          ref={addRef}
-          type="button"
-          className={`mpdp__btn mpdp__btn--primary ${inCart ? 'is-in' : ''}`}
-          onClick={() => cart.add(p.slug, document.querySelector('.mpdp__slide--3d') || addRef.current)}
-        >
-          {inCart ? 'In your basket' : 'Add to basket'}
+        <div className="mpdp__bar-info">
+          <b className="mpdp__bar-price" aria-live="polite">
+            {money(buy.hud.price)}
+          </b>
+          <span className="mpdp__bar-hud">
+            Hole {buy.hud.hole}% · Labor {laborClock(buy.hud.laborSec)} · Your wage <b>$0.00</b>
+          </span>
+        </div>
+        <button type="button" className={`mpdp__btn mpdp__btn--primary ${buy.added ? 'is-in' : ''}`} onClick={buy.add} disabled={!buy.canAdd}>
+          {buy.added ? 'In your basket ✓' : buy.hud.hole > 0 ? 'Add to basket' : 'Pull first'}
         </button>
       </div>
     </section>

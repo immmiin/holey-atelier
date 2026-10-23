@@ -163,7 +163,11 @@
     align-items: baseline;
     justify-content: center;
     gap: 8px;
+    min-height: 44px;
+    align-content: center;
     margin-top: 16px;
+    color: var(--ink);
+    text-decoration: none;
   }
   .tpick__name {
     margin: 0;
@@ -174,12 +178,12 @@
   .tpick__price {
     margin: 0;
     font-weight: 900;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.1;
   }
   .tpick__actions {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 8px;
     width: 100%;
     margin-top: 16px;

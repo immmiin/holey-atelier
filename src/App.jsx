@@ -8,6 +8,7 @@ import Footer from './components/Footer.jsx';
 import BasketDrawer from './components/BasketDrawer.jsx';
 import Toast from './components/Toast.jsx';
 import HoleCursor from './components/HoleCursor.jsx';
+import HandCursor from './components/HandCursor.jsx';
 import WashTransition from './components/WashTransition.jsx';
 import Home from './pages/Home.jsx';
 import { startReveal } from './lib/reveal.js';
@@ -167,6 +168,7 @@ export default function App() {
         <Toast />
         <Grain />
         <HoleCursor />
+        <HandCursor />
       </CartProvider>
     </MotionConfig>
   );

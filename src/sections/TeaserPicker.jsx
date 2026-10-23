@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 import Btn from '../components/Btn.jsx';
 import { money, sockSrc } from '../data/products.js';
-import { useCart } from '../context/CartContext.jsx';
 import { reducedMotion } from '../lib/scroll.js';
 import { pinClick, unlockSound } from '../atelier/sound';
 
 /* Phones: the home line-up as ONE large sock on a short line, with the six socks as split-colour
-   swatches under it, then its name, price, "Add +" and "Pull a thread →". (Desktop keeps the full
-   clothesline.)
+   swatches under it, then its name and price (a link to its page) and "Pull a thread →". Browsing only:
+   nothing here goes in the basket. (Desktop keeps the full clothesline.)
    Drag the sock sideways: its pin slides along the line (which dips under it) and it tilts with the
    drag; let go and it springs back to the middle and swings to rest. A quick flick sends it off along
    the line and brings in the next one. One rAF loop, transforms only. */
@@ -18,10 +18,9 @@ const FLICK = 700; // px/s
 const MAX_TILT = 12; // deg
 
 export default function TeaserPicker({ items }) {
-  const cart = useCart();
+  const navigate = useNavigate();
   const [idx, setIdx] = useState(0);
   const p = items[idx];
-  const inCart = cart.has(p.slug);
 
   const lineRef = useRef(null);
   const ropeRef = useRef(null);
@@ -179,6 +178,12 @@ export default function TeaserPicker({ items }) {
       go(idx + (d.v < 0 ? 1 : -1), Math.sign(d.v));
       return;
     }
+    if (!d.moved) {
+      // a plain tap: browsing only, the sock opens its own page
+      s.mode = 'rest';
+      navigate(`/socks/${p.slug}`);
+      return;
+    }
     s.mode = 'spring';
     s.om = s.vx * -0.04;
     run();
@@ -221,18 +226,11 @@ export default function TeaserPicker({ items }) {
         ))}
       </div>
 
-      <div className="tpick__info">
-        <p className="tpick__name">{p.name}</p>
-        <p className="tpick__price">{money(p.price)}</p>
-      </div>
+      <Link to={`/socks/${p.slug}`} className="tpick__info" aria-label={`${p.name}, ${money(p.price)} plus your labor. Opens the sock's page.`}>
+        <span className="tpick__name">{p.name}</span>
+        <span className="tpick__price">{money(p.price)} + your labor</span>
+      </Link>
       <div className="tpick__actions">
-        <button
-          type="button"
-          className={`tpick__add ${inCart ? 'is-in' : ''}`}
-          onClick={(e) => cart.add(p.slug, e.currentTarget.closest('.tpick')?.querySelector('.tpick__sock img'))}
-        >
-          {inCart ? 'In basket ✓' : 'Add +'}
-        </button>
         <Btn to={`/atelier?sock=${p.slug}`} variant="thread" tilt={0} className="tpick__pull">
           Pull a thread →
         </Btn>

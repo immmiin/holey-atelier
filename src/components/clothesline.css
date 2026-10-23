@@ -186,3 +186,11 @@
 .cl--level .cl__tag::before {
   height: calc(12px + var(--tag-drop, 0px));
 }
+
+/* no "+" on the tags any more (browsing only): the tag's right padding goes back to normal */
+.cl .cl__tag {
+  padding-right: 12px;
+}
+.cl .cl__tag-price {
+  white-space: nowrap;
+}

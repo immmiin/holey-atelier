@@ -985,3 +985,74 @@ html body .about__line .about__cta {
 html body:has(.about) .foot {
   margin-top: clamp(120px, 12vw, 190px);
 }
+
+/* ---- product page: pull to set your price ---- */
+.pdp2__pull {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.pdp2__pull.is-away {
+  visibility: hidden; /* still mounted: the pull you started is kept while you look at the 360° / hole */
+}
+.pdp2__viewer > .sock3d {
+  position: relative;
+  z-index: 1;
+}
+.pdp2__viewer > .pdp2__img {
+  z-index: 1;
+}
+.pdp2__grommet {
+  z-index: 3;
+}
+.pdp2__thumb-thread {
+  position: absolute;
+  left: 52%;
+  bottom: 14%;
+  width: 2px;
+  height: 22%;
+  background: repeating-linear-gradient(180deg, var(--ink) 0 3px, transparent 3px 5px);
+}
+.pdp2__pricebox {
+  display: grid;
+  gap: 4px;
+}
+.pdp2__hud {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.pdp2__hud b {
+  color: var(--red, #c9302c);
+}
+.pdp2__add:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+.pdp2__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: -4px 0 0;
+}
+.pdp2__reset,
+.pdp2__atelier {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.pdp2__atelier {
+  display: inline-flex;
+  align-items: center;
+  color: var(--green);
+}
