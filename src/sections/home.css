@@ -2080,8 +2080,7 @@ html body .washer__out {
   border: 2px solid var(--ink);
   border-radius: 16px;
   box-shadow: var(--shadow);
-  rotate: -2deg;
-  transform: none;
+  rotate: -2deg; /* (no `transform` here: the minifier would drop the rotate in its favour) */
   justify-items: stretch;
   text-align: left;
   /* in after the door has finished opening (120ms latch + 800ms swing) + 200ms */
